@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.12
+
+### Patch Changes
+
+- ensure warning always appears
+
 ## 0.0.11
 
 ### Patch Changes
