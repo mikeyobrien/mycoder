@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.11
+
+### Patch Changes
+
+- reduce expectations in the readme to start
+
 ## 0.0.10
 
 ### Patch Changes

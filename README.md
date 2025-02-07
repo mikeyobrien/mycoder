@@ -45,8 +45,8 @@ mycoder --promptFile=your-prompt.txt
 ### CLI Options
 
 - `[prompt]`: Main prompt text (positional argument)
-- `--interactive`: Run in interactive mode, asking for prompts
-- `--promptFile`: Read prompt from a specified file
+- `-i, --interactive`: Run in interactive mode, asking for prompts
+- `-f, --file`: Read prompt from a specified file
 - `--log`: Set log level (info, verbose, warn, error)
 - `-h, --help`: Show help
 - `-V, --version`: Show version
@@ -91,28 +91,6 @@ mycoder "Add a new global --debug command line option that enables verbose loggi
 
 # New functionality
 mycoder "Create a new caching system for API responses using Redis, including configuration options and unit tests"
-```
-
-### Project Creation
-
-```bash
-# Web application
-mycoder "Create a Next.js web application for a task management system with the following features:
-- User authentication using Next-Auth
-- MongoDB database integration
-- Task CRUD operations
-- Tailwind CSS styling
-- Unit tests for components
-- API route tests"
-
-# API service
-mycoder "Create an Express.js REST API service for a book management system with:
-- TypeScript configuration
-- PostgreSQL database
-- JWT authentication
-- OpenAPI documentation
-- Docker setup
-- GitHub Actions CI/CD"
 ```
 
 ### Maintenance & Fixes
