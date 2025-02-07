@@ -2,13 +2,17 @@
 
 ## Overview
 
-MyCoder is a powerful command-line based AI agent system that can perform arbitrary tasks with a particular focus on coding tasks. It uses a modular tool-based architecture that allows it to interact with files, execute commands, make network requests, and spawn sub-agents for parallel task execution.
+MyCoder is a simple to install, powerful command-line based AI agent system that can perform arbitrary tasks with a particular focus on coding tasks. It uses a modular tool-based architecture that allows it to interact with files, execute commands, make network requests, and spawn sub-agents for parallel task execution.
 
-## ⚠️ Important: API Key Required
+## WARNING and LIABILITY WAIVER
+
+This tool can do anything on your command line that you ask it to. It can delete files, install software, and even send data to remote servers. It is a powerful tool that should be used with caution. By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool.
+
+## API Key Required
 
 Before using MyCoder, you must have an ANTHROPIC_API_KEY specified either:
 
-- As an environment variable, or
+- As an environment variable, "export ANTHROPIC_API_KEY=[your-api-key]" or
 - In a .env file in the folder you run `mycoder` from
 
 Get an API key from https://www.anthropic.com/api

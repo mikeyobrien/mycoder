@@ -59,6 +59,12 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
         logger.info(
           `MyCoder v${packageInfo.version} - AI-powered coding assistant`
         );
+        logger.warn(
+          "WARNING: This tool can do anything on your command line that you ask it to.",
+          "It can delete files, install software, and even send data to remote servers.",
+          "It is a powerful tool that should be used with caution.",
+          "By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool."
+        );
         logger.info(
           "Type your request below or 'help' for usage information. Use Ctrl+C to exit."
         );

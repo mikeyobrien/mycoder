@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.10
+
+### Patch Changes
+
+- add warning, better docs, license
+
 ## 0.0.9
 
 ### Patch Changes

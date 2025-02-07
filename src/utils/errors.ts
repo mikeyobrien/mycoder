@@ -1,11 +1,10 @@
 export const getAnthropicApiKeyError = () => `
 Error: ANTHROPIC_API_KEY environment variable is not set
 
-To use this tool, you need an Anthropic API key:
-1. Get an API key from https://www.anthropic.com/api
-2. Set it as an environment variable:
-   export ANTHROPIC_API_KEY='your-api-key'
-   
-   Or add it to your .env file:
-   ANTHROPIC_API_KEY=your-api-key
+Before using MyCoder, you must have an ANTHROPIC_API_KEY specified either:
+
+- As an environment variable, "export ANTHROPIC_API_KEY=[your-api-key]" or
+- In a .env file in the folder you run "mycoder" from
+
+Get an API key from https://www.anthropic.com/api
 `;
