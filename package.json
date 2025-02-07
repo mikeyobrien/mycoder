@@ -1,0 +1,77 @@
+{
+  "name": "mycoder",
+  "description": "A command line tool using agent that can do arbitrary tasks, including coding tasks",
+  "version": "0.0.9",
+  "type": "module",
+  "bin": "./bin/cli.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "packageManager": "pnpm@8.9.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bhouston/mycoder.git"
+  },
+  "homepage": "https://github.com/bhouston/mycoder#readme",
+  "bugs": {
+    "url": "https://github.com/bhouston/mycoder/issues"
+  },
+  "scripts": {
+    "start": "node --no-deprecation dist/index.js",
+    "build": "tsc --noEmit && tsc",
+    "clean": "rimraf dist",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "format": "prettier --write \"src/**/*.*\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "mycoder",
+    "swe",
+    "swe-agent",
+    "claude",
+    "auto-coder",
+    "auto-gpt",
+    "typescript",
+    "openai",
+    "automation"
+  ],
+  "author": "Ben Houston",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36",
+    "chalk": "^5",
+    "dotenv": "^16",
+    "source-map-support": "^0.5",
+    "yargs": "^17",
+    "yargs-file-commands": "^0.0.17",
+    "zod": "^3",
+    "zod-to-json-schema": "^3"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2",
+    "@eslint/js": "^9",
+    "@types/node": "^18",
+    "@types/yargs": "^17",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "eslint": "^9.0.0",
+    "eslint-config-prettier": "^9",
+    "eslint-plugin-import": "^2",
+    "eslint-plugin-prettier": "^5",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3",
+    "rimraf": "^5",
+    "type-fest": "^4",
+    "typescript": "^5",
+    "typescript-eslint": "^8.23.0",
+    "vitest": "^3"
+  }
+}

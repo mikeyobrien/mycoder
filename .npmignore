@@ -1,0 +1,12 @@
+.env
+node_modules
+data
+.vscode
+.changeset
+prompts
+docs
+runs
+.gitignore
+.npmignore
+pnpm-lock.yaml
+*.test.*
