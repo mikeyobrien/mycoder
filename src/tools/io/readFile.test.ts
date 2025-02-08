@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Logger } from "../../utils/logger.js";
 import { readFileTool } from "./readFile.js";
 
-const logger = new Logger({ name: "readFile" });
+const logger = new Logger({ name: "readFile", logLevel: "warn" });
 
 describe("readFile", () => {
   it("should read a file", async () => {

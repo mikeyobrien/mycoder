@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { subAgentTool } from "./subAgent.js";
 import { Logger } from "../../utils/logger.js";
 
-const logger = new Logger({ name: "subAgent" });
+const logger = new Logger({ name: "subAgent", logLevel: "warn" });
 
 // Mock Anthropic client response
 const mockResponse = {
