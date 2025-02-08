@@ -18,6 +18,6 @@ describe("shellExecute", () => {
       { command: "nonexistentcommand", description: "test" },
       { logger }
     );
-    expect(error).toContain("command not found");
+    expect(error).toContain("Command failed:");
   });
 });
