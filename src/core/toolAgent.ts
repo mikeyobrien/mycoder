@@ -239,7 +239,7 @@ export const toolAgent = async (
         .map((c) => (c as TextContent).text)
         .join("\\n");
       if (assistantMessage) {
-        logger.debug("Assistant message:", assistantMessage);
+        logger.info(assistantMessage);
       }
 
       const { sequenceCompleted, completionResult } = await executeTools(

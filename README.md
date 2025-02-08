@@ -124,6 +124,26 @@ These examples showcase MyCoder's ability to handle complex software development
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our development workflow, coding guidelines, and testing procedures.
 
+## Development Workflow
+
+### Commit Messages
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. See [COMMIT_CONVENTION.md](COMMIT_CONVENTION.md) for detailed guidelines.
+
+### CI/CD Pipeline
+
+The project uses GitHub Actions for continuous integration and deployment:
+
+- **Non-main branches**: Automatically builds and tests the code
+- **Main branch**: Automatically creates releases and publishes to npm
+
+The release process is managed using [changesets](https://github.com/changesets/changesets) which:
+1. Determines version bumps based on commit messages
+2. Generates changelogs
+3. Creates GitHub releases
+4. Publishes to npm
+
+
 ## License
 
 MIT License
