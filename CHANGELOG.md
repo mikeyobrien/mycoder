@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.13
+
+### Patch Changes
+
+- Put all development guidelines in contributing.md and not in readme.md
+
 ## 0.0.12
 
 ### Patch Changes

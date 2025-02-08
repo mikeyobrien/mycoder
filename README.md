@@ -120,79 +120,9 @@ These examples showcase MyCoder's ability to handle complex software development
 - Node.js >=18.0.0
 - npm or pnpm
 
-## Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/mycoder.git
-cd mycoder
-
-# Install dependencies
-pnpm install
-
-# Create .env file with your API keys
-cp .env.example .env
-# Edit .env with your API keys
-```
-
-### Development Commands
-
-- `pnpm run build` - Build the TypeScript code
-- `pnpm start` - Run the application
-- `pnpm test` - Run tests
-- `pnpm run lint` - Lint the code
-- `pnpm run format` - Format the code
-- `pnpm run clean` - Clean build artifacts
-
-## Architecture
-
-### Core Components
-
-1. **Tool System**
-
-   - Modular tools for specific functionalities
-   - Categories: Interaction, I/O, System, Data Management
-   - Parallel execution capability
-   - Type-safe definitions
-
-2. **Agent System**
-
-   - Main agent for orchestration
-   - Sub-agents for parallel task execution
-   - Anthropic Claude API integration
-   - Hierarchical logging
-
-3. **Logger System**
-   - Color-coded component output
-   - Hierarchical indentation
-   - Multiple log levels (info, verbose, warn, error)
-   - Structured data logging
-
-## Project Structure
-
-```
-src/
-├── core/           # Core agent and executor logic
-├── interfaces/     # Type definitions and interfaces
-├── tools/         # Tool implementations
-│   ├── interaction/
-│   ├── io/
-│   ├── system/
-│   └── record/
-└── utils/         # Utilities including logger
-```
-
 ## Contributing
 
 We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our development workflow, coding guidelines, and testing procedures.
-
-Key points:
-
-- Use TypeScript types over interfaces
-- Maintain test coverage
-- Keep documentation updated
-- Use the logger system for output
-- Run build, test, and lint before submitting changes
 
 ## License
 
