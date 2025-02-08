@@ -12,15 +12,16 @@ Key points:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/mycoder.git
+git clone https://github.com/bhouston/mycoder.git
+
+# Change directory
 cd mycoder
 
 # Install dependencies
 pnpm install
 
-# Create .env file with your API keys
-cp .env.example .env
-# Edit .env with your API keys
+# Create a .env with your API key
+echo "ANTHROPIC_API_KEY=[your-api-key]" > .env
 ```
 
 ### Development Commands
