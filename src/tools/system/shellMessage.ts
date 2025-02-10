@@ -1,56 +1,87 @@
 import { Tool } from "../../core/types.js";
 import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
+import { processStates } from "./shellStart.js";
 
 // Define valid NodeJS signals as a union type
 type NodeSignals =
-  | 'SIGABRT'
-  | 'SIGALRM'
-  | 'SIGBUS'
-  | 'SIGCHLD'
-  | 'SIGCONT'
-  | 'SIGFPE'
-  | 'SIGHUP'
-  | 'SIGILL'
-  | 'SIGINT'
-  | 'SIGIO'
-  | 'SIGIOT'
-  | 'SIGKILL'
-  | 'SIGPIPE'
-  | 'SIGPOLL'
-  | 'SIGPROF'
-  | 'SIGPWR'
-  | 'SIGQUIT'
-  | 'SIGSEGV'
-  | 'SIGSTKFLT'
-  | 'SIGSTOP'
-  | 'SIGSYS'
-  | 'SIGTERM'
-  | 'SIGTRAP'
-  | 'SIGTSTP'
-  | 'SIGTTIN'
-  | 'SIGTTOU'
-  | 'SIGUNUSED'
-  | 'SIGURG'
-  | 'SIGUSR1'
-  | 'SIGUSR2'
-  | 'SIGVTALRM'
-  | 'SIGWINCH'
-  | 'SIGXCPU'
-  | 'SIGXFSZ';
+  | "SIGABRT"
+  | "SIGALRM"
+  | "SIGBUS"
+  | "SIGCHLD"
+  | "SIGCONT"
+  | "SIGFPE"
+  | "SIGHUP"
+  | "SIGILL"
+  | "SIGINT"
+  | "SIGIO"
+  | "SIGIOT"
+  | "SIGKILL"
+  | "SIGPIPE"
+  | "SIGPOLL"
+  | "SIGPROF"
+  | "SIGPWR"
+  | "SIGQUIT"
+  | "SIGSEGV"
+  | "SIGSTKFLT"
+  | "SIGSTOP"
+  | "SIGSYS"
+  | "SIGTERM"
+  | "SIGTRAP"
+  | "SIGTSTP"
+  | "SIGTTIN"
+  | "SIGTTOU"
+  | "SIGUNUSED"
+  | "SIGURG"
+  | "SIGUSR1"
+  | "SIGUSR2"
+  | "SIGVTALRM"
+  | "SIGWINCH"
+  | "SIGXCPU"
+  | "SIGXFSZ";
 
 const parameterSchema = z.object({
   instanceId: z.string().describe("The ID returned by shellStart"),
   stdin: z.string().optional().describe("Input to send to process"),
-  signal: z.enum([
-    'SIGABRT', 'SIGALRM', 'SIGBUS', 'SIGCHLD', 'SIGCONT',
-    'SIGFPE', 'SIGHUP', 'SIGILL', 'SIGINT', 'SIGIO',
-    'SIGIOT', 'SIGKILL', 'SIGPIPE', 'SIGPOLL', 'SIGPROF',
-    'SIGPWR', 'SIGQUIT', 'SIGSEGV', 'SIGSTKFLT', 'SIGSTOP',
-    'SIGSYS', 'SIGTERM', 'SIGTRAP', 'SIGTSTP', 'SIGTTIN',
-    'SIGTTOU', 'SIGUNUSED', 'SIGURG', 'SIGUSR1', 'SIGUSR2',
-    'SIGVTALRM', 'SIGWINCH', 'SIGXCPU', 'SIGXFSZ'
-  ] as const).optional().describe("Signal to send to the process (e.g., SIGTERM, SIGINT)"),
+  signal: z
+    .enum([
+      "SIGABRT",
+      "SIGALRM",
+      "SIGBUS",
+      "SIGCHLD",
+      "SIGCONT",
+      "SIGFPE",
+      "SIGHUP",
+      "SIGILL",
+      "SIGINT",
+      "SIGIO",
+      "SIGIOT",
+      "SIGKILL",
+      "SIGPIPE",
+      "SIGPOLL",
+      "SIGPROF",
+      "SIGPWR",
+      "SIGQUIT",
+      "SIGSEGV",
+      "SIGSTKFLT",
+      "SIGSTOP",
+      "SIGSYS",
+      "SIGTERM",
+      "SIGTRAP",
+      "SIGTSTP",
+      "SIGTTIN",
+      "SIGTTOU",
+      "SIGUNUSED",
+      "SIGURG",
+      "SIGUSR1",
+      "SIGUSR2",
+      "SIGVTALRM",
+      "SIGWINCH",
+      "SIGXCPU",
+      "SIGXFSZ",
+    ] as const)
+    .optional()
+    .describe("Signal to send to the process (e.g., SIGTERM, SIGINT)"),
   description: z
     .string()
     .max(80)
@@ -79,60 +110,53 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
-  execute: async ({ instanceId, stdin, signal }, { logger }): Promise<ReturnType> => {
+  execute: async (
+    { instanceId, stdin, signal },
+    { logger }
+  ): Promise<ReturnType> => {
     logger.verbose(
       `Interacting with shell process ${instanceId}${stdin ? " with input" : ""}${signal ? ` with signal ${signal}` : ""}`
     );
 
     try {
-      const process = global.startedProcesses.get(instanceId);
-      if (!process) {
-        throw new Error(`No process found with ID ${instanceId}`);
-      }
-
-      const processOutput = global.processOutputs.get(instanceId);
-      if (!processOutput) {
-        throw new Error(`No output buffers found for process ${instanceId}`);
-      }
-
-      const processState = global.processState.get(instanceId);
+      const processState = processStates.get(instanceId);
       if (!processState) {
-        throw new Error(`No state information found for process ${instanceId}`);
+        throw new Error(`No process found with ID ${instanceId}`);
       }
 
       // Send signal if provided
       if (signal) {
-        const wasKilled = process.kill(signal);
+        const wasKilled = processState.process.kill(signal);
         if (!wasKilled) {
           return {
             stdout: "",
             stderr: "",
-            completed: processState.completed,
+            completed: processState.state.completed,
             signaled: false,
-            error: `Failed to send signal ${signal} to process (process may have already terminated)`
+            error: `Failed to send signal ${signal} to process (process may have already terminated)`,
           };
         }
-        processState.signaled = true;
+        processState.state.signaled = true;
       }
 
       // Send input if provided
       if (stdin) {
-        if (!process.stdin?.writable) {
+        if (!processState.process.stdin?.writable) {
           throw new Error("Process stdin is not available");
         }
-        process.stdin.write(`${stdin}\n`);
+        processState.process.stdin.write(`${stdin}\n`);
       }
 
       // Wait a brief moment for output to be processed
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       // Get accumulated output
-      const stdout = processOutput.stdout.join("");
-      const stderr = processOutput.stderr.join("");
+      const stdout = processState.stdout.join("");
+      const stderr = processState.stderr.join("");
 
       // Clear the buffers
-      processOutput.stdout = [];
-      processOutput.stderr = [];
+      processState.stdout = [];
+      processState.stderr = [];
 
       logger.verbose("Interaction completed successfully");
       if (stdout) {
@@ -145,8 +169,8 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
       return {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
-        completed: processState.completed,
-        signaled: processState.signaled,
+        completed: processState.state.completed,
+        signaled: processState.state.signaled,
       };
     } catch (error) {
       if (error instanceof Error) {

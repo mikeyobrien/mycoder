@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { shellStartTool } from "./shellStart.js";
+import { processStates, shellStartTool } from "./shellStart.js";
 import { MockLogger } from "../../utils/mockLogger.js";
 import { shellMessageTool } from "./shellMessage.js";
 
@@ -10,14 +10,14 @@ describe("shellMessageTool", () => {
   let testInstanceId = "";
 
   beforeEach(() => {
-    global.startedProcesses.clear();
+    processStates.clear();
   });
 
   afterEach(() => {
-    for (const process of global.startedProcesses.values()) {
-      process.kill();
+    for (const processState of processStates.values()) {
+      processState.process.kill();
     }
-    global.startedProcesses.clear();
+    processStates.clear();
   });
 
   it("should interact with a running process", async () => {
@@ -82,8 +82,8 @@ describe("shellMessageTool", () => {
     );
 
     expect(result.completed).toBe(true);
-    // Process should still be in startedProcesses even after completion
-    expect(global.startedProcesses.has(startResult.instanceId)).toBe(true);
+    // Process should still be in processStates even after completion
+    expect(processStates.has(startResult.instanceId)).toBe(true);
   });
 
   it("should handle SIGTERM signal correctly", async () => {
@@ -179,10 +179,8 @@ describe("shellMessageTool", () => {
       { logger: mockLogger }
     );
 
-    console.log({ checkResult });
-
     expect(checkResult.signaled).toBe(true);
     expect(checkResult.completed).toBe(true);
-    expect(global.startedProcesses.has(startResult.instanceId)).toBe(true);
+    expect(processStates.has(startResult.instanceId)).toBe(true);
   });
 });

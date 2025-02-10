@@ -5,24 +5,22 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { v4 as uuidv4 } from "uuid";
 
-// Global maps to store process state
-declare global {
-  var startedProcesses: Map<string, ChildProcess>;
-  var processOutputs: Map<string, { stdout: string[]; stderr: string[] }>;
-  var processState: Map<string, { completed: boolean; signaled: boolean }>;
-}
+// Define ProcessState type
+type ProcessState = {
+  process: ChildProcess;
 
-if (!global.startedProcesses) {
-  global.startedProcesses = new Map<string, ChildProcess>();
-}
+  stdout: string[];
+  stderr: string[];
 
-if (!global.processOutputs) {
-  global.processOutputs = new Map<string, { stdout: string[]; stderr: string[] }>();
-}
+  state: {
+    completed: boolean;
+    signaled: boolean;
+  };
+};
 
-if (!global.processState) {
-  global.processState = new Map<string, { completed: boolean; signaled: boolean }>();
-}
+// Global map to store process state
+
+export const processStates: Map<string, ProcessState> = new Map();
 
 const parameterSchema = z.object({
   command: z.string().describe("The shell command to execute"),
@@ -47,98 +45,89 @@ type ReturnType = z.infer<typeof returnSchema>;
 export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: "shellStart",
   description:
-    "Starts a long-running shell command and returns a process instance ID",
+    "Starts a long-running shell command and returns a process instance ID, progress can be checked with shellMessage command",
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
-  // eslint-disable-next-line max-lines-per-function
   execute: async ({ command }, { logger }): Promise<ReturnType> => {
     logger.verbose(`Starting shell command: ${command}`);
 
-    // eslint-disable-next-line max-lines-per-function
     return new Promise((resolve) => {
       try {
         const instanceId = uuidv4();
         let hasResolved = false;
 
-        // Initialize output buffers and process state
-        global.processOutputs.set(instanceId, { stdout: [], stderr: [] });
-        global.processState.set(instanceId, { completed: false, signaled: false });
-
         // Split command into command and args
         // Use command directly with shell: true
         const process = spawn(command, [], { shell: true });
+
+        const processState: ProcessState = {
+          process,
+          stdout: [],
+          stderr: [],
+          state: { completed: false, signaled: false },
+        };
+
+        // Initialize combined process state
+        processStates.set(instanceId, processState);
 
         // Handle process events
         if (process.stdout)
           process.stdout.on("data", (data) => {
             const output = data.toString();
-            const processOutput = global.processOutputs.get(instanceId);
-            if (processOutput) {
-              processOutput.stdout.push(output);
-            }
+            processState.stdout.push(output);
             logger.verbose(`[${instanceId}] stdout: ${output.trim()}`);
           });
 
         if (process.stderr)
           process.stderr.on("data", (data) => {
             const output = data.toString();
-            const processOutput = global.processOutputs.get(instanceId);
-            if (processOutput) {
-              processOutput.stderr.push(output);
-            }
+            processState.stderr.push(output);
             logger.verbose(`[${instanceId}] stderr: ${output.trim()}`);
           });
 
         process.on("error", (error) => {
           logger.error(`[${instanceId}] Process error: ${error.message}`);
-          const state = global.processState.get(instanceId);
-          if (state) {
-            state.completed = true;
-          }
+          processState.state.completed = true;
           if (!hasResolved) {
             hasResolved = true;
-            const outputs = global.processOutputs.get(instanceId) || { stdout: [], stderr: [] };
             resolve({
               instanceId,
-              stdout: outputs.stdout.join("").trim(),
-              stderr: outputs.stderr.join("").trim(),
+              stdout: processState.stdout.join("").trim(),
+              stderr: processState.stderr.join("").trim(),
               error: error.message,
             });
           }
         });
 
         process.on("exit", (code, signal) => {
-          logger.verbose(`[${instanceId}] Process exited with code ${code} and signal ${signal}`);
-          const state = global.processState.get(instanceId);
-          if (state) {
-            state.completed = true;
-            state.signaled = signal !== null;
-          }
+          logger.verbose(
+            `[${instanceId}] Process exited with code ${code} and signal ${signal}`
+          );
+
+          processState.state.completed = true;
+          processState.state.signaled = signal !== null;
+
           if (code !== 0 && !hasResolved) {
             hasResolved = true;
-            const outputs = global.processOutputs.get(instanceId) || { stdout: [], stderr: [] };
+
             resolve({
               instanceId,
-              stdout: outputs.stdout.join("").trim(),
-              stderr: outputs.stderr.join("").trim(),
+              stdout: processState.stdout.join("").trim(),
+              stderr: processState.stderr.join("").trim(),
               error: `Process exited with code ${code}${signal ? ` and signal ${signal}` : ""}`,
             });
           }
         });
 
-        // Store process in global map
-        global.startedProcesses.set(instanceId, process);
-
         // Set timeout to return initial results
         setTimeout(() => {
           if (!hasResolved) {
             hasResolved = true;
-            const outputs = global.processOutputs.get(instanceId) || { stdout: [], stderr: [] };
             resolve({
               instanceId,
-              stdout: outputs.stdout.join("").trim(),
-              stderr: outputs.stderr.join("").trim(),
+              stdout: processState.stdout.join("").trim(),
+              stderr: processState.stderr.join("").trim(),
             });
           }
         }, 1000); // Wait 1 second for initial output
