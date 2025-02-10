@@ -16,20 +16,42 @@ describe("shellStartTool", () => {
     processStates.clear();
   });
 
-  it("should start a process and return instance ID", async () => {
+  it("should handle fast commands in sync mode", async () => {
     const result = await shellStartTool.execute(
       {
         command: 'echo "test"',
         description: "Test process",
+        timeout: 500, // Generous timeout to ensure sync mode
       },
       { logger: mockLogger }
     );
 
-    expect(result.instanceId).toBeDefined();
-    expect(result.error).toBeUndefined();
+    expect(result.mode).toBe("sync");
+    if (result.mode === "sync") {
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout).toBe("test");
+      expect(result.error).toBeUndefined();
+    }
   });
 
-  it("should handle invalid commands", async () => {
+  it("should switch to async mode for slow commands", async () => {
+    const result = await shellStartTool.execute(
+      {
+        command: "sleep 1",
+        description: "Slow command test",
+        timeout: 50, // Short timeout to force async mode
+      },
+      { logger: mockLogger }
+    );
+
+    expect(result.mode).toBe("async");
+    if (result.mode === "async") {
+      expect(result.instanceId).toBeDefined();
+      expect(result.error).toBeUndefined();
+    }
+  });
+
+  it("should handle invalid commands with sync error", async () => {
     const result = await shellStartTool.execute(
       {
         command: "nonexistentcommand",
@@ -38,56 +60,85 @@ describe("shellStartTool", () => {
       { logger: mockLogger }
     );
 
-    expect(result.error).toBeDefined();
+    expect(result.mode).toBe("sync");
+    if (result.mode === "sync") {
+      expect(result.exitCode).not.toBe(0);
+      expect(result.error).toBeDefined();
+    }
   });
 
-  it("should keep process in processStates after completion", async () => {
-    const result = await shellStartTool.execute(
+  it("should keep process in processStates in both modes", async () => {
+    // Test sync mode
+    const syncResult = await shellStartTool.execute(
       {
         command: 'echo "test"',
-        description: "Completion test",
+        description: "Sync completion test",
+        timeout: 500,
       },
       { logger: mockLogger }
     );
 
-    // Wait for process to complete
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    // Even sync results should be in processStates
+    expect(processStates.size).toBeGreaterThan(0);
 
-    // Process should still be in processStates
-    expect(processStates.has(result.instanceId)).toBe(true);
+    // Test async mode
+    const asyncResult = await shellStartTool.execute(
+      {
+        command: "sleep 1",
+        description: "Async completion test",
+        timeout: 50,
+      },
+      { logger: mockLogger }
+    );
+
+    if (asyncResult.mode === "async") {
+      expect(processStates.has(asyncResult.instanceId)).toBe(true);
+    }
   });
 
-  it("should handle piped commands correctly", async () => {
-    // Start a process that uses pipes
+  it("should handle piped commands correctly in async mode", async () => {
     const result = await shellStartTool.execute(
       {
-        command: 'grep "test"', // Just grep waiting for stdin
+        command: 'grep "test"',
         description: "Pipe test",
+        timeout: 50, // Force async for interactive command
       },
       { logger: mockLogger }
     );
 
-    expect(result.instanceId).toBeDefined();
-    expect(result.error).toBeUndefined();
+    expect(result.mode).toBe("async");
+    if (result.mode === "async") {
+      expect(result.instanceId).toBeDefined();
+      expect(result.error).toBeUndefined();
 
-    // Process should be in processStates
-    expect(processStates.has(result.instanceId)).toBe(true);
+      const processState = processStates.get(result.instanceId);
+      expect(processState).toBeDefined();
 
-    // Get the process
-    const processState = processStates.get(result.instanceId);
-    expect(processState).toBeDefined();
+      if (processState?.process.stdin) {
+        processState.process.stdin.write("this is a test line\n");
+        processState.process.stdin.write("not matching line\n");
+        processState.process.stdin.write("another test here\n");
+        processState.process.stdin.end();
 
-    // Write to stdin and check output
-    if (processState?.process.stdin) {
-      processState.process.stdin.write("this is a test line\n");
-      processState.process.stdin.write("not matching line\n");
-      processState.process.stdin.write("another test here\n");
+        // Wait for output
+        await new Promise((resolve) => setTimeout(resolve, 200));
 
-      // Wait for output
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Process should have filtered only lines with "test"
-      // This part might need adjustment based on how output is captured
+        // Check stdout in processState
+        expect(processState.stdout.join("")).toContain("test");
+        expect(processState.stdout.join("")).not.toContain("not matching");
+      }
     }
+  });
+
+  it("should use default timeout of 100ms", async () => {
+    const result = await shellStartTool.execute(
+      {
+        command: "sleep 1",
+        description: "Default timeout test",
+      },
+      { logger: mockLogger }
+    );
+
+    expect(result.mode).toBe("async");
   });
 });

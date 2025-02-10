@@ -8,18 +8,16 @@ import { v4 as uuidv4 } from "uuid";
 // Define ProcessState type
 type ProcessState = {
   process: ChildProcess;
-
   stdout: string[];
   stderr: string[];
-
   state: {
     completed: boolean;
     signaled: boolean;
+    exitCode: number | null;
   };
 };
 
 // Global map to store process state
-
 export const processStates: Map<string, ProcessState> = new Map();
 
 const parameterSchema = z.object({
@@ -28,16 +26,32 @@ const parameterSchema = z.object({
     .string()
     .max(80)
     .describe("The reason this shell command is being run (max 80 chars)"),
+  timeout: z
+    .number()
+    .optional()
+    .describe("Timeout in ms before switching to async mode (default: 100ms)")
 });
 
-const returnSchema = z
-  .object({
-    instanceId: z.string(),
-    stdout: z.string(),
-    stderr: z.string(),
-    error: z.string().optional(),
-  })
-  .describe("Process start results including instance ID and initial output");
+const returnSchema = z.union([
+  z
+    .object({
+      mode: z.literal("sync"),
+      stdout: z.string(),
+      stderr: z.string(),
+      exitCode: z.number(),
+      error: z.string().optional(),
+    })
+    .describe("Synchronous execution results when command completes within timeout"),
+  z
+    .object({
+      mode: z.literal("async"),
+      instanceId: z.string(),
+      stdout: z.string(),
+      stderr: z.string(),
+      error: z.string().optional(),
+    })
+    .describe("Asynchronous execution results when command exceeds timeout"),
+]);
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
@@ -45,11 +59,11 @@ type ReturnType = z.infer<typeof returnSchema>;
 export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: "shellStart",
   description:
-    "Starts a long-running shell command and returns a process instance ID, progress can be checked with shellMessage command",
+    "Starts a shell command with fast sync mode (default 100ms timeout) that falls back to async mode for longer-running commands",
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
-  execute: async ({ command }, { logger }): Promise<ReturnType> => {
+  execute: async ({ command, timeout = 100 }, { logger }): Promise<ReturnType> => {
     logger.verbose(`Starting shell command: ${command}`);
 
     return new Promise((resolve) => {
@@ -65,7 +79,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
           process,
           stdout: [],
           stderr: [],
-          state: { completed: false, signaled: false },
+          state: { completed: false, signaled: false, exitCode: null },
         };
 
         // Initialize combined process state
@@ -92,6 +106,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
           if (!hasResolved) {
             hasResolved = true;
             resolve({
+              mode: "async",
               instanceId,
               stdout: processState.stdout.join("").trim(),
               stderr: processState.stderr.join("").trim(),
@@ -107,36 +122,43 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
 
           processState.state.completed = true;
           processState.state.signaled = signal !== null;
+          processState.state.exitCode = code;
 
-          if (code !== 0 && !hasResolved) {
+          if (!hasResolved) {
             hasResolved = true;
-
+            // If we haven't resolved yet, this happened within the timeout
+            // so return sync results
             resolve({
-              instanceId,
+              mode: "sync",
               stdout: processState.stdout.join("").trim(),
               stderr: processState.stderr.join("").trim(),
-              error: `Process exited with code ${code}${signal ? ` and signal ${signal}` : ""}`,
+              exitCode: code ?? 1,
+              ...(code !== 0 && {
+                error: `Process exited with code ${code}${signal ? ` and signal ${signal}` : ""}`,
+              }),
             });
           }
         });
 
-        // Set timeout to return initial results
+        // Set timeout to switch to async mode
         setTimeout(() => {
           if (!hasResolved) {
             hasResolved = true;
             resolve({
+              mode: "async",
               instanceId,
               stdout: processState.stdout.join("").trim(),
               stderr: processState.stderr.join("").trim(),
             });
           }
-        }, 1000); // Wait 1 second for initial output
+        }, timeout);
       } catch (error) {
         logger.error(`Failed to start process: ${error}`);
         resolve({
-          instanceId: "",
+          mode: "sync",
           stdout: "",
           stderr: "",
+          exitCode: 1,
           error: error instanceof Error ? error.message : String(error),
         });
       }
@@ -144,9 +166,15 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   },
 
   logParameters: (input, { logger }) => {
-    logger.info(`Starting "${input.command}", ${input.description}`);
+    logger.info(
+      `Starting "${input.command}", ${input.description} (timeout: ${input.timeout}ms)`
+    );
   },
   logReturns: (output, { logger }) => {
-    logger.info(`Process started with instance ID: ${output.instanceId}`);
+    if (output.mode === "async") {
+      logger.info(`Process started with instance ID: ${output.instanceId}`);
+    } else {
+      logger.info(`Process completed with exit code: ${output.exitCode}`);
+    }
   },
 };
