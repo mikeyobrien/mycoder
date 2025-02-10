@@ -85,7 +85,8 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
 
     // Add the standard suffix to all prompts
     prompt += [
-      "\nPlease ask for clarifications if required or if the tasks is confusing.",
+      "Please ask for clarifications if required or if the tasks is confusing.",
+      "If you need more context, don't be scared to create a sub-agent to investigate and generate report back, this can save a lot of time and prevent obvious mistakes.",
       "Once the task is complete ask the user, via the userPrompt tool if the results are acceptable or if changes are needed or if there are additional follow on tasks.",
     ].join("\n");
 
