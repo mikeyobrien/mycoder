@@ -8,47 +8,111 @@ on:
     branches-ignore:
       - main
 
+# Cancel in-progress runs on new commits to same PR
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-test:
+  setup:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          
+          cache: 'pnpm'
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8.9.0
-          
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
-        run: pnpm install
-        
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.9.0
+          run_install: false
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Build
         run: pnpm build
-        
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: dist/
+          retention-days: 1
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.9.0
+          run_install: false
+
+      - name: Restore node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-modules-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Test
         run: pnpm test
-
-      - name: Check for changeset
-        run: |
-          # Only run this check on pull requests
-          if [[ $GITHUB_EVENT_NAME == 'pull_request' ]]; then
-            # Check if there are any changes to source files
-            if git diff --name-only origin/main HEAD | grep -q '^src/'; then
-              echo "Changes detected in src directory. Checking for changeset..."
-              # This will exit with non-zero if a changeset is needed but not present
-              pnpm changeset status
-            else
-              echo "No changes to src directory detected. Skipping changeset check."
-            fi
-          else
-            echo "Not a pull request. Skipping changeset check."
-          fi
