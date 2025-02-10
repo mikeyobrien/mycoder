@@ -15,7 +15,7 @@ const parameterSchema = z.object({
 const returnSchema = z
   .string()
   .describe(
-    "The response from the sub-agent including its reasoning and tool usage"
+    "The response from the sub-agent including its reasoning and tool usage",
   );
 
 type Parameters = z.infer<typeof parameterSchema>;
@@ -49,7 +49,7 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
     const { prompt } = parameterSchema.parse(params);
 
     const tools = (await getTools()).filter(
-      (tool) => tool.name !== "userPrompt"
+      (tool) => tool.name !== "userPrompt",
     );
 
     const result = await toolAgent(prompt, tools, logger, subAgentConfig);

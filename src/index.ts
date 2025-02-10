@@ -6,6 +6,7 @@ import { createRequire } from "module";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { fileCommands } from "yargs-file-commands";
+import { checkForUpdates } from "./utils/versionCheck.js";
 
 import sourceMapSupport from "source-map-support";
 
@@ -20,6 +21,11 @@ const main = async () => {
 
   const logger = new Logger({ name: "Main", color: "white" });
 
+  const updateMessage = await checkForUpdates();
+  if (updateMessage) {
+    logger.info(updateMessage);
+  }
+
   // Error handling
   process.on("SIGINT", () => {
     logger.warn("\nGracefully shutting down...");
@@ -31,7 +37,7 @@ const main = async () => {
       "Fatal error:",
       error.constructor.name,
       error.message,
-      error.stack
+      error.stack,
     );
     process.exit(1);
   });
@@ -63,7 +69,7 @@ const main = async () => {
       await fileCommands({
         commandDirs: [commandsDir],
         logLevel: "info",
-      })
+      }),
     )
     .strict()
     .showHelpOnFail(true)

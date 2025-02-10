@@ -9,7 +9,7 @@ const OUTPUT_LIMIT = 12 * 1024; // 10KB limit
 export const executeToolCall = async (
   toolCall: ToolCall,
   tools: Tool[],
-  parentLogger: Logger
+  parentLogger: Logger,
 ): Promise<string> => {
   const logger = new Logger({
     name: `Tool:${toolCall.name}`,

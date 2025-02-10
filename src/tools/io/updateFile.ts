@@ -54,13 +54,13 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
       const occurrences = content.split(operation.oldStr).length - 1;
       if (occurrences !== 1) {
         throw new Error(
-          `Found ${occurrences} occurrences of oldStr, expected exactly 1`
+          `Found ${occurrences} occurrences of oldStr, expected exactly 1`,
         );
       }
       await fs.writeFile(
         absolutePath,
         content.replace(operation.oldStr, operation.newStr),
-        "utf8"
+        "utf8",
       );
     } else if (operation.command === "append") {
       await fs.appendFile(absolutePath, operation.content, "utf8");

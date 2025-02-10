@@ -33,7 +33,7 @@ describe("getTools", () => {
           name: expect.any(String),
           description: expect.any(String),
           parameters: expect.any(Object),
-        })
+        }),
       );
     }
   });

@@ -48,8 +48,10 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
     if (argv.file) {
       try {
         prompt = await fs.readFile(argv.file, "utf-8");
-      } catch (error) {
-        logger.error(`Failed to read prompt file: ${argv.file}`);
+      } catch (error: any) {
+        logger.error(
+          `Failed to read prompt file: ${argv.file}, ${error?.message}`
+        );
         process.exit(1);
       }
     }

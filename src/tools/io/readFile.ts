@@ -19,7 +19,7 @@ const parameterSchema = z.object({
     .number()
     .optional()
     .describe(
-      "Maximum size to read, prevents reading arbitrarily large files that blow up the context window"
+      "Maximum size to read, prevents reading arbitrarily large files that blow up the context window",
     ),
   description: z
     .string()
@@ -54,7 +54,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
     const readSize = range ? range.end - range.start : stats.size;
     if (readSize > maxSize) {
       throw new Error(
-        `Requested size ${readSize} bytes exceeds maximum ${maxSize} bytes`
+        `Requested size ${readSize} bytes exceeds maximum ${maxSize} bytes`,
       );
     }
 
@@ -66,7 +66,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
           buffer,
           0,
           readSize,
-          range.start
+          range.start,
         );
         return {
           path: filePath,
