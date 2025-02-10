@@ -132,16 +132,15 @@ This project uses [Conventional Commits](https://www.conventionalcommits.org/) f
 
 ### CI/CD Pipeline
 
-The project uses GitHub Actions for continuous integration and deployment:
+The project uses GitHub Actions for continuous integration:
 
-- **Non-main branches**: Automatically builds and tests the code
-- **Main branch**: Automatically creates releases and publishes to npm
+- A single CI pipeline automatically builds and tests the code on all branches and pull requests to main
 
-The release process is managed using [changesets](https://github.com/changesets/changesets) which:
+The release process is managed manually using [changesets](https://github.com/changesets/changesets) which:
 1. Determines version bumps based on commit messages
 2. Generates changelogs
-3. Creates GitHub releases
-4. Publishes to npm
+
+Releases to GitHub and publishing to npm are performed manually after review.
 
 
 ## License
