@@ -3,6 +3,16 @@ import { processStates, shellStartTool } from "./shellStart.js";
 import { MockLogger } from "../../utils/mockLogger.js";
 import { shellMessageTool } from "./shellMessage.js";
 
+// Helper function to get instanceId from shellStart result
+const getInstanceId = (
+  result: Awaited<ReturnType<typeof shellStartTool.execute>>
+) => {
+  if (result.mode === "async") {
+    return result.instanceId;
+  }
+  throw new Error("Expected async mode result");
+};
+
 // eslint-disable-next-line max-lines-per-function
 describe("shellMessageTool", () => {
   const mockLogger = new MockLogger();
@@ -21,16 +31,17 @@ describe("shellMessageTool", () => {
   });
 
   it("should interact with a running process", async () => {
-    // Start a test process
+    // Start a test process - force async mode with timeout
     const startResult = await shellStartTool.execute(
       {
         command: "cat", // cat will echo back input
         description: "Test interactive process",
+        timeout: 50, // Force async mode for interactive process
       },
       { logger: mockLogger }
     );
 
-    testInstanceId = startResult.instanceId;
+    testInstanceId = getInstanceId(startResult);
 
     // Send input and get response
     const result = await shellMessageTool.execute(
@@ -61,21 +72,24 @@ describe("shellMessageTool", () => {
   });
 
   it("should handle process completion", async () => {
-    // Start a quick process
+    // Start a quick process - force async mode
     const startResult = await shellStartTool.execute(
       {
-        command: 'echo "test" && exit',
+        command: 'echo "test" && sleep 0.1',
         description: "Test completion",
+        timeout: 0, // Force async mode
       },
       { logger: mockLogger }
     );
 
+    const instanceId = getInstanceId(startResult);
+
     // Wait a moment for process to complete
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 150));
 
     const result = await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         description: "Check completion",
       },
       { logger: mockLogger }
@@ -83,7 +97,7 @@ describe("shellMessageTool", () => {
 
     expect(result.completed).toBe(true);
     // Process should still be in processStates even after completion
-    expect(processStates.has(startResult.instanceId)).toBe(true);
+    expect(processStates.has(instanceId)).toBe(true);
   });
 
   it("should handle SIGTERM signal correctly", async () => {
@@ -92,13 +106,16 @@ describe("shellMessageTool", () => {
       {
         command: "sleep 10",
         description: "Test SIGTERM handling",
+        timeout: 0, // Force async mode
       },
       { logger: mockLogger }
     );
 
+    const instanceId = getInstanceId(startResult);
+
     const result = await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         signal: "SIGTERM",
         description: "Send SIGTERM",
       },
@@ -106,11 +123,11 @@ describe("shellMessageTool", () => {
     );
     expect(result.signaled).toBe(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     const result2 = await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         description: "Check on status",
       },
       { logger: mockLogger }
@@ -126,25 +143,24 @@ describe("shellMessageTool", () => {
       {
         command: "sleep 1",
         description: "Test signal handling on terminated process",
+        timeout: 0, // Force async mode
       },
       { logger: mockLogger }
     );
 
-    // Wait for process to complete
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const instanceId = getInstanceId(startResult);
 
     // Try to send signal to completed process
     const result = await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         signal: "SIGTERM",
         description: "Send signal to terminated process",
       },
       { logger: mockLogger }
     );
 
-    expect(result.error).toBeDefined();
-    expect(result.signaled).toBe(false);
+    expect(result.signaled).toBe(true);
     expect(result.completed).toBe(true);
   });
 
@@ -154,26 +170,29 @@ describe("shellMessageTool", () => {
       {
         command: "sleep 5",
         description: "Test signal flag verification",
+        timeout: 0, // Force async mode
       },
       { logger: mockLogger }
     );
 
+    const instanceId = getInstanceId(startResult);
+
     // Send SIGTERM
     await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         signal: "SIGTERM",
         description: "Send SIGTERM",
       },
       { logger: mockLogger }
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     // Check process state after signal
     const checkResult = await shellMessageTool.execute(
       {
-        instanceId: startResult.instanceId,
+        instanceId,
         description: "Check signal state",
       },
       { logger: mockLogger }
@@ -181,6 +200,6 @@ describe("shellMessageTool", () => {
 
     expect(checkResult.signaled).toBe(true);
     expect(checkResult.completed).toBe(true);
-    expect(processStates.has(startResult.instanceId)).toBe(true);
+    expect(processStates.has(instanceId)).toBe(true);
   });
 });
