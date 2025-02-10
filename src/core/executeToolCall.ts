@@ -18,7 +18,6 @@ export const executeToolCall = async (
 
   const tool = tools.find((t) => t.name === toolCall.name);
   if (!tool) {
-    logger.error(`Tool '${toolCall.name}' not found`);
     throw new Error(`No tool with the name '${toolCall.name}' exists.`);
   }
 

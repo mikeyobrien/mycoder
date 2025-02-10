@@ -9,7 +9,7 @@ import { updateFileTool } from "./updateFile.js";
 import { readFileTool } from "./readFile.js";
 import { shellExecuteTool } from "../system/shellExecute.js";
 
-const logger = new Logger({ name: "updateFile" });
+const logger = new Logger({ name: "updateFile", logLevel: "warn" });
 
 describe("updateFile", () => {
   let testDir: string;

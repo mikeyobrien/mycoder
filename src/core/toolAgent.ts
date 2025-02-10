@@ -169,126 +169,114 @@ export const toolAgent = async (
   let totalOutputTokens = 0;
   let interactions = 0;
 
-  try {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) throw new Error(getAnthropicApiKeyError());
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error(getAnthropicApiKeyError());
 
-    const client = new Anthropic({ apiKey });
-    const messages: Message[] = [
-      {
-        role: "user",
-        content: [{ type: "text", text: initialPrompt }],
-      },
-    ];
+  const client = new Anthropic({ apiKey });
+  const messages: Message[] = [
+    {
+      role: "user",
+      content: [{ type: "text", text: initialPrompt }],
+    },
+  ];
 
-    logger.debug("User message:", initialPrompt);
+  logger.debug("User message:", initialPrompt);
 
-    // Get the system prompt once at the start
-    const systemPrompt = await config.getSystemPrompt();
+  // Get the system prompt once at the start
+  const systemPrompt = await config.getSystemPrompt();
 
-    for (let i = 0; i < config.maxIterations; i++) {
+  for (let i = 0; i < config.maxIterations; i++) {
+    logger.verbose(
+      `Requesting completion ${i + 1} with ${messages.length} messages with ${
+        JSON.stringify(messages).length
+      } bytes`
+    );
+
+    interactions++;
+    const response = await client.messages.create({
+      model: config.model,
+      max_tokens: config.maxTokens,
+      temperature: config.temperature,
+      messages,
+      system: systemPrompt,
+      tools: tools.map((t) => ({
+        name: t.name,
+        description: t.description,
+        input_schema: t.parameters as Anthropic.Tool.InputSchema,
+      })),
+      tool_choice: { type: "auto" },
+    });
+
+    if (!response.content.length) {
+      const result = {
+        result:
+          "Agent returned empty message implying it is done its given task",
+        tokens: {
+          input: totalInputTokens,
+          output: totalOutputTokens,
+        },
+        interactions,
+      };
       logger.verbose(
-        `Requesting completion ${i + 1} with ${messages.length} messages with ${
-          JSON.stringify(messages).length
-        } bytes`
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
       );
-
-      interactions++;
-      const response = await client.messages.create({
-        model: config.model,
-        max_tokens: config.maxTokens,
-        temperature: config.temperature,
-        messages,
-        system: systemPrompt,
-        tools: tools.map((t) => ({
-          name: t.name,
-          description: t.description,
-          input_schema: t.parameters as Anthropic.Tool.InputSchema,
-        })),
-        tool_choice: { type: "auto" },
-      });
-
-      if (!response.content.length) {
-        const result = {
-          result:
-            "Agent returned empty message implying it is done its given task",
-          tokens: {
-            input: totalInputTokens,
-            output: totalOutputTokens,
-          },
-          interactions,
-        };
-        logger.verbose(
-          `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
-        );
-        return result;
-      }
-
-      totalInputTokens += response.usage.input_tokens;
-      totalOutputTokens += response.usage.output_tokens;
-      logger.verbose(
-        `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`
-      );
-
-      const { content, toolCalls } = processResponse(response);
-      messages.push({ role: "assistant", content });
-
-      // Log the assistant's message
-      const assistantMessage = content
-        .filter((c) => c.type === "text")
-        .map((c) => (c as TextContent).text)
-        .join("\\n");
-      if (assistantMessage) {
-        logger.debug("Assistant message:", assistantMessage);
-      }
-
-      const { sequenceCompleted, completionResult } = await executeTools(
-        toolCalls,
-        tools,
-        messages,
-        logger
-      );
-
-      if (sequenceCompleted) {
-        const result = {
-          result:
-            completionResult ??
-            "Sequence explicitly completed with an empty result",
-          tokens: {
-            input: totalInputTokens,
-            output: totalOutputTokens,
-          },
-          interactions,
-        };
-        logger.verbose(
-          `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
-        );
-        return result;
-      }
+      return result;
     }
 
-    logger.warn("Maximum iterations reached");
-    const result = {
-      result:
-        "Maximum sub-agent iterations reach without successful completion",
-      tokens: {
-        input: totalInputTokens,
-        output: totalOutputTokens,
-      },
-      interactions,
-    };
+    totalInputTokens += response.usage.input_tokens;
+    totalOutputTokens += response.usage.output_tokens;
     logger.verbose(
-      `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`
     );
-    return result;
-  } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "Unknown error";
-    logger.error(
-      "Agent execution failed",
-      errorMessage,
-      (error as Error)?.stack
+
+    const { content, toolCalls } = processResponse(response);
+    messages.push({ role: "assistant", content });
+
+    // Log the assistant's message
+    const assistantMessage = content
+      .filter((c) => c.type === "text")
+      .map((c) => (c as TextContent).text)
+      .join("\\n");
+    if (assistantMessage) {
+      logger.info(assistantMessage);
+    }
+
+    const { sequenceCompleted, completionResult } = await executeTools(
+      toolCalls,
+      tools,
+      messages,
+      logger
     );
-    throw error;
+
+    if (sequenceCompleted) {
+      const result = {
+        result:
+          completionResult ??
+          "Sequence explicitly completed with an empty result",
+        tokens: {
+          input: totalInputTokens,
+          output: totalOutputTokens,
+        },
+        interactions,
+      };
+      logger.verbose(
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+      );
+      return result;
+    }
   }
+
+  logger.warn("Maximum iterations reached");
+  const result = {
+    result: "Maximum sub-agent iterations reach without successful completion",
+    tokens: {
+      input: totalInputTokens,
+      output: totalOutputTokens,
+    },
+    interactions,
+  };
+  logger.verbose(
+    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+  );
+  return result;
 };

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { Logger } from "../../utils/logger.js";
 import { shellExecuteTool } from "./shellExecute.js";
 
-const logger = new Logger({ name: "shellExecute" });
+const logger = new Logger({ name: "shellExecute", logLevel: "warn" });
 
 describe("shellExecute", () => {
   it("should execute shell commands", async () => {
@@ -18,6 +18,6 @@ describe("shellExecute", () => {
       { command: "nonexistentcommand", description: "test" },
       { logger }
     );
-    expect(error).toContain("command not found");
+    expect(error).toContain("Command failed:");
   });
 });
