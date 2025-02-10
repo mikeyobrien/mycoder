@@ -8,7 +8,7 @@ describe("readFile", () => {
   it("should read a file", async () => {
     const { content } = await readFileTool.execute(
       { path: "package.json", description: "test" },
-      { logger }
+      { logger },
     );
     expect(content).toContain("mycoder");
   });
@@ -17,7 +17,7 @@ describe("readFile", () => {
     try {
       await readFileTool.execute(
         { path: "nonexistent.txt", description: "test" },
-        { logger }
+        { logger },
       );
       expect(true).toBe(false); // Should not reach here
     } catch (error: any) {

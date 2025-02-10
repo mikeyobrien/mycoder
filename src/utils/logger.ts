@@ -77,10 +77,10 @@ export class Logger {
     // Split into lines and add prefix to each line if showPrefix is true
     return formatted
       .split("\n")
-      .map((line) => 
-        showPrefix 
-          ? `${prefixChalk(prefix)} ${messagesChalk(`${line}`)}` 
-          : `${this.offset}${messagesChalk(`${line}`)}`
+      .map((line) =>
+        showPrefix
+          ? `${prefixChalk(prefix)} ${messagesChalk(`${line}`)}`
+          : `${this.offset}${messagesChalk(`${line}`)}`,
       )
       .join("\n");
   }

@@ -41,7 +41,7 @@ describe("subAgent", () => {
         prompt: "Test sub-agent task",
         description: "A test agent for unit testing",
       },
-      { logger }
+      { logger },
     );
 
     expect(result.toString()).toContain("Sub-agent task complete");
@@ -57,8 +57,8 @@ describe("subAgent", () => {
           prompt: "Test task",
           description: "An agent that should fail",
         },
-        { logger }
-      )
+        { logger },
+      ),
     ).rejects.toThrow("ANTHROPIC_API_KEY environment variable is not set");
   });
 
@@ -72,8 +72,8 @@ describe("subAgent", () => {
           prompt: "Test task",
           description: longDescription,
         },
-        { logger }
-      )
+        { logger },
+      ),
     ).rejects.toThrow();
   });
 });

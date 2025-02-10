@@ -112,7 +112,7 @@ async function executeTools(
   toolCalls: ToolUseContent[],
   tools: Tool[],
   messages: Message[],
-  logger: Logger
+  logger: Logger,
 ): Promise<ToolCallResult> {
   if (toolCalls.length === 0) {
     return { sequenceCompleted: false, toolResults: [] };
@@ -134,7 +134,7 @@ async function executeTools(
         content: toolResult,
         isComplete: call.name === "sequenceComplete",
       };
-    })
+    }),
   );
 
   const toolResults = results.map(({ type, tool_use_id, content }) => ({
@@ -160,7 +160,7 @@ export const toolAgent = async (
   initialPrompt: string,
   tools: Tool[],
   logger: Logger,
-  config = CONFIG
+  config = CONFIG,
 ): Promise<ToolAgentResult> => {
   logger.verbose("Starting agent execution");
   logger.verbose("Initial prompt:", initialPrompt);
@@ -189,7 +189,7 @@ export const toolAgent = async (
     logger.verbose(
       `Requesting completion ${i + 1} with ${messages.length} messages with ${
         JSON.stringify(messages).length
-      } bytes`
+      } bytes`,
     );
 
     interactions++;
@@ -218,7 +218,7 @@ export const toolAgent = async (
         interactions,
       };
       logger.verbose(
-        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
       );
       return result;
     }
@@ -226,7 +226,7 @@ export const toolAgent = async (
     totalInputTokens += response.usage.input_tokens;
     totalOutputTokens += response.usage.output_tokens;
     logger.verbose(
-      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`
+      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`,
     );
 
     const { content, toolCalls } = processResponse(response);
@@ -245,7 +245,7 @@ export const toolAgent = async (
       toolCalls,
       tools,
       messages,
-      logger
+      logger,
     );
 
     if (sequenceCompleted) {
@@ -260,7 +260,7 @@ export const toolAgent = async (
         interactions,
       };
       logger.verbose(
-        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
       );
       return result;
     }
@@ -276,7 +276,7 @@ export const toolAgent = async (
     interactions,
   };
   logger.verbose(
-    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
+    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
   );
   return result;
 };

@@ -1,4 +1,4 @@
-import type { ArgumentsCamelCase, Argv } from "yargs";
+import type { Argv } from "yargs";
 import { getTools } from "../tools/getTools.js";
 import type { JsonSchema7Type } from "zod-to-json-schema";
 
@@ -42,7 +42,7 @@ function formatSchema(schema: {
   return output;
 }
 
-export const handler = async (_argv: ArgumentsCamelCase<ListToolsOptions>) => {
+export const handler = async () => {
   try {
     const tools = await getTools();
 
@@ -61,8 +61,8 @@ export const handler = async (_argv: ArgumentsCamelCase<ListToolsOptions>) => {
           tool.parameters as {
             properties?: Record<string, JsonSchema7Type>;
             required?: string[];
-          },
-        ),
+          }
+        )
       );
 
       // Returns section
@@ -73,8 +73,8 @@ export const handler = async (_argv: ArgumentsCamelCase<ListToolsOptions>) => {
             tool.returns as {
               properties?: Record<string, JsonSchema7Type>;
               required?: string[];
-            },
-          ),
+            }
+          )
         );
       } else {
         console.log("    Type: any");

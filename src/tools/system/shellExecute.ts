@@ -29,7 +29,7 @@ const returnSchema = z
     error: z.string().optional(),
   })
   .describe(
-    "Command execution results including stdout, stderr, and exit code"
+    "Command execution results including stdout, stderr, and exit code",
   );
 
 type Parameters = z.infer<typeof parameterSchema>;
@@ -49,10 +49,10 @@ export const shellExecuteTool: Tool<Parameters, ReturnType> = {
 
   execute: async (
     { command, timeout = 30000 },
-    { logger }
+    { logger },
   ): Promise<ReturnType> => {
     logger.verbose(
-      `Executing shell command with ${timeout}ms timeout: ${command}`
+      `Executing shell command with ${timeout}ms timeout: ${command}`,
     );
 
     try {

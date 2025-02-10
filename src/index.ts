@@ -37,7 +37,7 @@ const main = async () => {
       "Fatal error:",
       error.constructor.name,
       error.message,
-      error.stack
+      error.stack,
     );
     process.exit(1);
   });
@@ -69,7 +69,7 @@ const main = async () => {
       await fileCommands({
         commandDirs: [commandsDir],
         logLevel: "info",
-      })
+      }),
     )
     .strict()
     .showHelpOnFail(true)
