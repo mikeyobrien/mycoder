@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.15
+
+### Patch Changes
+
+- add support for async shell commands, but retain sync mode while viewing async as fallback
+
 ## 0.0.14
 
 ### Patch Changes
