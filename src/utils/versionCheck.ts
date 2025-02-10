@@ -3,8 +3,66 @@ import { createRequire } from "module";
 import type { PackageJson } from "type-fest";
 
 const require = createRequire(import.meta.url);
-const packageInfo = require("../../package.json") as PackageJson;
 const logger = new Logger({ name: "version-check" });
+
+/**
+ * Gets the current package info from package.json
+ */
+export function getPackageInfo(): {
+  name: string | undefined;
+  version: string | undefined;
+} {
+  const packageInfo = require("../../package.json") as PackageJson;
+  return {
+    name: packageInfo.name,
+    version: packageInfo.version,
+  };
+}
+
+/**
+ * Checks if the package is running as a global npm package
+ */
+export function isGlobalPackage(): boolean {
+  return !!process.env.npm_config_global;
+}
+
+/**
+ * Fetches the latest version of a package from npm registry
+ */
+export async function fetchLatestVersion(
+  packageName: string,
+): Promise<string | null> {
+  try {
+    const registryUrl = `https://registry.npmjs.org/${packageName}/latest`;
+    const response = await fetch(registryUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch version info: ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as { version: string | undefined };
+    return data.version ?? null;
+  } catch (error) {
+    logger.warn(
+      "Error fetching latest version:",
+      error instanceof Error ? error.message : String(error),
+    );
+    return null;
+  }
+}
+
+/**
+ * Generates an upgrade message if versions differ
+ */
+export function generateUpgradeMessage(
+  currentVersion: string,
+  latestVersion: string,
+  packageName: string,
+): string | null {
+  return currentVersion !== latestVersion
+    ? `Update available: ${currentVersion} → ${latestVersion}\nRun 'npm install -g ${packageName}' to update`
+    : null;
+}
 
 /**
  * Checks if a newer version of the package is available on npm.
@@ -15,45 +73,30 @@ const logger = new Logger({ name: "version-check" });
 export async function checkForUpdates(): Promise<string | null> {
   try {
     // Only check for updates if running as global package
-    if (!process.env.npm_config_global) {
+    if (!isGlobalPackage()) {
       return null;
     }
 
-    const packageName = packageInfo.name;
-    const currentVersion = packageInfo.version;
+    const { name: packageName, version: currentVersion } = getPackageInfo();
 
     if (!packageName || !currentVersion) {
       logger.warn("Unable to determine current package name or version");
       return null;
     }
 
-    // Fetch latest version from npm registry
-    const registryUrl = `https://registry.npmjs.org/${packageName}/latest`;
-    const response = await fetch(registryUrl);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch version info: ${response.statusText}`);
-    }
-
-    const data = (await response.json()) as { version: string | undefined };
-    const latestVersion = data.version;
+    const latestVersion = await fetchLatestVersion(packageName);
 
     if (!latestVersion) {
-      logger.warn("Unable to determine determine latest published version");
+      logger.warn("Unable to determine latest published version");
       return null;
     }
 
-    // Compare versions
-    if (currentVersion !== latestVersion) {
-      return `Update available: ${currentVersion} → ${latestVersion}\nRun 'npm install -g ${packageName}' to update`;
-    }
-
-    return null;
+    return generateUpgradeMessage(currentVersion, latestVersion, packageName);
   } catch (error) {
     // Log error but don't throw to handle gracefully
     logger.warn(
       "Error checking for updates:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
     return null;
   }
