@@ -6,6 +6,7 @@ import { createRequire } from "module";
 import { join } from "path";
 import { fileURLToPath } from "url";
 import { fileCommands } from "yargs-file-commands";
+import { checkForUpdates } from "./utils/versionCheck.js";
 
 import sourceMapSupport from "source-map-support";
 
@@ -19,6 +20,11 @@ const main = async () => {
   dotenv.config();
 
   const logger = new Logger({ name: "Main", color: "white" });
+
+  const updateMessage = await checkForUpdates();
+  if (updateMessage) {
+    logger.info(updateMessage);
+  }
 
   // Error handling
   process.on("SIGINT", () => {
