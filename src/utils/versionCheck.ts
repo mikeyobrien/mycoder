@@ -23,7 +23,7 @@ export async function checkForUpdates(): Promise<string | null> {
     const currentVersion = packageInfo.version;
 
     if (!packageName || !currentVersion) {
-      logger.warn("Unable to determine package name or version");
+      logger.warn("Unable to determine current package name or version");
       return null;
     }
 
@@ -39,7 +39,8 @@ export async function checkForUpdates(): Promise<string | null> {
     const latestVersion = data.version;
 
     if (!latestVersion) {
-      throw new Error("Unable to determine latest version");
+      logger.warn("Unable to determine determine latest published version");
+      return null;
     }
 
     // Compare versions
@@ -50,7 +51,7 @@ export async function checkForUpdates(): Promise<string | null> {
     return null;
   } catch (error) {
     // Log error but don't throw to handle gracefully
-    logger.error(
+    logger.warn(
       "Error checking for updates:",
       error instanceof Error ? error.message : String(error)
     );
