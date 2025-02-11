@@ -21,7 +21,7 @@ importers:
         specifier: ^0.5
         version: 0.5.21
       uuid:
-        specifier: ^11.0.5
+        specifier: ^11
         version: 11.0.5
       yargs:
         specifier: ^17
@@ -46,19 +46,19 @@ importers:
         specifier: ^18
         version: 18.19.75
       '@types/uuid':
-        specifier: ^10.0.0
+        specifier: ^10
         version: 10.0.0
       '@types/yargs':
         specifier: ^17
         version: 17.0.33
       '@typescript-eslint/eslint-plugin':
-        specifier: ^8.23.0
+        specifier: ^8
         version: 8.23.0(@typescript-eslint/parser@8.23.0(eslint@9.20.0)(typescript@5.7.3))(eslint@9.20.0)(typescript@5.7.3)
       '@typescript-eslint/parser':
-        specifier: ^8.23.0
+        specifier: ^8
         version: 8.23.0(eslint@9.20.0)(typescript@5.7.3)
       eslint:
-        specifier: ^9.0.0
+        specifier: ^9
         version: 9.20.0
       eslint-config-prettier:
         specifier: ^9
@@ -70,7 +70,7 @@ importers:
         specifier: ^5
         version: 5.2.3(eslint-config-prettier@9.1.0(eslint@9.20.0))(eslint@9.20.0)(prettier@3.5.0)
       eslint-plugin-unused-imports:
-        specifier: ^4.1.4
+        specifier: ^4
         version: 4.1.4(@typescript-eslint/eslint-plugin@8.23.0(@typescript-eslint/parser@8.23.0(eslint@9.20.0)(typescript@5.7.3))(eslint@9.20.0)(typescript@5.7.3))(eslint@9.20.0)
       prettier:
         specifier: ^3
@@ -85,7 +85,7 @@ importers:
         specifier: ^5
         version: 5.7.3
       typescript-eslint:
-        specifier: ^8.23.0
+        specifier: ^8
         version: 8.23.0(eslint@9.20.0)(typescript@5.7.3)
       vitest:
         specifier: ^3
