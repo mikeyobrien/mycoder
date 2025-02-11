@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.16
+
+### Patch Changes
+
+- Improve check for new versions, simplify the logging.
+
 ## 0.0.15
 
 ### Patch Changes
