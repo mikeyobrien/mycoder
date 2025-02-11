@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { Logger } from "./logger.js";
+import { Logger, LogLevel } from "./logger.js";
 
 describe("Logger", () => {
   let consoleSpy: { [key: string]: any };
@@ -20,7 +20,7 @@ describe("Logger", () => {
   });
 
   describe("Basic logging functionality", () => {
-    const logger = new Logger({ name: "TestLogger", logLevel: "debug" });
+    const logger = new Logger({ name: "TestLogger", logLevel: LogLevel.debug });
     const testMessage = "Test message";
 
     it("should log debug messages", () => {
@@ -59,15 +59,41 @@ describe("Logger", () => {
     });
   });
 
+  describe("Color modes", () => {
+    const testMessage = "Test message";
+
+    it("should default to Tool mode for debug/verbose", () => {
+      const logger = new Logger({
+        name: "TestLogger",
+        logLevel: LogLevel.debug,
+      });
+      logger.debug(testMessage);
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        expect.stringContaining("[TestLogger]"), // Tool mode always shows prefix
+      );
+    });
+
+    it("should default to Indent mode for info/warn/error", () => {
+      const logger = new Logger({
+        name: "TestLogger",
+        logLevel: LogLevel.info,
+      });
+      logger.info(testMessage);
+      expect(consoleSpy.log).toHaveBeenCalledWith(
+        expect.not.stringContaining("[TestLogger]"), // Indent mode hides prefix for info
+      );
+    });
+  });
+
   describe("Nested logger functionality", () => {
     const parentLogger = new Logger({
       name: "ParentLogger",
-      logLevel: "debug",
+      logLevel: LogLevel.debug,
     });
     const childLogger = new Logger({
       name: "ChildLogger",
       parent: parentLogger,
-      logLevel: "debug",
+      logLevel: LogLevel.debug,
     });
     const testMessage = "Nested test message";
 

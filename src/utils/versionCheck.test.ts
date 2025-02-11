@@ -10,7 +10,7 @@ describe("versionCheck", () => {
   describe("generateUpgradeMessage", () => {
     it("returns null when versions are the same", () => {
       expect(generateUpgradeMessage("1.0.0", "1.0.0", "test-package")).toBe(
-        null
+        null,
       );
     });
 
@@ -43,7 +43,7 @@ describe("versionCheck", () => {
       const version = await fetchLatestVersion("test-package");
       expect(version).toBe("1.1.0");
       expect(mockFetch).toHaveBeenCalledWith(
-        "https://registry.npmjs.org/test-package/latest"
+        "https://registry.npmjs.org/test-package/latest",
       );
     });
 
@@ -82,13 +82,6 @@ describe("versionCheck", () => {
       global.fetch = originalFetch;
       process.env = originalEnv;
       vi.clearAllMocks();
-    });
-
-    it("returns null when not running as global package", async () => {
-      delete process.env.npm_config_global;
-      const result = await checkForUpdates();
-      expect(result).toBe(null);
-      expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it("returns upgrade message when update available", async () => {

@@ -1,58 +1,79 @@
 import chalk, { ChalkInstance } from "chalk";
 
-export type LogColor = "white" | "blue" | "cyan" | "green" | "magenta";
-
-const randomColor = (): LogColor => {
-  const colors: LogColor[] = ["white", "blue", "cyan", "green", "magenta"];
-  return colors[Math.floor(Math.random() * colors.length)] as LogColor;
+export enum LogLevel {
+  debug = 0,
+  verbose = 1,
+  info = 2,
+  warn = 3,
+  error = 4,
+}
+export type LoggerStyler = {
+  getColor(level: LogLevel, indentLevel: number): ChalkInstance;
+  formatPrefix(prefix: string, level: LogLevel): string;
+  showPrefix(level: LogLevel): boolean;
 };
 
-export type LogLevel = "info" | "verbose" | "warn" | "error" | "debug";
+export const BasicLoggerStyler = {
+  getColor: (level: LogLevel, _nesting: number = 0): ChalkInstance => {
+    switch (level) {
+      case LogLevel.error:
+        return chalk.red;
+      case LogLevel.warn:
+        return chalk.yellow;
+      case LogLevel.debug:
+      case LogLevel.verbose:
+        return chalk.white.dim;
+      default:
+        return chalk.white;
+    }
+  },
+  formatPrefix: (
+    prefix: string,
+    level: LogLevel,
+    _nesting: number = 0,
+  ): string =>
+    level === LogLevel.debug || level === LogLevel.verbose
+      ? chalk.dim(prefix)
+      : "",
+};
+
+const loggerStyle = BasicLoggerStyler;
 
 export type LoggerProps = {
   name: string;
-  color?: LogColor;
   logLevel?: LogLevel;
   parent?: Logger;
 };
 
-const LogLevelIndex = {
-  error: 4,
-  warn: 3,
-  info: 2,
-  verbose: 1,
-  debug: 0,
-};
-
 export class Logger {
-  private readonly offset: string;
-  private readonly chalkColor;
+  private readonly prefix: string;
   private readonly logLevel: LogLevel;
-  private readonly logLevelIndex: number;
+  private readonly logLevelIndex: LogLevel;
   private readonly parent?: Logger;
   private readonly name: string;
+  private readonly nesting: number;
 
   constructor({
     name,
-    color = randomColor(),
     parent = undefined,
-    logLevel = parent?.logLevel ?? "info",
+    logLevel = parent?.logLevel ?? LogLevel.info,
   }: LoggerProps) {
     this.name = name;
     this.parent = parent;
     this.logLevel = logLevel;
-    this.logLevelIndex = LogLevelIndex[this.logLevel];
-    this.chalkColor = chalk[color];
+    this.logLevelIndex = logLevel;
 
-    // Calculate offset based on parent chain
+    // Calculate indent level and offset based on parent chain
+    this.nesting = 0;
     let offsetSpaces = 0;
     let currentParent = parent;
     while (currentParent) {
       offsetSpaces += 2;
+      this.nesting++;
       currentParent = currentParent.parent;
     }
 
-    this.offset = " ".repeat(offsetSpaces);
+    this.prefix = " ".repeat(offsetSpaces);
   }
 
   private toStrings(messages: any[]) {
@@ -65,95 +86,42 @@ export class Logger {
       .join(" ");
   }
 
-  private formatMessages(
-    prefixChalk: ChalkInstance,
-    prefix: string,
-    messagesChalk: ChalkInstance,
-    messages: any[],
-    showPrefix: boolean = true,
-  ): string {
+  private formatMessages(level: LogLevel, messages: any[]): string {
     const formatted = this.toStrings(messages);
+    const messageColor = loggerStyle.getColor(level, this.nesting);
+    const prefix = loggerStyle.formatPrefix(
+      `[${this.name}]`,
+      level,
+      this.nesting,
+    );
 
-    // Split into lines and add prefix to each line if showPrefix is true
     return formatted
       .split("\n")
-      .map((line) =>
-        showPrefix
-          ? `${prefixChalk(prefix)} ${messagesChalk(`${line}`)}`
-          : `${this.offset}${messagesChalk(`${line}`)}`,
-      )
+      .map((line) => `${this.prefix}${prefix} ${messageColor(line)}`)
       .join("\n");
   }
 
-  private prefix(): string {
-    return this.offset + `[${this.name}]`;
-  }
-
   debug(...messages: any[]): void {
-    if (this.logLevelIndex > LogLevelIndex.debug) return;
-
-    console.log(
-      this.formatMessages(
-        this.chalkColor.dim,
-        this.prefix(),
-        this.chalkColor.dim,
-        messages,
-        true, // Always show prefix for debug
-      ),
-    );
+    if (this.logLevelIndex > LogLevel.debug) return;
+    console.log(this.formatMessages(LogLevel.debug, messages));
   }
 
   verbose(...messages: any[]): void {
-    if (this.logLevelIndex > LogLevelIndex.verbose) return;
-
-    console.log(
-      this.formatMessages(
-        this.chalkColor.dim,
-        this.prefix(),
-        this.chalkColor.dim,
-        messages,
-        true, // Always show prefix for verbose
-      ),
-    );
+    if (this.logLevelIndex > LogLevel.verbose) return;
+    console.log(this.formatMessages(LogLevel.verbose, messages));
   }
 
   info(...messages: any[]): void {
-    if (this.logLevelIndex > LogLevelIndex.info) return;
-
-    console.log(
-      this.formatMessages(
-        this.chalkColor,
-        this.prefix(),
-        this.chalkColor,
-        messages,
-        false, // Don't show prefix for info
-      ),
-    );
+    if (this.logLevelIndex > LogLevel.info) return;
+    console.log(this.formatMessages(LogLevel.info, messages));
   }
 
   warn(...messages: any[]): void {
-    if (this.logLevelIndex > LogLevelIndex.warn) return;
-
-    console.warn(
-      this.formatMessages(
-        this.chalkColor.dim,
-        this.prefix(),
-        chalk.yellow,
-        messages,
-        false, // Don't show prefix for warn
-      ),
-    );
+    if (this.logLevelIndex > LogLevel.warn) return;
+    console.warn(this.formatMessages(LogLevel.warn, messages));
   }
 
   error(...messages: any[]): void {
-    console.error(
-      this.formatMessages(
-        this.chalkColor.dim,
-        this.prefix(),
-        chalk.red,
-        messages,
-        false, // Don't show prefix for error
-      ),
-    );
+    console.error(this.formatMessages(LogLevel.error, messages));
   }
 }

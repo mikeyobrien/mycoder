@@ -2,10 +2,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { executeToolCall } from "./executeToolCall.js";
 import { Tool } from "./types.js";
-import { Logger } from "../utils/logger.js";
 import { toolAgent } from "./toolAgent.js";
+import { MockLogger } from "../utils/mockLogger.js";
 
-const logger = new Logger({ name: "toolAgent", logLevel: "warn" });
+const logger = new MockLogger();
 
 // Mock configuration for testing
 const testConfig = {
@@ -96,7 +96,7 @@ describe("toolAgent", () => {
         input: { input: "test" },
       },
       [mockTool],
-      logger,
+      logger
     );
 
     expect(result.includes("Processed: test")).toBeTruthy();
@@ -111,8 +111,8 @@ describe("toolAgent", () => {
           input: {},
         },
         [mockTool],
-        logger,
-      ),
+        logger
+      )
     ).rejects.toThrow("No tool with the name 'nonexistentTool' exists.");
   });
 
@@ -142,8 +142,8 @@ describe("toolAgent", () => {
           input: {},
         },
         [errorTool],
-        logger,
-      ),
+        logger
+      )
     ).rejects.toThrow("Deliberate failure");
   });
 
@@ -153,7 +153,7 @@ describe("toolAgent", () => {
       "Test prompt",
       [sequenceCompleteTool],
       logger,
-      testConfig,
+      testConfig
     );
 
     expect(result.result).toBe("Test complete");

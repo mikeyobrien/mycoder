@@ -31,7 +31,7 @@ export function isGlobalPackage(): boolean {
  * Fetches the latest version of a package from npm registry
  */
 export async function fetchLatestVersion(
-  packageName: string
+  packageName: string,
 ): Promise<string | null> {
   try {
     const registryUrl = `https://registry.npmjs.org/${packageName}/latest`;
@@ -46,7 +46,7 @@ export async function fetchLatestVersion(
   } catch (error) {
     logger.warn(
       "Error fetching latest version:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
     return null;
   }
@@ -58,10 +58,12 @@ export async function fetchLatestVersion(
 export function generateUpgradeMessage(
   currentVersion: string,
   latestVersion: string,
-  packageName: string
+  packageName: string,
 ): string | null {
   return currentVersion !== latestVersion
-    ? chalk.green(`  Update available: ${currentVersion} → ${latestVersion}\n  Run 'npm install -g ${packageName}' to update`)
+    ? chalk.green(
+        `  Update available: ${currentVersion} → ${latestVersion}\n  Run 'npm install -g ${packageName}' to update`,
+      )
     : null;
 }
 
@@ -92,7 +94,7 @@ export async function checkForUpdates(): Promise<string | null> {
     // Log error but don't throw to handle gracefully
     logger.warn(
       "Error checking for updates:",
-      error instanceof Error ? error.message : String(error)
+      error instanceof Error ? error.message : String(error),
     );
     return null;
   }

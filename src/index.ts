@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { Logger } from "./utils/logger.js";
+import { Logger, LogLevel } from "./utils/logger.js";
 import { createRequire } from "module";
 import { join } from "path";
 import { fileURLToPath } from "url";
@@ -16,10 +16,15 @@ import { getTools } from "./tools/getTools.js";
 
 sourceMapSupport.install();
 
+const nameToLogIndex = (logLevelName: string) => {
+  // look up the log level name in the enum to get the value
+  return LogLevel[logLevelName as keyof typeof LogLevel];
+};
+
 const main = async () => {
   dotenv.config();
 
-  const logger = new Logger({ name: "Main", color: "white" });
+  const logger = new Logger({ name: "Main" });
 
   const updateMessage = await checkForUpdates();
   if (updateMessage) {
@@ -62,8 +67,7 @@ const main = async () => {
       // Set up logger with the specified log level
       argv.logger = new Logger({
         name: packageInfo.name!,
-        color: "white",
-        logLevel: argv.log,
+        logLevel: nameToLogIndex(argv.log),
       });
       argv.tools = await getTools();
     })
