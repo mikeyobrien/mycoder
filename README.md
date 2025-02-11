@@ -1,5 +1,8 @@
 # MyCoder
 
+[![NPM Package][npm]]
+[![NPM Downloads][npm-downloads]]
+
 ## Overview
 
 MyCoder is a simple to install, powerful command-line based AI agent system that can perform arbitrary tasks with a particular focus on coding tasks. It uses a modular tool-based architecture that allows it to interact with files, execute commands, make network requests, and spawn sub-agents for parallel task execution.
@@ -137,12 +140,15 @@ The project uses GitHub Actions for continuous integration:
 - A single CI pipeline automatically builds and tests the code on all branches and pull requests to main
 
 The release process is managed manually using [changesets](https://github.com/changesets/changesets) which:
+
 1. Determines version bumps based on commit messages
 2. Generates changelogs
 
 Releases to GitHub and publishing to npm are performed manually after review.
 
-
 ## License
 
 MIT License
+
+[npm]: https://img.shields.io/npm/v/mycoder
+[npm-downloads]: https://img.shields.io/npm/dw/mycoder
