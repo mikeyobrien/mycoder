@@ -1,7 +1,7 @@
 # MyCoder
 
-[![NPM Package][npm]]
-[![NPM Downloads][npm-downloads]]
+![NPM Package][npm]
+![NPM Downloads][npm-downloads]
 
 ## Overview
 
