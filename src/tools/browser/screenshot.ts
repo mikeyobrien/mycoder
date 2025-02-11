@@ -1,10 +1,5 @@
-import { Page } from '@playwright/test';
-import {
-  SelectorType,
-  ScreenshotOptions,
-  BrowserError,
-  BrowserErrorCode,
-} from './types.js';
+import { Page } from "@playwright/test";
+import { ScreenshotOptions, BrowserError, BrowserErrorCode } from "./types.js";
 
 export class ScreenshotController {
   constructor(private page: Page) {}
@@ -15,8 +10,8 @@ export class ScreenshotController {
     try {
       return await this.page.screenshot({
         fullPage: true,
-        type: options.type || 'png',
-        quality: options.type === 'jpeg' ? options.quality : undefined,
+        type: options.type || "png",
+        quality: options.type === "jpeg" ? options.quality : undefined,
         path: options.path,
       });
     } catch (error) {
@@ -35,8 +30,8 @@ export class ScreenshotController {
     try {
       const element = this.page.locator(selector);
       return await element.screenshot({
-        type: options.type || 'png',
-        quality: options.type === 'jpeg' ? options.quality : undefined,
+        type: options.type || "png",
+        quality: options.type === "jpeg" ? options.quality : undefined,
         path: options.path,
       });
     } catch (error) {
@@ -54,8 +49,8 @@ export class ScreenshotController {
     try {
       return await this.page.screenshot({
         fullPage: false,
-        type: options.type || 'png',
-        quality: options.type === 'jpeg' ? options.quality : undefined,
+        type: options.type || "png",
+        quality: options.type === "jpeg" ? options.quality : undefined,
         path: options.path,
       });
     } catch (error) {

@@ -79,7 +79,7 @@ describe("Form Interaction Tests", () => {
       expect(usernameLabel).toBe("Username");
 
       const passwordPlaceholder = await session.page.$eval(
-        '#password',
+        "#password",
         (el) => (el as HTMLInputElement).placeholder
       );
       expect(passwordPlaceholder).toBe("");

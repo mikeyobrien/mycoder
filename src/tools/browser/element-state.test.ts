@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { BrowserManager } from "./browser-manager.js";
 import { BrowserSession } from "./types.js";
@@ -25,45 +26,53 @@ describe("Element State Tests", () => {
       const checkboxes = await session.page.$$('input[type="checkbox"]');
       expect(checkboxes).toHaveLength(2);
 
-      const initialStates = await Promise.all(
-        checkboxes.map((cb) =>
-          cb.evaluate((el) => (el as HTMLInputElement).checked)
-        )
-      );
+      const initialStates: boolean[] = [];
+      for (const checkbox of checkboxes) {
+        const isChecked = await checkbox.evaluate(
+          (el) => (el as HTMLInputElement).checked
+        );
+        initialStates.push(isChecked);
+      }
+
       expect(initialStates[0]).toBe(false);
       expect(initialStates[1]).toBe(true);
     });
 
     it("should toggle checkbox states", async () => {
       const checkboxes = await session.page.$$('input[type="checkbox"]');
+      if (!checkboxes[0] || !checkboxes[1])
+        throw new Error("Checkboxes not found");
 
       // Toggle first checkbox
       await checkboxes[0].click();
-      let newState = await checkboxes[0].evaluate(
+      const newState = await checkboxes[0].evaluate(
         (el) => (el as HTMLInputElement).checked
       );
       expect(newState).toBe(true);
 
       // Toggle second checkbox
       await checkboxes[1].click();
-      newState = await checkboxes[1].evaluate(
+      const secondState = await checkboxes[1].evaluate(
         (el) => (el as HTMLInputElement).checked
       );
-      expect(newState).toBe(false);
+      expect(secondState).toBe(false);
     });
 
     it("should maintain checkbox states after page refresh", async () => {
       const checkboxes = await session.page.$$('input[type="checkbox"]');
+      if (!checkboxes[0]) throw new Error("First checkbox not found");
       await checkboxes[0].click(); // Toggle first checkbox
 
       await session.page.reload();
 
       const newCheckboxes = await session.page.$$('input[type="checkbox"]');
-      const states = await Promise.all(
-        newCheckboxes.map((cb) =>
-          cb.evaluate((el) => (el as HTMLInputElement).checked)
-        )
-      );
+      const states: boolean[] = [];
+      for (const checkbox of newCheckboxes) {
+        const isChecked = await checkbox.evaluate(
+          (el) => (el as HTMLInputElement).checked
+        );
+        states.push(isChecked);
+      }
 
       // After refresh, should return to default states
       expect(states[0]).toBe(false);
@@ -77,16 +86,30 @@ describe("Element State Tests", () => {
     });
 
     it("should handle enabled/disabled element states", async () => {
-      const input = await session.page.$('input[type="text"]');
-      const isInitiallyDisabled = await input?.evaluate(
-        (el) => (el as HTMLInputElement).disabled
+      // Wait for the input to be present and verify initial disabled state
+      await session.page.waitForSelector('input[type="text"][disabled]');
+
+      // Click the enable button
+      await session.page.click('button:has-text("Enable")');
+
+      // Wait for the message indicating the input is enabled
+      await session.page.waitForSelector("#message", {
+        state: "visible",
+        timeout: 5000,
+      });
+
+      // Verify the input is now enabled
+      const input = await session.page.waitForSelector(
+        'input[type="text"]:not([disabled])',
+        {
+          state: "visible",
+          timeout: 5000,
+        }
       );
-      expect(isInitiallyDisabled).toBe(true);
 
-      await session.page.click('button:has-text("Enable")'); 
-      await session.page.waitForSelector('input:not([disabled])');
+      if (!input) throw new Error("Enabled input not found");
 
-      const isEnabled = await input?.evaluate(
+      const isEnabled = await input.evaluate(
         (el) => !(el as HTMLInputElement).disabled
       );
       expect(isEnabled).toBe(true);

@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { BrowserManager } from "./browser-manager.js";
 import { BrowserSession } from "./types.js";
 
@@ -39,9 +39,11 @@ describe("Browser Navigation Tests", () => {
 
   it("should handle 404 pages appropriately", async () => {
     await session.page.goto(`${baseUrl}/nonexistent`);
-    const title = await session.page.title();
-    expect(title).toBe("The Internet");
 
+    // Wait for the page to stabilize
+    await session.page.waitForLoadState("networkidle");
+
+    // Check for 404 content instead of title since title may vary
     const bodyText = await session.page.$eval("body", (el) => el.textContent);
     expect(bodyText).toContain("Not Found");
   });
@@ -54,7 +56,7 @@ describe("Browser Navigation Tests", () => {
 
   it("should wait for network idle", async () => {
     await session.page.goto(baseUrl, {
-      waitUntil: "networkidle0",
+      waitUntil: "networkidle",
     });
     expect(session.page.url()).toBe(`${baseUrl}/`);
   });

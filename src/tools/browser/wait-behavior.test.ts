@@ -26,7 +26,7 @@ describe("Wait Behavior Tests", () => {
 
       // Wait for loading element to appear and then disappear
       await session.page.waitForSelector("#loading");
-      await session.page.waitForSelector("#loading", { hidden: true });
+      await session.page.waitForSelector("#loading", { state: "hidden" });
 
       const finishElement = await session.page.waitForSelector("#finish");
       const finishText = await finishElement?.evaluate((el) => el.textContent);
@@ -56,7 +56,7 @@ describe("Wait Behavior Tests", () => {
       await session.page.click('button:has-text("Remove")');
 
       // Wait for checkbox to be removed
-      await session.page.waitForSelector("#checkbox", { hidden: true });
+      await session.page.waitForSelector("#checkbox", { state: "hidden" });
 
       // Verify gone message
       const message = await session.page.waitForSelector("#message");
@@ -67,12 +67,12 @@ describe("Wait Behavior Tests", () => {
     it("should handle multiple sequential dynamic changes", async () => {
       // Remove checkbox
       await session.page.click('button:has-text("Remove")');
-      await session.page.waitForSelector("#checkbox", { hidden: true });
-      
+      await session.page.waitForSelector("#checkbox", { state: "hidden" });
+
       // Add checkbox back
       await session.page.click('button:has-text("Add")');
       await session.page.waitForSelector("#checkbox");
-      
+
       // Verify checkbox is present
       const checkbox = await session.page.$("#checkbox");
       expect(checkbox).toBeTruthy();

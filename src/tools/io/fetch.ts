@@ -6,7 +6,7 @@ const parameterSchema = z.object({
   method: z
     .string()
     .describe(
-      "HTTP method to use (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+      "HTTP method to use (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)"
     ),
   url: z.string().describe("URL to make the request to"),
   params: z
@@ -34,12 +34,13 @@ type ReturnType = z.infer<typeof returnSchema>;
 
 export const fetchTool: Tool<Parameters, ReturnType> = {
   name: "fetch",
-  description: "Executes HTTP requests using native Node.js fetch API",
+  description:
+    "Executes HTTP requests using native Node.js fetch API, for using APIs, not for browsing the web.",
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
     { method, url, params, body, headers }: Parameters,
-    { logger },
+    { logger }
   ): Promise<ReturnType> => {
     logger.verbose(`Starting ${method} request to ${url}`);
     const urlObj = new URL(url);
@@ -48,7 +49,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
     if (params) {
       logger.verbose("Adding query parameters:", params);
       Object.entries(params).forEach(([key, value]) =>
-        urlObj.searchParams.append(key, value as string),
+        urlObj.searchParams.append(key, value as string)
       );
     }
 
@@ -71,7 +72,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
     logger.verbose("Request options:", options);
     const response = await fetch(urlObj.toString(), options);
     logger.verbose(
-      `Request completed with status ${response.status} ${response.statusText}`,
+      `Request completed with status ${response.status} ${response.statusText}`
     );
 
     const contentType = response.headers.get("content-type");
@@ -91,7 +92,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
   logParameters(params, { logger }) {
     const { method, url, params: queryParams } = params;
     logger.info(
-      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams)}` : ""}`,
+      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams)}` : ""}`
     );
   },
 };

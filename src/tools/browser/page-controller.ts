@@ -1,15 +1,18 @@
-import { Page } from '@playwright/test';
+import { Page } from "@playwright/test";
 import {
   SelectorType,
   SelectorOptions,
   BrowserError,
   BrowserErrorCode,
-} from './types.js';
+} from "./types.js";
 
 export class PageController {
   constructor(private page: Page) {}
 
-  private getSelector(selector: string, type: SelectorType = SelectorType.CSS): string {
+  private getSelector(
+    selector: string,
+    type: SelectorType = SelectorType.CSS
+  ): string {
     switch (type) {
       case SelectorType.XPATH:
         return `xpath=${selector}`;
@@ -27,7 +30,7 @@ export class PageController {
   private validateSelector(selector: string, type: SelectorType): void {
     if (!selector) {
       throw new BrowserError(
-        'Invalid selector: empty string',
+        "Invalid selector: empty string",
         BrowserErrorCode.SELECTOR_INVALID
       );
     }
@@ -43,7 +46,7 @@ export class PageController {
         this.getSelector(selector, options.type)
       );
       await locator.waitFor({
-        state: options.visible ? 'visible' : 'attached',
+        state: options.visible ? "visible" : "attached",
         timeout: options.timeout,
       });
     } catch (error) {
@@ -55,10 +58,7 @@ export class PageController {
     }
   }
 
-  async click(
-    selector: string,
-    options: SelectorOptions = {}
-  ): Promise<void> {
+  async click(selector: string, options: SelectorOptions = {}): Promise<void> {
     this.validateSelector(selector, options.type || SelectorType.CSS);
     try {
       const locator = this.page.locator(
@@ -103,7 +103,7 @@ export class PageController {
       const locator = this.page.locator(
         this.getSelector(selector, options.type)
       );
-      return await locator.textContent() || '';
+      return (await locator.textContent()) || "";
     } catch (error) {
       throw new BrowserError(
         `Failed to get text: ${error}`,
