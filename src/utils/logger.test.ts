@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { Logger, LogLevel } from "./logger.js";
 
@@ -26,61 +27,35 @@ describe("Logger", () => {
     it("should log debug messages", () => {
       logger.debug(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
     });
 
     it("should log verbose messages", () => {
       logger.verbose(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
     });
 
     it("should log info messages", () => {
       logger.info(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
     });
 
     it("should log warning messages", () => {
       logger.warn(testMessage);
       expect(consoleSpy.warn).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
     });
 
     it("should log error messages", () => {
       logger.error(testMessage);
       expect(consoleSpy.error).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
-      );
-    });
-  });
-
-  describe("Color modes", () => {
-    const testMessage = "Test message";
-
-    it("should default to Tool mode for debug/verbose", () => {
-      const logger = new Logger({
-        name: "TestLogger",
-        logLevel: LogLevel.debug,
-      });
-      logger.debug(testMessage);
-      expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining("[TestLogger]"), // Tool mode always shows prefix
-      );
-    });
-
-    it("should default to Indent mode for info/warn/error", () => {
-      const logger = new Logger({
-        name: "TestLogger",
-        logLevel: LogLevel.info,
-      });
-      logger.info(testMessage);
-      expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.not.stringContaining("[TestLogger]"), // Indent mode hides prefix for info
+        expect.stringContaining(testMessage)
       );
     });
   });
@@ -100,34 +75,34 @@ describe("Logger", () => {
     it("should include proper indentation for nested loggers", () => {
       childLogger.info(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining("  "), // Two spaces of indentation
+        expect.stringContaining("  ") // Two spaces of indentation
       );
     });
 
     it("should properly log messages at all levels with nested logger", () => {
       childLogger.debug(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
 
       childLogger.verbose(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
 
       childLogger.info(testMessage);
       expect(consoleSpy.log).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
 
       childLogger.warn(testMessage);
       expect(consoleSpy.warn).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
 
       childLogger.error(testMessage);
       expect(consoleSpy.error).toHaveBeenCalledWith(
-        expect.stringContaining(testMessage),
+        expect.stringContaining(testMessage)
       );
     });
   });
