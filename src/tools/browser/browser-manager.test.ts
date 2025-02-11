@@ -1,5 +1,6 @@
-import { BrowserManager } from '../../src/tools/browser/browser-manager';
-import { BrowserError, BrowserErrorCode } from '../../src/tools/browser/types';
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { BrowserManager } from "./browser-manager";
+import { BrowserError, BrowserErrorCode } from "./types";
 
 describe('BrowserManager', () => {
   let browserManager: BrowserManager;
@@ -23,7 +24,6 @@ describe('BrowserManager', () => {
     it('should create a headless session when specified', async () => {
       const session = await browserManager.createSession({ headless: true });
       expect(session.id).toBeDefined();
-      // Additional headless mode checks could be added here
     });
 
     it('should apply custom timeout when specified', async () => {
