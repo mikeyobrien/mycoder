@@ -42,7 +42,7 @@ const returnSchema = z.union([
       error: z.string().optional(),
     })
     .describe(
-      "Synchronous execution results when command completes within timeout",
+      "Synchronous execution results when command completes within timeout"
     ),
   z
     .object({
@@ -58,6 +58,8 @@ const returnSchema = z.union([
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
 
+const DEFAULT_TIMEOUT = 100;
+
 export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: "shellStart",
   description:
@@ -66,8 +68,8 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   returns: zodToJsonSchema(returnSchema),
 
   execute: async (
-    { command, timeout = 100 },
-    { logger },
+    { command, timeout = DEFAULT_TIMEOUT },
+    { logger }
   ): Promise<ReturnType> => {
     logger.verbose(`Starting shell command: ${command}`);
 
@@ -122,7 +124,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
 
         process.on("exit", (code, signal) => {
           logger.verbose(
-            `[${instanceId}] Process exited with code ${code} and signal ${signal}`,
+            `[${instanceId}] Process exited with code ${code} and signal ${signal}`
           );
 
           processState.state.completed = true;
@@ -170,9 +172,12 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
     });
   },
 
-  logParameters: (input, { logger }) => {
+  logParameters: (
+    { command, description, timeout = DEFAULT_TIMEOUT },
+    { logger }
+  ) => {
     logger.info(
-      `Starting "${input.command}", ${input.description} (timeout: ${input.timeout}ms)`,
+      `Starting "${command}", ${description} (timeout: ${timeout}ms)`
     );
   },
   logReturns: (output, { logger }) => {
