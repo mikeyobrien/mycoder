@@ -8,7 +8,6 @@ This document describes the browser automation capabilities implemented in the p
 
 - Browser session management
 - Page control and interaction
-- Screenshot capture
 - Resource cleanup and management
 - Error handling
 - Type-safe API
@@ -29,12 +28,6 @@ Manages page interactions:
 - Element selection and interaction
 - State management
 - Event handling
-
-### ScreenshotManager
-Provides screenshot capabilities:
-- Full page captures
-- Element-specific captures
-- Screenshot storage and management
 
 ## Installation & Setup
 
@@ -67,14 +60,6 @@ await page.waitForSelector('.main-content');
 ```typescript
 await page.click('#submit-button');
 await page.type('#search-input', 'search term');
-```
-
-### Taking Screenshots
-```typescript
-await page.screenshot({
-  path: './screenshot.png',
-  fullPage: true
-});
 ```
 
 ## Error Handling
@@ -117,7 +102,6 @@ Main class providing browser automation capabilities.
 #### Methods
 - `newPage()`: Creates a new page session
 - `close()`: Closes all browser sessions
-- `screenshot()`: Captures screenshots
 - `evaluate()`: Evaluates JavaScript in the page context
 
 ### PageController
@@ -128,13 +112,6 @@ Handles page-specific operations.
 - `click(selector: string)`: Clicks element
 - `type(selector: string, text: string)`: Types text
 - `waitForSelector(selector: string)`: Waits for element
-
-### ScreenshotManager
-Manages screenshot operations.
-
-#### Methods
-- `capture(options: ScreenshotOptions)`: Takes screenshot
-- `saveToFile(path: string)`: Saves screenshot to file
 
 ## Future Enhancements
 
@@ -193,4 +170,4 @@ Please see CONTRIBUTING.md for guidelines on contributing to this project.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE file for details

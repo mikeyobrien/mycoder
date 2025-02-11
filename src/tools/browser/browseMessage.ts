@@ -1,24 +1,16 @@
 import { Tool } from '../../core/types.js';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
-import { browserSessions, type BrowserAction, SelectorType, type ScreenshotOptions } from './types.js';
-
-// Schema for browser action options
-const screenshotOptionsSchema = z.object({
-  path: z.string().optional(),
-  fullPage: z.boolean().optional(),
-  type: z.enum(['png', 'jpeg']).optional(),
-  quality: z.number().min(0).max(100).optional(),
-}).optional();
+import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 
 // Schema for browser action
 const browserActionSchema = z.object({
-  type: z.enum(['goto', 'click', 'type', 'wait', 'screenshot', 'content', 'close']),
+  type: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
   url: z.string().url().optional(),
   selector: z.string().optional(),
   selectorType: z.nativeEnum(SelectorType).optional(),
   text: z.string().optional(),
-  options: screenshotOptionsSchema,
+  options: z.object({}).optional(),
 }).describe('Browser action to perform');
 
 // Main parameter schema
@@ -32,7 +24,6 @@ const parameterSchema = z.object({
 const returnSchema = z.object({
   status: z.string(),
   content: z.string().optional(),
-  screenshot: z.string().optional(),
   error: z.string().optional(),
 });
 
@@ -108,16 +99,6 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           await page.waitForSelector(waitSelector);
           logger.verbose(`Wait action completed for selector: ${waitSelector}`);
           return { status: 'success' };
-        }
-
-        case 'screenshot': {
-          const screenshotBuffer = await page.screenshot({
-            ...action.options,
-            type: 'png',
-          });
-          const screenshotBase64 = screenshotBuffer.toString('base64');
-          logger.verbose('Screenshot captured successfully');
-          return { status: 'success', screenshot: screenshotBase64 };
         }
 
         case 'content': {

@@ -23,7 +23,6 @@ export enum BrowserErrorCode {
   UNKNOWN = "UNKNOWN",
   SELECTOR_INVALID = "SELECTOR_INVALID",
   ELEMENT_NOT_FOUND = "ELEMENT_NOT_FOUND",
-  SCREENSHOT_FAILED = "SCREENSHOT_FAILED",
 }
 
 // Browser error class
@@ -54,15 +53,6 @@ export interface SelectorOptions {
   visible?: boolean;
 }
 
-// Screenshot options
-export interface ScreenshotOptions {
-  path?: string;
-  fullPage?: boolean;
-  type?: "png" | "jpeg";
-  quality?: number;
-  scale?: number;
-}
-
 // Global map to store browser sessions
 export const browserSessions: Map<string, BrowserSession> = new Map();
 
@@ -77,6 +67,5 @@ export type BrowserAction =
       selectorType?: SelectorType;
     }
   | { type: "wait"; selector: string; selectorType?: SelectorType }
-  | { type: "screenshot"; options?: ScreenshotOptions }
   | { type: "content" }
   | { type: "close" };
