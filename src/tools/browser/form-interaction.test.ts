@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
-import { BrowserManager } from "./browser-manager.js";
+import { BrowserManager } from "./BrowserManager.js";
 import { BrowserSession } from "./types.js";
 
 describe("Form Interaction Tests", () => {
