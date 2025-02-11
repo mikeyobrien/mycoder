@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { Logger } from "../../utils/logger.js";
 import { readFileTool } from "./readFile.js";
+import { MockLogger } from "../../utils/mockLogger.js";
 
-const logger = new Logger({ name: "readFile", logLevel: "warn" });
+const logger = new MockLogger();
 
 describe("readFile", () => {
   it("should read a file", async () => {

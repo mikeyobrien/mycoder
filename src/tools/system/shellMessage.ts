@@ -97,7 +97,7 @@ const returnSchema = z
     signaled: z.boolean().optional(),
   })
   .describe(
-    "Process interaction results including stdout, stderr, and completion status"
+    "Process interaction results including stdout, stderr, and completion status",
   );
 
 type Parameters = z.infer<typeof parameterSchema>;
@@ -112,10 +112,10 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
 
   execute: async (
     { instanceId, stdin, signal },
-    { logger }
+    { logger },
   ): Promise<ReturnType> => {
     logger.verbose(
-      `Interacting with shell process ${instanceId}${stdin ? " with input" : ""}${signal ? ` with signal ${signal}` : ""}`
+      `Interacting with shell process ${instanceId}${stdin ? " with input" : ""}${signal ? ` with signal ${signal}` : ""}`,
     );
 
     try {
@@ -197,7 +197,7 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
 
   logParameters: (input, { logger }) => {
     logger.info(
-      `Interacting with process ${input.instanceId}, ${input.description}`
+      `Interacting with process ${input.instanceId}, ${input.description}`,
     );
   },
   logReturns: () => {},

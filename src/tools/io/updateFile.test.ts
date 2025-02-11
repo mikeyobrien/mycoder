@@ -4,12 +4,12 @@ import { join } from "path";
 import { randomUUID } from "crypto";
 import { mkdtemp } from "fs/promises";
 import { tmpdir } from "os";
-import { Logger } from "../../utils/logger.js";
 import { updateFileTool } from "./updateFile.js";
 import { readFileTool } from "./readFile.js";
 import { shellExecuteTool } from "../system/shellExecute.js";
+import { MockLogger } from "../../utils/mockLogger.js";
 
-const logger = new Logger({ name: "updateFile", logLevel: "warn" });
+const logger = new MockLogger();
 
 describe("updateFile", () => {
   let testDir: string;

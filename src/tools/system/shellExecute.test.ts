@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { Logger } from "../../utils/logger.js";
 import { shellExecuteTool } from "./shellExecute.js";
+import { MockLogger } from "../../utils/mockLogger.js";
 
-const logger = new Logger({ name: "shellExecute", logLevel: "warn" });
+const logger = new MockLogger();
 
 describe("shellExecute", () => {
   it("should execute shell commands", async () => {

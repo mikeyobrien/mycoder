@@ -1,4 +1,5 @@
 import { Logger } from "./logger.js";
+import chalk from "chalk";
 import { createRequire } from "module";
 import type { PackageJson } from "type-fest";
 
@@ -60,7 +61,9 @@ export function generateUpgradeMessage(
   packageName: string,
 ): string | null {
   return currentVersion !== latestVersion
-    ? `Update available: ${currentVersion} → ${latestVersion}\nRun 'npm install -g ${packageName}' to update`
+    ? chalk.green(
+        `  Update available: ${currentVersion} → ${latestVersion}\n  Run 'npm install -g ${packageName}' to update`,
+      )
     : null;
 }
 
@@ -72,11 +75,6 @@ export function generateUpgradeMessage(
  */
 export async function checkForUpdates(): Promise<string | null> {
   try {
-    // Only check for updates if running as global package
-    if (!isGlobalPackage()) {
-      return null;
-    }
-
     const { name: packageName, version: currentVersion } = getPackageInfo();
 
     if (!packageName || !currentVersion) {

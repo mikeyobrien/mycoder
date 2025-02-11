@@ -24,7 +24,7 @@ export const builder = (yargs) => {
 };
 
 export const handler = async (argv: ArgumentsCamelCase<Options>) => {
-  const logger = new Logger({ name: "Default", color: "white" });
+  const logger = new Logger({ name: "Default" });
   const require = createRequire(import.meta.url);
   const packageInfo = require("../../package.json");
 
@@ -33,7 +33,7 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
     "WARNING: This tool can do anything on your command line that you ask it to.",
     "It can delete files, install software, and even send data to remote servers.",
     "It is a powerful tool that should be used with caution.",
-    "By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool."
+    "By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool.",
   );
   try {
     // Early API key check
@@ -50,7 +50,7 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
         prompt = await fs.readFile(argv.file, "utf-8");
       } catch (error: any) {
         logger.error(
-          `Failed to read prompt file: ${argv.file}, ${error?.message}`
+          `Failed to read prompt file: ${argv.file}, ${error?.message}`,
         );
         process.exit(1);
       }
@@ -65,7 +65,7 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
 
       try {
         logger.info(
-          "Type your request below or 'help' for usage information. Use Ctrl+C to exit."
+          "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
         );
         prompt = await readline.question("\n> ");
       } finally {
@@ -78,7 +78,7 @@ export const handler = async (argv: ArgumentsCamelCase<Options>) => {
 
     if (!prompt) {
       logger.error(
-        "No prompt provided. Either specify a prompt, use --promptFile, or run in --interactive mode."
+        "No prompt provided. Either specify a prompt, use --promptFile, or run in --interactive mode.",
       );
       process.exit(1);
     }

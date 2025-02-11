@@ -21,10 +21,9 @@ function formatSchema(schema: {
   if (schema.properties) {
     for (const [paramName, param] of Object.entries(schema.properties)) {
       const required = schema.required?.includes(paramName)
-        ? " (required)"
+        ? ""
         : " (optional)";
-      const description =
-        (param as any).description || "No description available";
+      const description = (param as any).description || "";
       output += `${paramName}${required}: ${description}\n`;
 
       if ((param as any).type) {
@@ -61,8 +60,8 @@ export const handler = async () => {
           tool.parameters as {
             properties?: Record<string, JsonSchema7Type>;
             required?: string[];
-          }
-        )
+          },
+        ),
       );
 
       // Returns section
@@ -73,8 +72,8 @@ export const handler = async () => {
             tool.returns as {
               properties?: Record<string, JsonSchema7Type>;
               required?: string[];
-            }
-          )
+            },
+          ),
         );
       } else {
         console.log("    Type: any");
