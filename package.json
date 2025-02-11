@@ -22,7 +22,7 @@
     "start": "node --no-deprecation dist/index.js",
     "build": "tsc --noEmit && tsc",
     "build:ci": "tsc",
-    "clean": "rimraf dist",
+    "clean": "rimraf node_modules dist",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.*\"",
     "test": "vitest run",
