@@ -1,40 +1,16 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
-  isGlobalPackage,
   generateUpgradeMessage,
   fetchLatestVersion,
   getPackageInfo,
   checkForUpdates,
 } from "./versionCheck.js";
 
-// eslint-disable-next-line max-lines-per-function
 describe("versionCheck", () => {
-  describe("isGlobalPackage", () => {
-    const originalEnv = process.env;
-
-    beforeEach(() => {
-      process.env = { ...originalEnv };
-    });
-
-    afterEach(() => {
-      process.env = originalEnv;
-    });
-
-    it("returns true when npm_config_global is set", () => {
-      process.env.npm_config_global = "true";
-      expect(isGlobalPackage()).toBe(true);
-    });
-
-    it("returns false when npm_config_global is not set", () => {
-      delete process.env.npm_config_global;
-      expect(isGlobalPackage()).toBe(false);
-    });
-  });
-
   describe("generateUpgradeMessage", () => {
     it("returns null when versions are the same", () => {
       expect(generateUpgradeMessage("1.0.0", "1.0.0", "test-package")).toBe(
-        null,
+        null
       );
     });
 
@@ -67,7 +43,7 @@ describe("versionCheck", () => {
       const version = await fetchLatestVersion("test-package");
       expect(version).toBe("1.1.0");
       expect(mockFetch).toHaveBeenCalledWith(
-        "https://registry.npmjs.org/test-package/latest",
+        "https://registry.npmjs.org/test-package/latest"
       );
     });
 

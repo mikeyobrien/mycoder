@@ -23,7 +23,9 @@ const main = async () => {
 
   const updateMessage = await checkForUpdates();
   if (updateMessage) {
+    console.log();
     logger.info(updateMessage);
+    console.log();
   }
 
   // Error handling

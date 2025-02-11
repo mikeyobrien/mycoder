@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { processStates, shellStartTool } from "./shellStart.js";
-import { MockLogger } from "../../utils/mockLogger.js";
+import { MockLogger } from "../../utils/mockLogger.test.js";
 
 describe("shellStartTool", () => {
   const mockLogger = new MockLogger();
