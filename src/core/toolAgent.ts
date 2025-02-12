@@ -155,7 +155,7 @@ async function executeTools(
   return { sequenceCompleted, completionResult, toolResults };
 }
 
-// eslint-disable-next-line max-lines-per-function
+ 
 export const toolAgent = async (
   initialPrompt: string,
   tools: Tool[],

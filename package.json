@@ -24,7 +24,7 @@
     "build:ci": "tsc",
     "clean": "rimraf dist",
     "clean:all": "rimraf dist node_modules",
-    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint": "eslint . --fix",
     "format": "prettier --write \"src/**/*.*\"",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { processStates, shellStartTool } from "./shellStart.js";
 import { MockLogger } from "../../utils/mockLogger.js";
-import { shellMessageTool } from "./shellMessage.js";
+import { shellMessageTool, NodeSignals } from "./shellMessage.js";
 
 const logger = new MockLogger();
 
@@ -116,7 +116,7 @@ describe("shellMessageTool", () => {
     const result = await shellMessageTool.execute(
       {
         instanceId,
-        signal: "SIGTERM",
+        signal: NodeSignals.SIGTERM,
         description: "Send SIGTERM",
       },
       { logger },
@@ -154,7 +154,7 @@ describe("shellMessageTool", () => {
     const result = await shellMessageTool.execute(
       {
         instanceId,
-        signal: "SIGTERM",
+        signal: NodeSignals.SIGTERM,
         description: "Send signal to terminated process",
       },
       { logger },
@@ -181,7 +181,7 @@ describe("shellMessageTool", () => {
     await shellMessageTool.execute(
       {
         instanceId,
-        signal: "SIGTERM",
+        signal: NodeSignals.SIGTERM,
         description: "Send SIGTERM",
       },
       { logger },

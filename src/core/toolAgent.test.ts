@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function */
+ 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { executeToolCall } from "./executeToolCall.js";
 import { Tool } from "./types.js";

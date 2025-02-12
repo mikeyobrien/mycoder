@@ -3,83 +3,49 @@ import { z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { processStates } from "./shellStart.js";
 
-// Define valid NodeJS signals as a union type
-type NodeSignals =
-  | "SIGABRT"
-  | "SIGALRM"
-  | "SIGBUS"
-  | "SIGCHLD"
-  | "SIGCONT"
-  | "SIGFPE"
-  | "SIGHUP"
-  | "SIGILL"
-  | "SIGINT"
-  | "SIGIO"
-  | "SIGIOT"
-  | "SIGKILL"
-  | "SIGPIPE"
-  | "SIGPOLL"
-  | "SIGPROF"
-  | "SIGPWR"
-  | "SIGQUIT"
-  | "SIGSEGV"
-  | "SIGSTKFLT"
-  | "SIGSTOP"
-  | "SIGSYS"
-  | "SIGTERM"
-  | "SIGTRAP"
-  | "SIGTSTP"
-  | "SIGTTIN"
-  | "SIGTTOU"
-  | "SIGUNUSED"
-  | "SIGURG"
-  | "SIGUSR1"
-  | "SIGUSR2"
-  | "SIGVTALRM"
-  | "SIGWINCH"
-  | "SIGXCPU"
-  | "SIGXFSZ";
+// Define NodeJS signals as an enum
+export enum NodeSignals {
+  SIGABRT = "SIGABRT",
+  SIGALRM = "SIGALRM",
+  SIGBUS = "SIGBUS",
+  SIGCHLD = "SIGCHLD",
+  SIGCONT = "SIGCONT",
+  SIGFPE = "SIGFPE",
+  SIGHUP = "SIGHUP",
+  SIGILL = "SIGILL",
+  SIGINT = "SIGINT",
+  SIGIO = "SIGIO",
+  SIGIOT = "SIGIOT",
+  SIGKILL = "SIGKILL",
+  SIGPIPE = "SIGPIPE",
+  SIGPOLL = "SIGPOLL",
+  SIGPROF = "SIGPROF",
+  SIGPWR = "SIGPWR",
+  SIGQUIT = "SIGQUIT",
+  SIGSEGV = "SIGSEGV",
+  SIGSTKFLT = "SIGSTKFLT",
+  SIGSTOP = "SIGSTOP",
+  SIGSYS = "SIGSYS",
+  SIGTERM = "SIGTERM",
+  SIGTRAP = "SIGTRAP",
+  SIGTSTP = "SIGTSTP",
+  SIGTTIN = "SIGTTIN",
+  SIGTTOU = "SIGTTOU",
+  SIGUNUSED = "SIGUNUSED",
+  SIGURG = "SIGURG",
+  SIGUSR1 = "SIGUSR1",
+  SIGUSR2 = "SIGUSR2",
+  SIGVTALRM = "SIGVTALRM",
+  SIGWINCH = "SIGWINCH",
+  SIGXCPU = "SIGXCPU",
+  SIGXFSZ = "SIGXFSZ"
+}
 
 const parameterSchema = z.object({
   instanceId: z.string().describe("The ID returned by shellStart"),
   stdin: z.string().optional().describe("Input to send to process"),
   signal: z
-    .enum([
-      "SIGABRT",
-      "SIGALRM",
-      "SIGBUS",
-      "SIGCHLD",
-      "SIGCONT",
-      "SIGFPE",
-      "SIGHUP",
-      "SIGILL",
-      "SIGINT",
-      "SIGIO",
-      "SIGIOT",
-      "SIGKILL",
-      "SIGPIPE",
-      "SIGPOLL",
-      "SIGPROF",
-      "SIGPWR",
-      "SIGQUIT",
-      "SIGSEGV",
-      "SIGSTKFLT",
-      "SIGSTOP",
-      "SIGSYS",
-      "SIGTERM",
-      "SIGTRAP",
-      "SIGTSTP",
-      "SIGTTIN",
-      "SIGTTOU",
-      "SIGUNUSED",
-      "SIGURG",
-      "SIGUSR1",
-      "SIGUSR2",
-      "SIGVTALRM",
-      "SIGWINCH",
-      "SIGXCPU",
-      "SIGXFSZ",
-    ] as const)
+    .nativeEnum(NodeSignals)
     .optional()
     .describe("Signal to send to the process (e.g., SIGTERM, SIGINT)"),
   description: z

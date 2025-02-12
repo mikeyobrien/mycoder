@@ -80,6 +80,11 @@ describe("shellStartTool", () => {
 
     // Even sync results should be in processStates
     expect(processStates.size).toBeGreaterThan(0);
+    expect(syncResult.mode).toBe("sync");
+    expect(syncResult.error).toBeUndefined();
+    if (syncResult.mode === "sync") {
+      expect(syncResult.exitCode).toBe(0);
+    }
 
     // Test async mode
     const asyncResult = await shellStartTool.execute(
