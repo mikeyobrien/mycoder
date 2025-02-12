@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.23
+
+### Patch Changes
+
+- upgrade dependency to fix windows bug
+
 ## 0.0.22
 
 ### Patch Changes

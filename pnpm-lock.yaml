@@ -30,8 +30,8 @@ importers:
         specifier: ^17
         version: 17.7.2
       yargs-file-commands:
-        specifier: ^0.0.17
-        version: 0.0.17(yargs@17.7.2)
+        specifier: ^0.0.19
+        version: 0.0.19(yargs@17.7.2)
       zod:
         specifier: ^3
         version: 3.24.1
@@ -2008,8 +2008,8 @@ packages:
     resolution: {integrity: sha512-0pfFzegeDWJHJIAmTLRP2DwHjdF5s7jo9tuztdQxAhINCdvS+3nGINqPd00AphqJR/0LhANUS6/+7SCb98YOfA==}
     engines: {node: '>=10'}
 
-  yargs-file-commands@0.0.17:
-    resolution: {integrity: sha512-3yuf1hFiMSkn3rHlvYydBGk8j5ZnM9EeLH4nHmd7RvwEe+qxO01l12BIcJ4ij6nedlruqQK1DHs/fgSzBhJVhQ==}
+  yargs-file-commands@0.0.19:
+    resolution: {integrity: sha512-uEHidtVw1HPp/ZFYK+8EnJ2eKVIGMxawWP761heBU2AtOJSg4VGvKLsGUGYaMuWI/UcyFK8HUUIsH6aM0mEqmQ==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
       yargs: ^17
@@ -4132,7 +4132,7 @@ snapshots:
 
   y18n@5.0.8: {}
 
-  yargs-file-commands@0.0.17(yargs@17.7.2):
+  yargs-file-commands@0.0.19(yargs@17.7.2):
     dependencies:
       yargs: 17.7.2
 
