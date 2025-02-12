@@ -1,5 +1,5 @@
-import { Logger } from "../utils/logger.js";
-import { ToolContext } from "./types.js";
+import { Logger } from '../utils/logger.js';
+import { ToolContext } from './types.js';
 
 export function createToolContext(logger: Logger): ToolContext {
   return {

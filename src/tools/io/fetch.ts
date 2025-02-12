@@ -1,23 +1,23 @@
-import { Tool } from "../../core/types.js";
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { Tool } from '../../core/types.js';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
 const parameterSchema = z.object({
   method: z
     .string()
     .describe(
-      "HTTP method to use (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)",
+      'HTTP method to use (GET, POST, PUT, DELETE, PATCH, HEAD, OPTIONS)',
     ),
-  url: z.string().describe("URL to make the request to"),
+  url: z.string().describe('URL to make the request to'),
   params: z
     .record(z.any())
     .optional()
-    .describe("Optional query parameters to append to the URL"),
+    .describe('Optional query parameters to append to the URL'),
   body: z
     .record(z.any())
     .optional()
-    .describe("Optional request body (for POST, PUT, PATCH requests)"),
-  headers: z.record(z.string()).optional().describe("Optional request headers"),
+    .describe('Optional request body (for POST, PUT, PATCH requests)'),
+  headers: z.record(z.string()).optional().describe('Optional request headers'),
 });
 
 const returnSchema = z
@@ -27,14 +27,14 @@ const returnSchema = z
     headers: z.record(z.string()),
     body: z.union([z.string(), z.record(z.any())]),
   })
-  .describe("HTTP response including status, headers, and body");
+  .describe('HTTP response including status, headers, and body');
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
 
 export const fetchTool: Tool<Parameters, ReturnType> = {
-  name: "fetch",
-  description: "Executes HTTP requests using native Node.js fetch API",
+  name: 'fetch',
+  description: 'Executes HTTP requests using native Node.js fetch API',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
@@ -46,7 +46,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
 
     // Add query parameters
     if (params) {
-      logger.verbose("Adding query parameters:", params);
+      logger.verbose('Adding query parameters:', params);
       Object.entries(params).forEach(([key, value]) =>
         urlObj.searchParams.append(key, value as string),
       );
@@ -57,41 +57,41 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
       method,
       headers: {
         ...(body &&
-          !["GET", "HEAD"].includes(method) && {
-            "content-type": "application/json",
+          !['GET', 'HEAD'].includes(method) && {
+            'content-type': 'application/json',
           }),
         ...headers,
       },
       ...(body &&
-        !["GET", "HEAD"].includes(method) && {
+        !['GET', 'HEAD'].includes(method) && {
           body: JSON.stringify(body),
         }),
     };
 
-    logger.verbose("Request options:", options);
+    logger.verbose('Request options:', options);
     const response = await fetch(urlObj.toString(), options);
     logger.verbose(
       `Request completed with status ${response.status} ${response.statusText}`,
     );
 
-    const contentType = response.headers.get("content-type");
-    const responseBody = contentType?.includes("application/json")
+    const contentType = response.headers.get('content-type');
+    const responseBody = contentType?.includes('application/json')
       ? await response.json()
       : await response.text();
 
-    logger.verbose("Response content-type:", contentType);
+    logger.verbose('Response content-type:', contentType);
 
     return {
       status: response.status,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers),
-      body: responseBody as ReturnType["body"],
+      body: responseBody as ReturnType['body'],
     };
   },
   logParameters(params, { logger }) {
     const { method, url, params: queryParams } = params;
     logger.info(
-      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams)}` : ""}`,
+      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams).toString()}` : ''}`,
     );
   },
 };

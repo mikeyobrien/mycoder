@@ -1,14 +1,14 @@
-import type { Argv } from "yargs";
-import { getTools } from "../tools/getTools.js";
-import type { JsonSchema7Type } from "zod-to-json-schema";
+import type { Argv } from 'yargs';
+import { getTools } from '../tools/getTools.js';
+import type { JsonSchema7Type } from 'zod-to-json-schema';
 
-interface ListToolsOptions {
+interface Options {
   [key: string]: unknown;
 }
 
-export const describe = "List all available tools and their capabilities";
+export const describe = 'List all available tools and their capabilities';
 
-export const builder = (yargs: Argv<ListToolsOptions>) => {
+export const builder = (yargs: Argv<Options>) => {
   return yargs;
 };
 
@@ -16,14 +16,14 @@ function formatSchema(schema: {
   properties?: Record<string, JsonSchema7Type>;
   required?: string[];
 }) {
-  let output = "";
+  let output = '';
 
   if (schema.properties) {
     for (const [paramName, param] of Object.entries(schema.properties)) {
       const required = schema.required?.includes(paramName)
-        ? ""
-        : " (optional)";
-      const description = (param as any).description || "";
+        ? ''
+        : ' (optional)';
+      const description = (param as any).description || '';
       output += `${paramName}${required}: ${description}\n`;
 
       if ((param as any).type) {
@@ -41,20 +41,20 @@ function formatSchema(schema: {
   return output;
 }
 
-export const handler = async () => {
+export const handler = () => {
   try {
-    const tools = await getTools();
+    const tools = getTools();
 
-    console.log("Available Tools:\\n");
+    console.log('Available Tools:\\n');
 
     for (const tool of tools) {
       // Tool name and description
       console.log(`${tool.name}`);
-      console.log("-".repeat(tool.name.length));
+      console.log('-'.repeat(tool.name.length));
       console.log(`Description: ${tool.description}\\n`);
 
       // Parameters section
-      console.log("Parameters:");
+      console.log('Parameters:');
       console.log(
         formatSchema(
           tool.parameters as {
@@ -65,7 +65,7 @@ export const handler = async () => {
       );
 
       // Returns section
-      console.log("Returns:");
+      console.log('Returns:');
       if (tool.returns) {
         console.log(
           formatSchema(
@@ -76,14 +76,14 @@ export const handler = async () => {
           ),
         );
       } else {
-        console.log("    Type: any");
-        console.log("    Description: Tool execution result or error\\n");
+        console.log('    Type: any');
+        console.log('    Description: Tool execution result or error\\n');
       }
 
       console.log(); // Add spacing between tools
     }
   } catch (error) {
-    console.error("Error listing tools:", error);
+    console.error('Error listing tools:', error);
     process.exit(1);
   }
 };

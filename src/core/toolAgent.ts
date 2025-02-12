@@ -1,16 +1,16 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { executeToolCall } from "./executeToolCall.js";
-import { Logger } from "../utils/logger.js";
+import Anthropic from '@anthropic-ai/sdk';
+import { executeToolCall } from './executeToolCall.js';
+import { Logger } from '../utils/logger.js';
 import {
   Tool,
   TextContent,
   ToolUseContent,
   ToolResultContent,
   Message,
-} from "./types.js";
-import { execSync } from "child_process";
+} from './types.js';
+import { execSync } from 'child_process';
 
-import { getAnthropicApiKeyError } from "../utils/errors.js";
+import { getAnthropicApiKeyError } from '../utils/errors.js';
 
 export interface ToolAgentResult {
   result: string;
@@ -23,10 +23,10 @@ export interface ToolAgentResult {
 
 const CONFIG = {
   maxIterations: 50,
-  model: "claude-3-5-sonnet-20241022",
+  model: 'claude-3-5-sonnet-20241022',
   maxTokens: 4096,
   temperature: 0.7,
-  getSystemPrompt: async () => {
+  getSystemPrompt: () => {
     // Gather context with error handling
     const getCommandOutput = (command: string, label: string): string => {
       try {
@@ -37,46 +37,46 @@ const CONFIG = {
     };
 
     const context = {
-      pwd: getCommandOutput("pwd", "current directory"),
-      files: getCommandOutput("ls -la", "file listing"),
-      system: getCommandOutput("uname -a", "system information"),
+      pwd: getCommandOutput('pwd', 'current directory'),
+      files: getCommandOutput('ls -la', 'file listing'),
+      system: getCommandOutput('uname -a', 'system information'),
       datetime: new Date().toString(),
     };
 
     return [
-      "You are an AI agent that can use tools to accomplish tasks.",
-      "",
-      "Current Context:",
+      'You are an AI agent that can use tools to accomplish tasks.',
+      '',
+      'Current Context:',
       `Directory: ${context.pwd}`,
-      "Files:",
+      'Files:',
       context.files,
       `System: ${context.system}`,
       `DateTime: ${context.datetime}`,
-      "",
-      "You prefer to call tools in parallel when possible because it leads to faster execution and less resource usage.",
-      "When done, call the sequenceComplete tool with your results to indicate that the sequence has completed.",
-      "",
-      "For coding tasks:",
-      "0. Try to break large tasks into smaller sub-tasks that can be completed and verified sequentially.",
+      '',
+      'You prefer to call tools in parallel when possible because it leads to faster execution and less resource usage.',
+      'When done, call the sequenceComplete tool with your results to indicate that the sequence has completed.',
+      '',
+      'For coding tasks:',
+      '0. Try to break large tasks into smaller sub-tasks that can be completed and verified sequentially.',
       "   - trying to make lots of changes in one go can make it really hard to identify when something doesn't work",
-      "   - use sub-agents for each sub-task, leaving the main agent in a supervisory role",
-      "   - when possible ensure the project compiles/builds and the tests pass after each sub-task",
-      "   - give the sub-agents the guidance and context necessary be successful",
-      "1. First understand the context by:",
-      "   - Reading README.md, CONTRIBUTING.md, and similar documentation",
-      "   - Checking project configuration files (e.g., package.json)",
-      "   - Understanding coding standards",
-      "2. Ensure changes:",
-      "   - Follow project conventions",
-      "   - Build successfully",
-      "   - Pass all tests",
-      "3. Update documentation as needed",
-      "4. Consider adding documentation if you encountered setup/understanding challenges",
-      "",
-      "When you run into issues or unexpected results, take a step back and read the project documentation and configuration files and look at other source files in the project for examples of what works.",
-      "",
-      "Use sub-agents for parallel tasks, providing them with specific context they need rather than having them rediscover it.",
-    ].join("\\n");
+      '   - use sub-agents for each sub-task, leaving the main agent in a supervisory role',
+      '   - when possible ensure the project compiles/builds and the tests pass after each sub-task',
+      '   - give the sub-agents the guidance and context necessary be successful',
+      '1. First understand the context by:',
+      '   - Reading README.md, CONTRIBUTING.md, and similar documentation',
+      '   - Checking project configuration files (e.g., package.json)',
+      '   - Understanding coding standards',
+      '2. Ensure changes:',
+      '   - Follow project conventions',
+      '   - Build successfully',
+      '   - Pass all tests',
+      '3. Update documentation as needed',
+      '4. Consider adding documentation if you encountered setup/understanding challenges',
+      '',
+      'When you run into issues or unexpected results, take a step back and read the project documentation and configuration files and look at other source files in the project for examples of what works.',
+      '',
+      'Use sub-agents for parallel tasks, providing them with specific context they need rather than having them rediscover it.',
+    ].join('\\n');
   },
 };
 
@@ -91,11 +91,11 @@ function processResponse(response: Anthropic.Message) {
   const toolCalls: ToolUseContent[] = [];
 
   for (const message of response.content) {
-    if (message.type === "text") {
-      content.push({ type: "text", text: message.text });
-    } else if (message.type === "tool_use") {
+    if (message.type === 'text') {
+      content.push({ type: 'text', text: message.text });
+    } else if (message.type === 'tool_use') {
       const toolUse: ToolUseContent = {
-        type: "tool_use",
+        type: 'tool_use',
         name: message.name,
         id: message.id,
         input: message.input,
@@ -122,17 +122,17 @@ async function executeTools(
 
   const results = await Promise.all(
     toolCalls.map(async (call) => {
-      let toolResult = "";
+      let toolResult = '';
       try {
         toolResult = await executeToolCall(call, tools, logger);
       } catch (error: any) {
         toolResult = `Error: Exception thrown during tool execution.  Type: ${error.constructor.name}, Message: ${error.message}`;
       }
       return {
-        type: "tool_result" as const,
+        type: 'tool_result' as const,
         tool_use_id: call.id,
         content: toolResult,
-        isComplete: call.name === "sequenceComplete",
+        isComplete: call.name === 'sequenceComplete',
       };
     }),
   );
@@ -146,24 +146,23 @@ async function executeTools(
   const sequenceCompleted = results.some((r) => r.isComplete);
   const completionResult = results.find((r) => r.isComplete)?.content;
 
-  messages.push({ role: "user", content: toolResults });
+  messages.push({ role: 'user', content: toolResults });
 
   if (sequenceCompleted) {
-    logger.verbose("Sequence completed", { completionResult });
+    logger.verbose('Sequence completed', { completionResult });
   }
 
   return { sequenceCompleted, completionResult, toolResults };
 }
 
- 
 export const toolAgent = async (
   initialPrompt: string,
   tools: Tool[],
   logger: Logger,
   config = CONFIG,
 ): Promise<ToolAgentResult> => {
-  logger.verbose("Starting agent execution");
-  logger.verbose("Initial prompt:", initialPrompt);
+  logger.verbose('Starting agent execution');
+  logger.verbose('Initial prompt:', initialPrompt);
 
   let totalInputTokens = 0;
   let totalOutputTokens = 0;
@@ -175,15 +174,15 @@ export const toolAgent = async (
   const client = new Anthropic({ apiKey });
   const messages: Message[] = [
     {
-      role: "user",
-      content: [{ type: "text", text: initialPrompt }],
+      role: 'user',
+      content: [{ type: 'text', text: initialPrompt }],
     },
   ];
 
-  logger.debug("User message:", initialPrompt);
+  logger.debug('User message:', initialPrompt);
 
   // Get the system prompt once at the start
-  const systemPrompt = await config.getSystemPrompt();
+  const systemPrompt = config.getSystemPrompt();
 
   for (let i = 0; i < config.maxIterations; i++) {
     logger.verbose(
@@ -204,13 +203,13 @@ export const toolAgent = async (
         description: t.description,
         input_schema: t.parameters as Anthropic.Tool.InputSchema,
       })),
-      tool_choice: { type: "auto" },
+      tool_choice: { type: 'auto' },
     });
 
     if (!response.content.length) {
       const result = {
         result:
-          "Agent returned empty message implying it is done its given task",
+          'Agent returned empty message implying it is done its given task',
         tokens: {
           input: totalInputTokens,
           output: totalOutputTokens,
@@ -230,13 +229,13 @@ export const toolAgent = async (
     );
 
     const { content, toolCalls } = processResponse(response);
-    messages.push({ role: "assistant", content });
+    messages.push({ role: 'assistant', content });
 
     // Log the assistant's message
     const assistantMessage = content
-      .filter((c) => c.type === "text")
-      .map((c) => (c as TextContent).text)
-      .join("\\n");
+      .filter((c) => c.type === 'text')
+      .map((c) => c.text)
+      .join('\\n');
     if (assistantMessage) {
       logger.info(assistantMessage);
     }
@@ -252,7 +251,7 @@ export const toolAgent = async (
       const result = {
         result:
           completionResult ??
-          "Sequence explicitly completed with an empty result",
+          'Sequence explicitly completed with an empty result',
         tokens: {
           input: totalInputTokens,
           output: totalOutputTokens,
@@ -266,9 +265,9 @@ export const toolAgent = async (
     }
   }
 
-  logger.warn("Maximum iterations reached");
+  logger.warn('Maximum iterations reached');
   const result = {
-    result: "Maximum sub-agent iterations reach without successful completion",
+    result: 'Maximum sub-agent iterations reach without successful completion',
     tokens: {
       input: totalInputTokens,
       output: totalOutputTokens,

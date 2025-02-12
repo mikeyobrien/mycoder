@@ -8,7 +8,7 @@ export const stringify2 = (
       .map(([key, val]) => [
         key,
         val === null
-          ? "null"
+          ? 'null'
           : JSON.stringify(val, null, 2).slice(0, valueCharacterLimit),
       ]),
   );

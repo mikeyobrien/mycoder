@@ -1,32 +1,32 @@
-/* eslint-disable max-lines-per-function */
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { join } from "path";
-import { randomUUID } from "crypto";
-import { mkdtemp } from "fs/promises";
-import { tmpdir } from "os";
-import { updateFileTool } from "./updateFile.js";
-import { readFileTool } from "./readFile.js";
-import { shellExecuteTool } from "../system/shellExecute.js";
-import { MockLogger } from "../../utils/mockLogger.js";
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { join } from 'path';
+import { randomUUID } from 'crypto';
+import { mkdtemp } from 'fs/promises';
+import { tmpdir } from 'os';
+import { updateFileTool } from './updateFile.js';
+import { readFileTool } from './readFile.js';
+import { shellExecuteTool } from '../system/shellExecute.js';
+import { MockLogger } from '../../utils/mockLogger.js';
 
 const logger = new MockLogger();
 
-describe("updateFile", () => {
+// eslint-disable-next-line max-lines-per-function
+describe('updateFile', () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = await mkdtemp(join(tmpdir(), "updatefile-test-"));
+    testDir = await mkdtemp(join(tmpdir(), 'updatefile-test-'));
   });
 
   afterEach(async () => {
     await shellExecuteTool.execute(
-      { command: `rm -rf "${testDir}"`, description: "test" },
+      { command: `rm -rf "${testDir}"`, description: 'test' },
       { logger },
     );
   });
 
   it("should rewrite a file's content", async () => {
-    const testContent = "test content";
+    const testContent = 'test content';
     const testPath = join(testDir, `${randomUUID()}.txt`);
 
     // Create and rewrite the file
@@ -34,29 +34,29 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "rewrite",
+          command: 'rewrite',
           content: testContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
 
     // Verify return value
     expect(result.path).toBe(testPath);
-    expect(result.operation).toBe("rewrite");
+    expect(result.operation).toBe('rewrite');
 
     // Verify content
     const readResult = await readFileTool.execute(
-      { path: testPath, description: "test" },
+      { path: testPath, description: 'test' },
       { logger },
     );
     expect(readResult.content).toBe(testContent);
   });
 
-  it("should append content to a file", async () => {
-    const initialContent = "initial content\n";
-    const appendContent = "appended content";
+  it('should append content to a file', async () => {
+    const initialContent = 'initial content\n';
+    const appendContent = 'appended content';
     const expectedContent = initialContent + appendContent;
     const testPath = join(testDir, `${randomUUID()}.txt`);
 
@@ -65,10 +65,10 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "rewrite",
+          command: 'rewrite',
           content: initialContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
@@ -78,31 +78,31 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "append",
+          command: 'append',
           content: appendContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
 
     // Verify return value
     expect(result.path).toBe(testPath);
-    expect(result.operation).toBe("append");
+    expect(result.operation).toBe('append');
 
     // Verify content
     const readResult = await readFileTool.execute(
-      { path: testPath, description: "test" },
+      { path: testPath, description: 'test' },
       { logger },
     );
     expect(readResult.content).toBe(expectedContent);
   });
 
-  it("should update specific text in a file", async () => {
-    const initialContent = "Hello world! This is a test.";
-    const oldStr = "world";
-    const newStr = "universe";
-    const expectedContent = "Hello universe! This is a test.";
+  it('should update specific text in a file', async () => {
+    const initialContent = 'Hello world! This is a test.';
+    const oldStr = 'world';
+    const newStr = 'universe';
+    const expectedContent = 'Hello universe! This is a test.';
     const testPath = join(testDir, `${randomUUID()}.txt`);
 
     // Create initial file
@@ -110,10 +110,10 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "rewrite",
+          command: 'rewrite',
           content: initialContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
@@ -123,31 +123,31 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "update",
+          command: 'update',
           oldStr,
           newStr,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
 
     // Verify return value
     expect(result.path).toBe(testPath);
-    expect(result.operation).toBe("update");
+    expect(result.operation).toBe('update');
 
     // Verify content
     const readResult = await readFileTool.execute(
-      { path: testPath, description: "test" },
+      { path: testPath, description: 'test' },
       { logger },
     );
     expect(readResult.content).toBe(expectedContent);
   });
 
-  it("should throw error when update finds multiple occurrences", async () => {
-    const initialContent = "Hello world! This is a world test.";
-    const oldStr = "world";
-    const newStr = "universe";
+  it('should throw error when update finds multiple occurrences', async () => {
+    const initialContent = 'Hello world! This is a world test.';
+    const oldStr = 'world';
+    const newStr = 'universe';
     const testPath = join(testDir, `${randomUUID()}.txt`);
 
     // Create initial file
@@ -155,10 +155,10 @@ describe("updateFile", () => {
       {
         path: testPath,
         operation: {
-          command: "rewrite",
+          command: 'rewrite',
           content: initialContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
@@ -169,41 +169,41 @@ describe("updateFile", () => {
         {
           path: testPath,
           operation: {
-            command: "update",
+            command: 'update',
             oldStr,
             newStr,
           },
-          description: "test",
+          description: 'test',
         },
         { logger },
       ),
-    ).rejects.toThrow("Found 2 occurrences of oldStr, expected exactly 1");
+    ).rejects.toThrow('Found 2 occurrences of oldStr, expected exactly 1');
   });
 
   it("should create parent directories if they don't exist", async () => {
-    const testContent = "test content";
-    const nestedPath = join(testDir, "nested", "dir", `${randomUUID()}.txt`);
+    const testContent = 'test content';
+    const nestedPath = join(testDir, 'nested', 'dir', `${randomUUID()}.txt`);
 
     // Create file in nested directory
     const result = await updateFileTool.execute(
       {
         path: nestedPath,
         operation: {
-          command: "rewrite",
+          command: 'rewrite',
           content: testContent,
         },
-        description: "test",
+        description: 'test',
       },
       { logger },
     );
 
     // Verify return value
     expect(result.path).toBe(nestedPath);
-    expect(result.operation).toBe("rewrite");
+    expect(result.operation).toBe('rewrite');
 
     // Verify content
     const readResult = await readFileTool.execute(
-      { path: nestedPath, description: "test" },
+      { path: nestedPath, description: 'test' },
       { logger },
     );
     expect(readResult.content).toBe(testContent);
