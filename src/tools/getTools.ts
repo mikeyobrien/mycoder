@@ -9,6 +9,7 @@ import { shellStartTool } from './system/shellStart.js';
 import { shellMessageTool } from './system/shellMessage.js';
 import { browseMessageTool } from './browser/browseMessage.js';
 import { browseStartTool } from './browser/browseStart.js';
+import { respawnTool } from './system/respawn.js';
 
 export function getTools(): Tool[] {
   return [
@@ -22,5 +23,6 @@ export function getTools(): Tool[] {
     shellMessageTool,
     browseStartTool,
     browseMessageTool,
+    respawnTool,
   ] as Tool[];
 }
