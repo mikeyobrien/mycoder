@@ -1,17 +1,17 @@
-import { Page } from "@playwright/test";
+import { Page } from '@playwright/test';
 import {
   SelectorType,
   SelectorOptions,
   BrowserError,
   BrowserErrorCode,
-} from "./types.js";
+} from './types.js';
 
 export class PageController {
   constructor(private page: Page) {}
 
   private getSelector(
     selector: string,
-    type: SelectorType = SelectorType.CSS
+    type: SelectorType = SelectorType.CSS,
   ): string {
     switch (type) {
       case SelectorType.XPATH:
@@ -30,30 +30,30 @@ export class PageController {
   private validateSelector(selector: string, type: SelectorType): void {
     if (!selector) {
       throw new BrowserError(
-        "Invalid selector: empty string",
-        BrowserErrorCode.SELECTOR_INVALID
+        'Invalid selector: empty string',
+        BrowserErrorCode.SELECTOR_INVALID,
       );
     }
   }
 
   async waitForSelector(
     selector: string,
-    options: SelectorOptions = {}
+    options: SelectorOptions = {},
   ): Promise<void> {
     this.validateSelector(selector, options.type || SelectorType.CSS);
     try {
       const locator = this.page.locator(
-        this.getSelector(selector, options.type)
+        this.getSelector(selector, options.type),
       );
       await locator.waitFor({
-        state: options.visible ? "visible" : "attached",
+        state: options.visible ? 'visible' : 'attached',
         timeout: options.timeout,
       });
     } catch (error) {
       throw new BrowserError(
         `Failed to find element: ${error}`,
         BrowserErrorCode.ELEMENT_NOT_FOUND,
-        error
+        error,
       );
     }
   }
@@ -62,14 +62,14 @@ export class PageController {
     this.validateSelector(selector, options.type || SelectorType.CSS);
     try {
       const locator = this.page.locator(
-        this.getSelector(selector, options.type)
+        this.getSelector(selector, options.type),
       );
       await locator.click({ timeout: options.timeout });
     } catch (error) {
       throw new BrowserError(
         `Failed to click element: ${error}`,
         BrowserErrorCode.SELECTOR_ERROR,
-        error
+        error,
       );
     }
   }
@@ -77,38 +77,38 @@ export class PageController {
   async type(
     selector: string,
     text: string,
-    options: SelectorOptions = {}
+    options: SelectorOptions = {},
   ): Promise<void> {
     this.validateSelector(selector, options.type || SelectorType.CSS);
     try {
       const locator = this.page.locator(
-        this.getSelector(selector, options.type)
+        this.getSelector(selector, options.type),
       );
       await locator.fill(text, { timeout: options.timeout });
     } catch (error) {
       throw new BrowserError(
         `Failed to type text: ${error}`,
         BrowserErrorCode.SELECTOR_ERROR,
-        error
+        error,
       );
     }
   }
 
   async getText(
     selector: string,
-    options: SelectorOptions = {}
+    options: SelectorOptions = {},
   ): Promise<string> {
     this.validateSelector(selector, options.type || SelectorType.CSS);
     try {
       const locator = this.page.locator(
-        this.getSelector(selector, options.type)
+        this.getSelector(selector, options.type),
       );
-      return (await locator.textContent()) || "";
+      return (await locator.textContent()) || '';
     } catch (error) {
       throw new BrowserError(
         `Failed to get text: ${error}`,
         BrowserErrorCode.SELECTOR_ERROR,
-        error
+        error,
       );
     }
   }

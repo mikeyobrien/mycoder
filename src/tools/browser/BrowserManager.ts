@@ -24,7 +24,8 @@ export class BrowserManager {
       // Create a new context (equivalent to Puppeteer's incognito context)
       const context = await browser.newContext({
         viewport: null,
-        userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        userAgent:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       });
 
       const page = await context.newPage();
@@ -44,7 +45,7 @@ export class BrowserManager {
       throw new BrowserError(
         'Failed to create browser session',
         BrowserErrorCode.LAUNCH_FAILED,
-        error
+        error,
       );
     }
   }
@@ -54,7 +55,7 @@ export class BrowserManager {
     if (!session) {
       throw new BrowserError(
         'Session not found',
-        BrowserErrorCode.SESSION_ERROR
+        BrowserErrorCode.SESSION_ERROR,
       );
     }
 
@@ -67,7 +68,7 @@ export class BrowserManager {
       throw new BrowserError(
         'Failed to close session',
         BrowserErrorCode.SESSION_ERROR,
-        error
+        error,
       );
     }
   }
@@ -91,7 +92,7 @@ export class BrowserManager {
 
   async closeAllSessions(): Promise<void> {
     const closePromises = Array.from(this.sessions.keys()).map((sessionId) =>
-      this.closeSession(sessionId).catch(() => {})
+      this.closeSession(sessionId).catch(() => {}),
     );
     await Promise.all(closePromises);
   }
@@ -101,7 +102,7 @@ export class BrowserManager {
     if (!session) {
       throw new BrowserError(
         'Session not found',
-        BrowserErrorCode.SESSION_ERROR
+        BrowserErrorCode.SESSION_ERROR,
       );
     }
     return session;

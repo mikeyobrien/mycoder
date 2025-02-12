@@ -4,20 +4,25 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 
 // Schema for browser action
-const browserActionSchema = z.object({
-  type: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
-  url: z.string().url().optional(),
-  selector: z.string().optional(),
-  selectorType: z.nativeEnum(SelectorType).optional(),
-  text: z.string().optional(),
-  options: z.object({}).optional(),
-}).describe('Browser action to perform');
+const browserActionSchema = z
+  .object({
+    type: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
+    url: z.string().url().optional(),
+    selector: z.string().optional(),
+    selectorType: z.nativeEnum(SelectorType).optional(),
+    text: z.string().optional(),
+    options: z.object({}).optional(),
+  })
+  .describe('Browser action to perform');
 
 // Main parameter schema
 const parameterSchema = z.object({
   instanceId: z.string().describe('The ID returned by browseStart'),
   action: browserActionSchema,
-  description: z.string().max(80).describe('The reason for this browser action (max 80 chars)'),
+  description: z
+    .string()
+    .max(80)
+    .describe('The reason for this browser action (max 80 chars)'),
 });
 
 // Return schema
@@ -74,10 +79,15 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           if (!action.selector) {
             throw new Error('Selector required for click action');
           }
-          const clickSelector = getSelector(action.selector, action.selectorType);
+          const clickSelector = getSelector(
+            action.selector,
+            action.selectorType,
+          );
           await page.click(clickSelector);
           const content = await page.content();
-          logger.verbose(`Click action completed on selector: ${clickSelector}`);
+          logger.verbose(
+            `Click action completed on selector: ${clickSelector}`,
+          );
           return { status: 'success', content };
         }
 
@@ -85,7 +95,10 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           if (!action.selector || !action.text) {
             throw new Error('Selector and text required for type action');
           }
-          const typeSelector = getSelector(action.selector, action.selectorType);
+          const typeSelector = getSelector(
+            action.selector,
+            action.selectorType,
+          );
           await page.fill(typeSelector, action.text);
           logger.verbose(`Type action completed on selector: ${typeSelector}`);
           return { status: 'success' };
@@ -95,7 +108,10 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           if (!action.selector) {
             throw new Error('Selector required for wait action');
           }
-          const waitSelector = getSelector(action.selector, action.selectorType);
+          const waitSelector = getSelector(
+            action.selector,
+            action.selectorType,
+          );
           await page.waitForSelector(waitSelector);
           logger.verbose(`Wait action completed for selector: ${waitSelector}`);
           return { status: 'success' };
@@ -116,10 +132,11 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
         }
 
         default: {
-          throw new Error(`Unsupported action type: ${(action as BrowserAction).type}`);
+          throw new Error(
+            `Unsupported action type: ${(action as BrowserAction).type}`,
+          );
         }
       }
-
     } catch (error) {
       logger.error('Browser action failed:', { error });
       return {
@@ -130,9 +147,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   },
 
   logParameters: ({ action, description }, { logger }) => {
-    logger.info(
-      `Performing browser action: ${action.type}, ${description}`,
-    );
+    logger.info(`Performing browser action: ${action.type}, ${description}`);
   },
 
   logReturns: (output, { logger }) => {

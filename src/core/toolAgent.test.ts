@@ -64,7 +64,7 @@ describe('toolAgent', () => {
       type: 'string',
       description: 'The processed result',
     },
-    execute: ({ input }) =>  Promise.resolve( `Processed: ${input}`),
+    execute: ({ input }) => Promise.resolve(`Processed: ${input}`),
   };
 
   const sequenceCompleteTool: Tool = {
@@ -84,7 +84,7 @@ describe('toolAgent', () => {
       type: 'string',
       description: 'The final result',
     },
-    execute: ({ result }) => Promise.resolve( result),
+    execute: ({ result }) => Promise.resolve(result),
   };
 
   it('should execute tool calls', async () => {

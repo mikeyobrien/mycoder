@@ -18,7 +18,7 @@ export const sequenceCompleteTool: Tool<Parameters, ReturnType> = {
   description: 'Completes the tool use sequence and returns the final result',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
-  execute: ({ result }) =>  Promise.resolve(result),
+  execute: ({ result }) => Promise.resolve(result),
   logParameters: () => {},
   logReturns: (output, { logger }) => {
     logger.info(`Completed: ${output}`);

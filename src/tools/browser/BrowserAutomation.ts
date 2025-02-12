@@ -1,5 +1,5 @@
-import { BrowserManager } from "./BrowserManager.js";
-import { PageController } from "./PageController.js";
+import { BrowserManager } from './BrowserManager.js';
+import { PageController } from './PageController.js';
 
 export class BrowserAutomation {
   private static instance: BrowserAutomation;

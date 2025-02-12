@@ -9,8 +9,6 @@ export default defineConfig({
     testTimeout: 10000,
     // Timeout for hook operations
     hookTimeout: 10000,
-    // Pool timeout for workers
-    poolTimeout: 30000,
     // Specific environment configurations
     environmentOptions: {
       // Browser-specific timeouts when running browser tests
@@ -22,7 +20,6 @@ export default defineConfig({
     // Browser tests configuration
     browser: {
       enabled: true,
-      name: 'chrome',
       provider: 'playwright',
       headless: true,
     },

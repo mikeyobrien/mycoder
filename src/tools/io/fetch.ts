@@ -33,14 +33,14 @@ type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
 
 export const fetchTool: Tool<Parameters, ReturnType> = {
-  name: "fetch",
+  name: 'fetch',
   description:
-    "Executes HTTP requests using native Node.js fetch API, for using APIs, not for browsing the web.",
+    'Executes HTTP requests using native Node.js fetch API, for using APIs, not for browsing the web.',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
     { method, url, params, body, headers }: Parameters,
-    { logger }
+    { logger },
   ): Promise<ReturnType> => {
     logger.verbose(`Starting ${method} request to ${url}`);
     const urlObj = new URL(url);
@@ -49,7 +49,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
     if (params) {
       logger.verbose('Adding query parameters:', params);
       Object.entries(params).forEach(([key, value]) =>
-        urlObj.searchParams.append(key, value as string)
+        urlObj.searchParams.append(key, value as string),
       );
     }
 
@@ -72,7 +72,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
     logger.verbose('Request options:', options);
     const response = await fetch(urlObj.toString(), options);
     logger.verbose(
-      `Request completed with status ${response.status} ${response.statusText}`
+      `Request completed with status ${response.status} ${response.statusText}`,
     );
 
     const contentType = response.headers.get('content-type');

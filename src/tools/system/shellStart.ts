@@ -70,7 +70,6 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
-  // eslint-disable-next-line max-lines-per-function
   execute: async (
     { command, timeout = DEFAULT_TIMEOUT },
     { logger },
