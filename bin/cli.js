@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { join } from 'path';
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { join } from "path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const cliUrl = import.meta.url;
+const distIndex = cliUrl.replace("bin/cli.js", "dist/index.js");
 
-await import(join(__dirname, '..', 'dist', 'index.js'));
+await import(distIndex);
