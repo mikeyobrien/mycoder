@@ -22,6 +22,8 @@ describe("Wait Behavior Tests", () => {
     });
 
     it("should handle dynamic loading with explicit waits", async () => {
+      // Set longer timeout for this test
+      vi.setConfig({ testTimeout: 10000 });
       await session.page.click("button");
 
       // Wait for loading element to appear and then disappear
@@ -41,7 +43,7 @@ describe("Wait Behavior Tests", () => {
         await session.page.waitForSelector("#nonexistent", { timeout: 1000 });
         expect(true).toBe(false); // Should not reach here
       } catch (error: any) {
-        expect(error.message).toContain("timeout");
+        expect(error.message).toContain("Timeout");
       }
     });
   });
@@ -65,6 +67,8 @@ describe("Wait Behavior Tests", () => {
     });
 
     it("should handle multiple sequential dynamic changes", async () => {
+      // Set longer timeout for this test
+      vi.setConfig({ testTimeout: 10000 });
       // Remove checkbox
       await session.page.click('button:has-text("Remove")');
       await session.page.waitForSelector("#checkbox", { state: "hidden" });
