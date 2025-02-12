@@ -1,11 +1,15 @@
 # MyCoder
 
-![NPM Package][npm]
-![NPM Downloads][npm-downloads]
+[![NPM Package][npm]][npm-url]
+[![NPM Downloads][npm-downloads]][npmtrends-url]
+[![CI Status][ci]][ci-url]
+[![Discord][discord]][discord-url]
 
 ## Overview
 
 MyCoder is a simple to install, powerful command-line based AI agent system that can perform arbitrary tasks with a particular focus on coding tasks. It uses a modular tool-based architecture that allows it to interact with files, execute commands, make network requests, and spawn sub-agents for parallel task execution.
+
+Please join the MyCoder.ai discord for support: https://discord.gg/5K6TYrHGHt
 
 ## WARNING and LIABILITY WAIVER
 
@@ -152,3 +156,11 @@ MIT License
 
 [npm]: https://img.shields.io/npm/v/mycoder
 [npm-downloads]: https://img.shields.io/npm/dw/mycoder
+[npm]: https://img.shields.io/npm/v/mycoder
+[npm-url]: https://www.npmjs.com/package/mycoder
+[npm-downloads]: https://img.shields.io/npm/dw/mycoder
+[npmtrends-url]: https://www.npmtrends.com/mycoder
+[ci]: https://img.shields.io/github/checks-status/bhouston/mycoder/main
+[ci-url]: https://github.com/bhouston/mycoder/actions
+[discord]: https://img.shields.io/discord/1339025847331328000
+[discord-url]: https://discord.gg/5K6TYrHGHt
