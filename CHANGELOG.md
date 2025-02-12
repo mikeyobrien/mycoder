@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.1.0
+
+### Minor Changes
+
+- Add support for browsing the web
+
 ## 0.0.23
 
 ### Patch Changes
