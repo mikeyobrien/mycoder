@@ -16,7 +16,7 @@ export class BrowserAutomation {
     return BrowserAutomation.instance;
   }
 
-  async createSession(headless: boolean = false) {
+  async createSession(headless: boolean = true) {
     const session = await this.browserManager.createSession({ headless });
     const pageController = new PageController(session.page);
 

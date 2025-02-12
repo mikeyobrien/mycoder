@@ -10,7 +10,7 @@ import {
 export class BrowserManager {
   private sessions: Map<string, BrowserSession> = new Map();
   private readonly defaultConfig: BrowserConfig = {
-    headless: false,
+    headless: true,
     defaultTimeout: 30000,
   };
 
