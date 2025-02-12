@@ -23,7 +23,7 @@ describe("shellStartTool", () => {
         description: "Test process",
         timeout: 500, // Generous timeout to ensure sync mode
       },
-      { logger },
+      { logger }
     );
 
     expect(result.mode).toBe("sync");
@@ -41,7 +41,7 @@ describe("shellStartTool", () => {
         description: "Slow command test",
         timeout: 50, // Short timeout to force async mode
       },
-      { logger },
+      { logger }
     );
 
     expect(result.mode).toBe("async");
@@ -57,7 +57,7 @@ describe("shellStartTool", () => {
         command: "nonexistentcommand",
         description: "Invalid command test",
       },
-      { logger },
+      { logger }
     );
 
     expect(result.mode).toBe("sync");
@@ -75,7 +75,7 @@ describe("shellStartTool", () => {
         description: "Sync completion test",
         timeout: 500,
       },
-      { logger },
+      { logger }
     );
 
     // Even sync results should be in processStates
@@ -88,7 +88,7 @@ describe("shellStartTool", () => {
         description: "Async completion test",
         timeout: 50,
       },
-      { logger },
+      { logger }
     );
 
     if (asyncResult.mode === "async") {
@@ -103,7 +103,7 @@ describe("shellStartTool", () => {
         description: "Pipe test",
         timeout: 50, // Force async for interactive command
       },
-      { logger },
+      { logger }
     );
 
     expect(result.mode).toBe("async");
@@ -130,15 +130,15 @@ describe("shellStartTool", () => {
     }
   });
 
-  it("should use default timeout of 100ms", async () => {
+  it("should use default timeout of 10000ms", async () => {
     const result = await shellStartTool.execute(
       {
         command: "sleep 1",
         description: "Default timeout test",
       },
-      { logger },
+      { logger }
     );
 
-    expect(result.mode).toBe("async");
+    expect(result.mode).toBe("sync");
   });
 });

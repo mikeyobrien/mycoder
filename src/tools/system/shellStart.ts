@@ -29,7 +29,9 @@ const parameterSchema = z.object({
   timeout: z
     .number()
     .optional()
-    .describe("Timeout in ms before switching to async mode (default: 100ms)"),
+    .describe(
+      "Timeout in ms before switching to async mode (default: 10s, which usually is sufficient)"
+    ),
 });
 
 const returnSchema = z.union([
@@ -58,7 +60,7 @@ const returnSchema = z.union([
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
 
-const DEFAULT_TIMEOUT = 100;
+const DEFAULT_TIMEOUT = 1000 * 10;
 
 export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: "shellStart",
