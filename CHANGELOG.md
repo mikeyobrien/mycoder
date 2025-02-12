@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.18
+
+### Patch Changes
+
+- better fix for linux cli that still hides deprecations
+
 ## 0.0.17
 
 ### Patch Changes
