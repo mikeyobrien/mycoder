@@ -17,6 +17,9 @@ importers:
       dotenv:
         specifier: ^16
         version: 16.4.7
+      semver:
+        specifier: ^7.7.1
+        version: 7.7.1
       source-map-support:
         specifier: ^0.5
         version: 0.5.21
