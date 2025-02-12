@@ -7,17 +7,20 @@ import { Tool } from '../core/types.js';
 import { updateFileTool } from './io/updateFile.js';
 import { shellStartTool } from './system/shellStart.js';
 import { shellMessageTool } from './system/shellMessage.js';
+import { browseMessageTool } from './browser/browseMessage.js';
+import { browseStartTool } from './browser/browseStart.js';
 
 export function getTools(): Tool[] {
   return [
     subAgentTool,
     readFileTool,
     updateFileTool,
-    //shellExecuteTool, - remove for now.
     userPromptTool,
     sequenceCompleteTool,
     fetchTool,
     shellStartTool,
     shellMessageTool,
+    browseStartTool,
+    browseMessageTool,
   ] as Tool[];
 }

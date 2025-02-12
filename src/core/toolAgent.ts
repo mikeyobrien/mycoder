@@ -59,24 +59,26 @@ const CONFIG = {
       'For coding tasks:',
       '0. Try to break large tasks into smaller sub-tasks that can be completed and verified sequentially.',
       "   - trying to make lots of changes in one go can make it really hard to identify when something doesn't work",
-      '   - use sub-agents for each sub-task, leaving the main agent in a supervisory role',
-      '   - when possible ensure the project compiles/builds and the tests pass after each sub-task',
-      '   - give the sub-agents the guidance and context necessary be successful',
-      '1. First understand the context by:',
-      '   - Reading README.md, CONTRIBUTING.md, and similar documentation',
-      '   - Checking project configuration files (e.g., package.json)',
-      '   - Understanding coding standards',
-      '2. Ensure changes:',
-      '   - Follow project conventions',
-      '   - Build successfully',
-      '   - Pass all tests',
-      '3. Update documentation as needed',
-      '4. Consider adding documentation if you encountered setup/understanding challenges',
-      '',
-      'When you run into issues or unexpected results, take a step back and read the project documentation and configuration files and look at other source files in the project for examples of what works.',
-      '',
-      'Use sub-agents for parallel tasks, providing them with specific context they need rather than having them rediscover it.',
-    ].join('\\n');
+      "   - use sub-agents for each sub-task, leaving the main agent in a supervisory role",
+      "   - when possible ensure the project compiles/builds and the tests pass after each sub-task",
+      "   - give the sub-agents the guidance and context necessary be successful",
+      "1. First understand the context by:",
+      "   - Reading README.md, CONTRIBUTING.md, and similar documentation",
+      "   - Checking project configuration files (e.g., package.json)",
+      "   - Understanding coding standards",
+      "2. Ensure changes:",
+      "   - Follow project conventions",
+      "   - Build successfully",
+      "   - Pass all tests",
+      "3. Update documentation as needed",
+      "4. Consider adding documentation if you encountered setup/understanding challenges",
+      "",
+      "Feel free to use Google and Bing via the browser tools to search for information or for ideas when you get stuck.",
+      "",
+      "When you run into issues or unexpected results, take a step back and read the project documentation and configuration files and look at other source files in the project for examples of what works.",
+      "",
+      "Use sub-agents for parallel tasks, providing them with specific context they need rather than having them rediscover it.",
+    ].join("\\n");
   },
 };
 
@@ -112,7 +114,7 @@ async function executeTools(
   toolCalls: ToolUseContent[],
   tools: Tool[],
   messages: Message[],
-  logger: Logger,
+  logger: Logger
 ): Promise<ToolCallResult> {
   if (toolCalls.length === 0) {
     return { sequenceCompleted: false, toolResults: [] };
@@ -134,7 +136,7 @@ async function executeTools(
         content: toolResult,
         isComplete: call.name === 'sequenceComplete',
       };
-    }),
+    })
   );
 
   const toolResults = results.map(({ type, tool_use_id, content }) => ({
@@ -159,7 +161,7 @@ export const toolAgent = async (
   initialPrompt: string,
   tools: Tool[],
   logger: Logger,
-  config = CONFIG,
+  config = CONFIG
 ): Promise<ToolAgentResult> => {
   logger.verbose('Starting agent execution');
   logger.verbose('Initial prompt:', initialPrompt);
@@ -188,7 +190,7 @@ export const toolAgent = async (
     logger.verbose(
       `Requesting completion ${i + 1} with ${messages.length} messages with ${
         JSON.stringify(messages).length
-      } bytes`,
+      } bytes`
     );
 
     interactions++;
@@ -217,7 +219,7 @@ export const toolAgent = async (
         interactions,
       };
       logger.verbose(
-        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
       );
       return result;
     }
@@ -225,7 +227,7 @@ export const toolAgent = async (
     totalInputTokens += response.usage.input_tokens;
     totalOutputTokens += response.usage.output_tokens;
     logger.verbose(
-      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`,
+      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`
     );
 
     const { content, toolCalls } = processResponse(response);
@@ -244,7 +246,7 @@ export const toolAgent = async (
       toolCalls,
       tools,
       messages,
-      logger,
+      logger
     );
 
     if (sequenceCompleted) {
@@ -259,7 +261,7 @@ export const toolAgent = async (
         interactions,
       };
       logger.verbose(
-        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
+        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
       );
       return result;
     }
@@ -275,7 +277,7 @@ export const toolAgent = async (
     interactions,
   };
   logger.verbose(
-    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
+    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`
   );
   return result;
 };
