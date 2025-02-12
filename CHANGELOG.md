@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- A very fast and simple background version check
+
+## 0.0.19
+
+### Patch Changes
+
 - ensure the cli works on windows
 
 ## 0.0.18
