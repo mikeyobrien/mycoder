@@ -1,8 +1,8 @@
-import { Logger } from "./logger.js";
+import { Logger } from './logger.js';
 
 export class MockLogger extends Logger {
   constructor() {
-    super({ name: "mock" });
+    super({ name: 'mock' });
   }
 
   debug(..._messages: any[]): void {}

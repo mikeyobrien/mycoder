@@ -1,23 +1,24 @@
-import { exec, ExecException } from "child_process";
-import { promisify } from "util";
-import { Tool } from "../../core/types.js";
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { exec, ExecException } from 'child_process';
+import { promisify } from 'util';
+import { Tool } from '../../core/types.js';
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
+import { errorToString } from '../../utils/errorToString.js';
 
 const execAsync = promisify(exec);
 
 const parameterSchema = z.object({
   command: z
     .string()
-    .describe("The shell command to execute in MacOS bash format"),
+    .describe('The shell command to execute in MacOS bash format'),
   description: z
     .string()
     .max(80)
-    .describe("The reason this shell command is being run (max 80 chars)"),
+    .describe('The reason this shell command is being run (max 80 chars)'),
   timeout: z
     .number()
     .optional()
-    .describe("Timeout in milliseconds (optional, default 30000)"),
+    .describe('Timeout in milliseconds (optional, default 30000)'),
 });
 
 const returnSchema = z
@@ -29,7 +30,7 @@ const returnSchema = z
     error: z.string().optional(),
   })
   .describe(
-    "Command execution results including stdout, stderr, and exit code",
+    'Command execution results including stdout, stderr, and exit code',
   );
 
 type Parameters = z.infer<typeof parameterSchema>;
@@ -41,9 +42,9 @@ interface ExtendedExecException extends ExecException {
 }
 
 export const shellExecuteTool: Tool<Parameters, ReturnType> = {
-  name: "shellExecute",
+  name: 'shellExecute',
   description:
-    "Executes a bash shell command and returns its output, can do amazing things if you are a shell scripting wizard",
+    'Executes a bash shell command and returns its output, can do amazing things if you are a shell scripting wizard',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
@@ -61,7 +62,7 @@ export const shellExecuteTool: Tool<Parameters, ReturnType> = {
         maxBuffer: 10 * 1024 * 1024, // 10MB buffer
       });
 
-      logger.verbose("Command executed successfully");
+      logger.verbose('Command executed successfully');
       logger.verbose(`stdout: ${stdout.trim()}`);
       if (stderr.trim()) {
         logger.verbose(`stderr: ${stderr.trim()}`);
@@ -71,31 +72,33 @@ export const shellExecuteTool: Tool<Parameters, ReturnType> = {
         stdout: stdout.trim(),
         stderr: stderr.trim(),
         code: 0,
-        error: "",
+        error: '',
         command,
       };
     } catch (error) {
       if (error instanceof Error) {
         const execError = error as ExtendedExecException;
-        const isTimeout = error.message.includes("timeout");
+        const isTimeout = error.message.includes('timeout');
 
         logger.verbose(`Command execution failed: ${error.message}`);
 
         return {
           error: isTimeout
-            ? "Command execution timed out after " + timeout + "ms"
+            ? 'Command execution timed out after ' + timeout + 'ms'
             : error.message,
-          stdout: (execError.stdout as string | undefined)?.trim() ?? "",
-          stderr: (execError.stderr as string | undefined)?.trim() ?? "",
+          stdout: execError.stdout?.trim() ?? '',
+          stderr: execError.stderr?.trim() ?? '',
           code: execError.code ?? -1,
           command,
         };
       }
-      logger.error(`Unknown error occurred during command execution: ${error}`);
+      logger.error(
+        `Unknown error occurred during command execution: ${errorToString(error)}`,
+      );
       return {
-        error: `Unknown error occurred: ${error}`,
-        stdout: "",
-        stderr: "",
+        error: `Unknown error occurred: ${errorToString(error)}`,
+        stdout: '',
+        stderr: '',
         code: -1,
         command,
       };

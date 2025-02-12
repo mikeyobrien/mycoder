@@ -1,4 +1,4 @@
-import chalk, { ChalkInstance } from "chalk";
+import chalk, { ChalkInstance } from 'chalk';
 
 export enum LogLevel {
   debug = 0,
@@ -34,7 +34,7 @@ export const BasicLoggerStyler = {
   ): string =>
     level === LogLevel.debug || level === LogLevel.verbose
       ? chalk.dim(prefix)
-      : "",
+      : '',
 };
 
 const loggerStyle = BasicLoggerStyler;
@@ -73,20 +73,21 @@ export class Logger {
       currentParent = currentParent.parent;
     }
 
-    this.prefix = " ".repeat(offsetSpaces);
+    this.prefix = ' '.repeat(offsetSpaces);
   }
 
-  private toStrings(messages: any[]) {
+  private toStrings(messages: unknown[]) {
     return messages
       .map((message) =>
-        typeof message === "object"
+        typeof message === 'object'
           ? JSON.stringify(message, null, 2)
-          : String(message),
+          : // eslint-disable-next-line @typescript-eslint/no-base-to-string
+            String(message),
       )
-      .join(" ");
+      .join(' ');
   }
 
-  private formatMessages(level: LogLevel, messages: any[]): string {
+  private formatMessages(level: LogLevel, messages: unknown[]): string {
     const formatted = this.toStrings(messages);
     const messageColor = loggerStyle.getColor(level, this.nesting);
     const prefix = loggerStyle.formatPrefix(
@@ -96,32 +97,32 @@ export class Logger {
     );
 
     return formatted
-      .split("\n")
+      .split('\n')
       .map((line) => `${this.prefix}${prefix} ${messageColor(line)}`)
-      .join("\n");
+      .join('\n');
   }
 
-  debug(...messages: any[]): void {
+  debug(...messages: unknown[]): void {
     if (this.logLevelIndex > LogLevel.debug) return;
     console.log(this.formatMessages(LogLevel.debug, messages));
   }
 
-  verbose(...messages: any[]): void {
+  verbose(...messages: unknown[]): void {
     if (this.logLevelIndex > LogLevel.verbose) return;
     console.log(this.formatMessages(LogLevel.verbose, messages));
   }
 
-  info(...messages: any[]): void {
+  info(...messages: unknown[]): void {
     if (this.logLevelIndex > LogLevel.info) return;
     console.log(this.formatMessages(LogLevel.info, messages));
   }
 
-  warn(...messages: any[]): void {
+  warn(...messages: unknown[]): void {
     if (this.logLevelIndex > LogLevel.warn) return;
     console.warn(this.formatMessages(LogLevel.warn, messages));
   }
 
-  error(...messages: any[]): void {
+  error(...messages: unknown[]): void {
     console.error(this.formatMessages(LogLevel.error, messages));
   }
 }
