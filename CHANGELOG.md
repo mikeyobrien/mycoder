@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.0.21
+
+### Patch Changes
+
+- Fix windows compatibility for cli tool.
+
 ## 0.0.20
 
 ### Patch Changes
