@@ -2,6 +2,7 @@ import { Tool } from '../../core/types.js';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { browserSessions, type BrowserAction, SelectorType } from './types.js';
+import { errorToString } from '../../utils/errorToString.js';
 
 // Schema for browser action
 const browserActionSchema = z
@@ -141,7 +142,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
       logger.error('Browser action failed:', { error });
       return {
         status: 'error',
-        error: error instanceof Error ? error.message : String(error),
+        error: errorToString(error),
       };
     }
   },

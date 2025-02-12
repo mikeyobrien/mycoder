@@ -7,6 +7,7 @@ import { getSettingsDir } from '../settings/settings.js';
 import * as fsPromises from 'fs/promises';
 import * as fs from 'fs';
 import * as semver from 'semver';
+import { errorToString } from './errorToString.js';
 
 const require = createRequire(import.meta.url);
 const logger = new Logger({ name: 'version-check' });
@@ -76,19 +77,13 @@ export async function checkForUpdates(): Promise<string | null> {
         return fsPromises.writeFile(versionFilePath, latestVersion, 'utf8');
       })
       .catch((error) => {
-        logger.warn(
-          'Error fetching latest version:',
-          error instanceof Error ? error.message : String(error),
-        );
+        logger.warn('Error fetching latest version:', errorToString(error));
       });
 
     return null;
   } catch (error) {
     // Log error but don't throw to handle gracefully
-    logger.warn(
-      'Error checking for updates:',
-      error instanceof Error ? error.message : String(error),
-    );
+    logger.warn('Error checking for updates:', errorToString(error));
     return null;
   }
 }

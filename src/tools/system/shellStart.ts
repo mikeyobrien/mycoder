@@ -169,7 +169,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
           stdout: '',
           stderr: '',
           exitCode: 1,
-          error: error instanceof Error ? error.message : String(error),
+          error: errorToString(error),
         });
       }
     });

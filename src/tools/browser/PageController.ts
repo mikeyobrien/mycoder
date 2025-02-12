@@ -5,6 +5,7 @@ import {
   BrowserError,
   BrowserErrorCode,
 } from './types.js';
+import { errorToString } from '../../utils/errorToString.js';
 
 export class PageController {
   constructor(private page: Page) {}
@@ -27,13 +28,14 @@ export class PageController {
     }
   }
 
-  private validateSelector(selector: string, type: SelectorType): void {
+  private validateSelector(selector: string, _type: SelectorType): void {
     if (!selector) {
       throw new BrowserError(
         'Invalid selector: empty string',
         BrowserErrorCode.SELECTOR_INVALID,
       );
     }
+    // TODO: Add more validation
   }
 
   async waitForSelector(
@@ -51,7 +53,7 @@ export class PageController {
       });
     } catch (error) {
       throw new BrowserError(
-        `Failed to find element: ${error}`,
+        `Failed to find element: ${errorToString(error)}`,
         BrowserErrorCode.ELEMENT_NOT_FOUND,
         error,
       );
@@ -67,7 +69,7 @@ export class PageController {
       await locator.click({ timeout: options.timeout });
     } catch (error) {
       throw new BrowserError(
-        `Failed to click element: ${error}`,
+        `Failed to click element: ${errorToString(error)}`,
         BrowserErrorCode.SELECTOR_ERROR,
         error,
       );
@@ -87,7 +89,7 @@ export class PageController {
       await locator.fill(text, { timeout: options.timeout });
     } catch (error) {
       throw new BrowserError(
-        `Failed to type text: ${error}`,
+        `Failed to type text: ${errorToString(error)}`,
         BrowserErrorCode.SELECTOR_ERROR,
         error,
       );
@@ -106,7 +108,7 @@ export class PageController {
       return (await locator.textContent()) || '';
     } catch (error) {
       throw new BrowserError(
-        `Failed to get text: ${error}`,
+        `Failed to get text: ${errorToString(error)}`,
         BrowserErrorCode.SELECTOR_ERROR,
         error,
       );

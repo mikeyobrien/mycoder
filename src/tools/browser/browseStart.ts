@@ -4,6 +4,7 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 import { v4 as uuidv4 } from 'uuid';
 import { chromium } from '@playwright/test';
 import { browserSessions } from './types.js';
+import { errorToString } from '../../utils/errorToString.js';
 
 const parameterSchema = z.object({
   url: z.string().url().optional().describe('Initial URL to navigate to'),
@@ -91,11 +92,11 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
         content: content || undefined,
       };
     } catch (error) {
-      logger.error(`Failed to start browser: ${error}`);
+      logger.error(`Failed to start browser: ${errorToString(error)}`);
       return {
         instanceId: '',
         status: 'error',
-        error: error instanceof Error ? error.message : String(error),
+        error: errorToString(error),
       };
     }
   },
