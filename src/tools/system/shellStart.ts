@@ -9,6 +9,7 @@ import { errorToString } from '../../utils/errorToString.js';
 // Define ProcessState type
 type ProcessState = {
   process: ChildProcess;
+  command: string;
   stdout: string[];
   stderr: string[];
   state: {
@@ -86,6 +87,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
         const process = spawn(command, [], { shell: true });
 
         const processState: ProcessState = {
+          command,
           process,
           stdout: [],
           stderr: [],

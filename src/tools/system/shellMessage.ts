@@ -162,8 +162,9 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
   },
 
   logParameters: (input, { logger }) => {
-    logger.info(
-      `Interacting with process ${input.instanceId}, ${input.description}`,
+      const processState = processStates.get(input.instanceId);
+       logger.info(
+      `Interacting with shell command "${processState ? processState.command : "<unknown instanceId>"}", ${input.description}`,
     );
   },
   logReturns: () => {},
