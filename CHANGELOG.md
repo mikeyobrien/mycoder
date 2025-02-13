@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.1.2
+
+### Patch Changes
+
+- add sleep tool to allow the agent to wait for tasks (like browse or shell commands) to complete.
+
 ## 0.1.1
 
 ### Patch Changes
