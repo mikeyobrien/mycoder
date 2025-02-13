@@ -33,8 +33,7 @@ export const sleepTool: Tool = {
     });
   },
   logParameters({ seconds }, { logger }) {
-    logger.info( `sleeping for ${seconds} seconds` );
+    logger.info(`sleeping for ${seconds} seconds`);
   },
-  logReturns() {
-  },
+  logReturns() {},
 };
