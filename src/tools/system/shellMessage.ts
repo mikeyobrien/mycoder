@@ -2,6 +2,7 @@ import { Tool } from '../../core/types.js';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 import { processStates } from './shellStart.js';
+import { sleep } from '../../utils/sleep.js';
 
 // Define NodeJS signals as an enum
 export enum NodeSignals {
@@ -114,7 +115,7 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
       }
 
       // Wait a brief moment for output to be processed
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await sleep(100);
 
       // Get accumulated output
       const stdout = processState.stdout.join('');

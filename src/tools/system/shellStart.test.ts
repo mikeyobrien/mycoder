@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { processStates, shellStartTool } from './shellStart.js';
 import { MockLogger } from '../../utils/mockLogger.js';
+import { sleep } from '../../utils/sleep.js';
 
 const logger = new MockLogger();
 
@@ -126,7 +127,7 @@ describe('shellStartTool', () => {
         processState.process.stdin.end();
 
         // Wait for output
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        await sleep(200);
 
         // Check stdout in processState
         expect(processState.stdout.join('')).toContain('test');

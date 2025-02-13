@@ -23,11 +23,11 @@ export const respawnTool: Tool = {
     type: 'string',
     description: 'A message indicating that the respawn has been initiated',
   },
-  execute: async (
-    params: Record<string, any>,
-    context: ToolContext,
+  execute: (
+    _params: Record<string, any>,
+    _context: ToolContext,
   ): Promise<string> => {
     // This is a special case tool - the actual respawn logic is handled in toolAgent
-    return 'Respawn initiated';
+    return Promise.resolve('Respawn initiated');
   },
 };
