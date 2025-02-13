@@ -115,12 +115,30 @@ async function executeTools(
   tools: Tool[],
   messages: Message[],
   logger: Logger,
-): Promise<ToolCallResult> {
+): Promise<ToolCallResult & { respawn?: { context: string } }> {
   if (toolCalls.length === 0) {
     return { sequenceCompleted: false, toolResults: [] };
   }
 
   logger.verbose(`Executing ${toolCalls.length} tool calls`);
+
+  // Check for respawn tool call
+  const respawnCall = toolCalls.find((call) => call.name === 'respawn');
+  if (respawnCall) {
+    return {
+      sequenceCompleted: false,
+      toolResults: [
+        {
+          type: 'tool_result',
+          tool_use_id: respawnCall.id,
+          content: 'Respawn initiated',
+        },
+      ],
+      respawn: {
+        context: respawnCall.input.respawnContext,
+      },
+    };
+  }
 
   const results = await Promise.all(
     toolCalls.map(async (call) => {
@@ -242,12 +260,23 @@ export const toolAgent = async (
       logger.info(assistantMessage);
     }
 
-    const { sequenceCompleted, completionResult } = await executeTools(
+    const { sequenceCompleted, completionResult, respawn } = await executeTools(
       toolCalls,
       tools,
       messages,
       logger,
     );
+
+    if (respawn) {
+      logger.info('Respawning agent with new context');
+      // Reset messages to just the new context
+      messages.length = 0;
+      messages.push({
+        role: 'user',
+        content: [{ type: 'text', text: respawn.context }],
+      });
+      continue;
+    }
 
     if (sequenceCompleted) {
       const result = {

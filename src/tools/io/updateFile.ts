@@ -1,4 +1,5 @@
-import * as fs from 'fs/promises';
+import * as fsPromises from 'fs/promises';
+import * as fs from 'fs';
 import * as path from 'path';
 import { Tool } from '../../core/types.js';
 import { z } from 'zod';
@@ -47,32 +48,35 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
     const absolutePath = path.resolve(path.normalize(filePath));
     logger.verbose(`Updating file: ${absolutePath}`);
 
-    await fs.mkdir(path.dirname(absolutePath), { recursive: true });
+    await fsPromises.mkdir(path.dirname(absolutePath), { recursive: true });
 
     if (operation.command === 'update') {
-      const content = await fs.readFile(absolutePath, 'utf8');
+      const content = await fsPromises.readFile(absolutePath, 'utf8');
       const occurrences = content.split(operation.oldStr).length - 1;
       if (occurrences !== 1) {
         throw new Error(
           `Found ${occurrences} occurrences of oldStr, expected exactly 1`,
         );
       }
-      await fs.writeFile(
+      await fsPromises.writeFile(
         absolutePath,
         content.replace(operation.oldStr, operation.newStr),
         'utf8',
       );
     } else if (operation.command === 'append') {
-      await fs.appendFile(absolutePath, operation.content, 'utf8');
+      await fsPromises.appendFile(absolutePath, operation.content, 'utf8');
     } else {
-      await fs.writeFile(absolutePath, operation.content, 'utf8');
+      await fsPromises.writeFile(absolutePath, operation.content, 'utf8');
     }
 
     logger.verbose(`Operation complete: ${operation.command}`);
     return { path: filePath, operation: operation.command };
   },
   logParameters: (input, { logger }) => {
-    logger.info(`Modifying "${input.path}", ${input.description}`);
+    const isFile = fs.existsSync(input.path);
+    logger.info(
+      `${isFile ? 'Modifying' : 'Creating'} "${input.path}", ${input.description}`,
+    );
   },
   logReturns: () => {},
 };

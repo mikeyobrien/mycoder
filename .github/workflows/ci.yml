@@ -3,13 +3,17 @@ name: CI
 on:
   push:
     branches:
-      - "*"
+      - '*'
   pull_request:
     branches:
       - main
 
 permissions:
   contents: read
+
+env:
+  pnpm-version: 10.2.1
+  node-version: 23
 
 jobs:
   ci:
@@ -19,15 +23,15 @@ jobs:
 
       - uses: pnpm/action-setup@v2
         with:
-          version: 10.2.1
+          version: ${{ env.pnpm-version }}
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: 23
+          node-version: ${{ env.node-version }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        
+
       - name: Build
         run: pnpm build:ci
 

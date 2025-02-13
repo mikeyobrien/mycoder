@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { processStates, shellStartTool } from './shellStart.js';
 import { MockLogger } from '../../utils/mockLogger.js';
 import { shellMessageTool, NodeSignals } from './shellMessage.js';
+import { sleep } from '../../utils/sleep.js';
 
 const logger = new MockLogger();
 
@@ -85,7 +86,7 @@ describe('shellMessageTool', () => {
     const instanceId = getInstanceId(startResult);
 
     // Wait a moment for process to complete
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await sleep(150);
 
     const result = await shellMessageTool.execute(
       {
@@ -123,7 +124,7 @@ describe('shellMessageTool', () => {
     );
     expect(result.signaled).toBe(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await sleep(50);
 
     const result2 = await shellMessageTool.execute(
       {
@@ -187,7 +188,7 @@ describe('shellMessageTool', () => {
       { logger },
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await sleep(50);
 
     // Check process state after signal
     const checkResult = await shellMessageTool.execute(
