@@ -31,10 +31,10 @@ Get an API key from https://www.anthropic.com/api
 npm install -g mycoder
 
 # Start MyCoder with a prompt
-mycoder "your prompt here"
+mycoder "fix all build errors and ensure the tests pass"
 
 # Start in interactive mode
-mycoder --interactive
+mycoder -i
 
 # Read prompt from a file
 mycoder --promptFile=your-prompt.txt
