@@ -47,6 +47,7 @@ docs: update README with new API documentation
 ## Changelog Generation
 
 Commit messages are used to:
+
 1. Automatically determine the next version number
 2. Generate changelog entries
 3. Create GitHub releases

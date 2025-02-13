@@ -8,7 +8,8 @@ vi.mock('@anthropic-ai/sdk', () => {
   return {
     default: vi.fn().mockImplementation(() => ({
       messages: {
-        create: vi.fn()
+        create: vi
+          .fn()
           .mockResolvedValueOnce({
             content: [
               {

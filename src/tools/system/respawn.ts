@@ -6,7 +6,8 @@ export interface RespawnInput {
 
 export const respawnTool: Tool = {
   name: 'respawn',
-  description: 'Resets the agent context to just the system prompt and provided context',
+  description:
+    'Resets the agent context to just the system prompt and provided context',
   parameters: {
     type: 'object',
     properties: {
@@ -22,7 +23,10 @@ export const respawnTool: Tool = {
     type: 'string',
     description: 'A message indicating that the respawn has been initiated',
   },
-  execute: async (params: Record<string, any>, context: ToolContext): Promise<string> => {
+  execute: async (
+    params: Record<string, any>,
+    context: ToolContext,
+  ): Promise<string> => {
     // This is a special case tool - the actual respawn logic is handled in toolAgent
     return 'Respawn initiated';
   },

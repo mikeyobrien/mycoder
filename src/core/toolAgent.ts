@@ -123,18 +123,20 @@ async function executeTools(
   logger.verbose(`Executing ${toolCalls.length} tool calls`);
 
   // Check for respawn tool call
-  const respawnCall = toolCalls.find(call => call.name === 'respawn');
+  const respawnCall = toolCalls.find((call) => call.name === 'respawn');
   if (respawnCall) {
     return {
       sequenceCompleted: false,
-      toolResults: [{
-        type: 'tool_result',
-        tool_use_id: respawnCall.id,
-        content: 'Respawn initiated',
-      }],
+      toolResults: [
+        {
+          type: 'tool_result',
+          tool_use_id: respawnCall.id,
+          content: 'Respawn initiated',
+        },
+      ],
       respawn: {
-        context: respawnCall.input.respawnContext
-      }
+        context: respawnCall.input.respawnContext,
+      },
     };
   }
 
