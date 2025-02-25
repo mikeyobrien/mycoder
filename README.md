@@ -11,6 +11,8 @@ MyCoder is a simple to install, powerful command-line based AI agent system that
 
 Please join the MyCoder.ai discord for support: https://discord.gg/5K6TYrHGHt
 
+![MyCoder Screenshot](./docs/Screenshot1.gif)
+
 ## WARNING and LIABILITY WAIVER
 
 This tool can do anything on your command line that you ask it to. It can delete files, install software, and even send data to remote servers. It is a powerful tool that should be used with caution. By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool.
