@@ -33,7 +33,7 @@ pnpm install
 pnpm build
 
 # Run locally built cli in interactive mode
-pnpm -f mycoder -i
+pnpm cli -i
 ```
 
 ## 📦 Packages

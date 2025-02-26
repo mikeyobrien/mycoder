@@ -19,7 +19,7 @@
     "url": "https://github.com/drivecore/mycoder-monorepo/issues"
   },
   "scripts": {
-    "start": "node --no-deprecation dist/index.js",
+    "start": "node --no-deprecation bin/cli.js",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "clean": "rimraf dist",
