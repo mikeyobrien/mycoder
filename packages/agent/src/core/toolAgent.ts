@@ -212,7 +212,7 @@ function addCacheControlToContentBlocks(
 function addCacheControlToMessages(
   messages: Anthropic.Messages.MessageParam[],
 ): Anthropic.Messages.MessageParam[] {
-  return messages.map((m, i) => {
+  return messages.map((m) => {
     if (typeof m.content === 'string') {
       return {
         ...m,
