@@ -95,9 +95,14 @@ export class Logger {
       this.nesting,
     );
 
+    let combinedPrefix = `${this.prefix}${prefix}`;
+    if (combinedPrefix.length > 0) {
+      combinedPrefix += ' ';
+    }
+
     return formatted
       .split('\n')
-      .map((line) => `${this.prefix}${prefix} ${messageColor(line)}`)
+      .map((line) => `${combinedPrefix}${messageColor(line)}`)
       .join('\n');
   }
 
