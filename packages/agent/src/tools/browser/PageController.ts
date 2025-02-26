@@ -1,13 +1,13 @@
-import { Page } from "@playwright/test";
+import { Page } from '@playwright/test';
 
-import { errorToString } from "../../utils/errorToString.js";
+import { errorToString } from '../../utils/errorToString.js';
 
 import {
   SelectorType,
   SelectorOptions,
   BrowserError,
   BrowserErrorCode,
-} from "./types.js";
+} from './types.js';
 
 export class PageController {
   constructor(private page: Page) {}
@@ -33,7 +33,7 @@ export class PageController {
   private validateSelector(selector: string, _type: SelectorType): void {
     if (!selector) {
       throw new BrowserError(
-        "Invalid selector: empty string",
+        'Invalid selector: empty string',
         BrowserErrorCode.SELECTOR_INVALID,
       );
     }
@@ -50,7 +50,7 @@ export class PageController {
         this.getSelector(selector, options.type),
       );
       await locator.waitFor({
-        state: options.visible ? "visible" : "attached",
+        state: options.visible ? 'visible' : 'attached',
         timeout: options.timeout,
       });
     } catch (error) {
@@ -107,7 +107,7 @@ export class PageController {
       const locator = this.page.locator(
         this.getSelector(selector, options.type),
       );
-      return (await locator.textContent()) || "";
+      return (await locator.textContent()) || '';
     } catch (error) {
       throw new BrowserError(
         `Failed to get text: ${errorToString(error)}`,

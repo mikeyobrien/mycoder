@@ -1,6 +1,6 @@
-import { JsonSchema7Type } from "zod-to-json-schema";
+import { JsonSchema7Type } from 'zod-to-json-schema';
 
-import { Logger } from "../utils/logger.js";
+import { Logger } from '../utils/logger.js';
 
 export type ToolContext = {
   logger: Logger;
@@ -26,16 +26,16 @@ export type ToolCall = {
 };
 
 export type TextContent = {
-  type: "text";
+  type: 'text';
   text: string;
 };
 
 export type ToolUseContent = {
-  type: "tool_use";
+  type: 'tool_use';
 } & ToolCall;
 
 export type AssistantMessage = {
-  role: "assistant";
+  role: 'assistant';
   content: (TextContent | ToolUseContent)[];
   tokenUsage?: {
     promptTokens: number;
@@ -45,13 +45,13 @@ export type AssistantMessage = {
 };
 
 export type ToolResultContent = {
-  type: "tool_result";
+  type: 'tool_result';
   tool_use_id: string;
   content: string;
 };
 
 export type UserMessage = {
-  role: "user";
+  role: 'user';
   content: (TextContent | ToolResultContent)[];
 };
 

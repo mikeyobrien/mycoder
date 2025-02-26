@@ -1,6 +1,6 @@
-import { Logger } from "../utils/logger.js";
+import { Logger } from '../utils/logger.js';
 
-import { Tool, ToolCall } from "./types.js";
+import { Tool, ToolCall } from './types.js';
 
 const OUTPUT_LIMIT = 12 * 1024; // 10KB limit
 
@@ -29,7 +29,7 @@ export const executeToolCall = async (
   if (tool.logParameters) {
     tool.logParameters(toolCall.input, toolContext);
   } else {
-    logger.info("Parameters:");
+    logger.info('Parameters:');
     Object.entries(toolCall.input).forEach(([name, value]) => {
       logger.info(`  - ${name}: ${JSON.stringify(value).substring(0, 60)}`);
     });
@@ -45,10 +45,10 @@ export const executeToolCall = async (
   if (tool.logReturns) {
     tool.logReturns(output, toolContext);
   } else {
-    logger.info("Results:");
-    if (typeof output === "string") {
+    logger.info('Results:');
+    if (typeof output === 'string') {
       logger.info(`  - ${output}`);
-    } else if (typeof output === "object") {
+    } else if (typeof output === 'object') {
       Object.entries(output).forEach(([name, value]) => {
         logger.info(`  - ${name}: ${JSON.stringify(value).substring(0, 60)}`);
       });
@@ -56,7 +56,7 @@ export const executeToolCall = async (
   }
 
   const toolOutput =
-    typeof output === "string" ? output : JSON.stringify(output, null, 2);
+    typeof output === 'string' ? output : JSON.stringify(output, null, 2);
   return toolOutput.length > OUTPUT_LIMIT
     ? `${toolOutput.slice(0, OUTPUT_LIMIT)}...(truncated)`
     : toolOutput;

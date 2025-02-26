@@ -1,32 +1,32 @@
-import * as fs from "fs/promises";
-import * as path from "path";
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
-import { Tool } from "../../core/types.js";
+import { Tool } from '../../core/types.js';
 
 const OUTPUT_LIMIT = 10 * 1024; // 10KB limit
 
 const parameterSchema = z.object({
-  path: z.string().describe("Path to the file to read"),
+  path: z.string().describe('Path to the file to read'),
   range: z
     .object({
       start: z.number(),
       end: z.number(),
     })
     .optional()
-    .describe("Range of bytes to read"),
+    .describe('Range of bytes to read'),
   maxSize: z
     .number()
     .optional()
     .describe(
-      "Maximum size to read, prevents reading arbitrarily large files that blow up the context window, max is 10KB",
+      'Maximum size to read, prevents reading arbitrarily large files that blow up the context window, max is 10KB',
     ),
   description: z
     .string()
     .max(80)
-    .describe("The reason you are reading this file (max 80 chars)"),
+    .describe('The reason you are reading this file (max 80 chars)'),
 });
 
 const returnSchema = z.object({
@@ -45,8 +45,8 @@ type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
 
 export const readFileTool: Tool<Parameters, ReturnType> = {
-  name: "readFile",
-  description: "Reads file content within size limits and optional range",
+  name: 'readFile',
+  description: 'Reads file content within size limits and optional range',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
@@ -80,7 +80,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
         );
         return {
           path: filePath,
-          content: buffer.toString("utf8", 0, bytesRead),
+          content: buffer.toString('utf8', 0, bytesRead),
           size: stats.size,
           range,
         };
@@ -91,7 +91,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
 
     return {
       path: filePath,
-      content: await fs.readFile(absolutePath, "utf8"),
+      content: await fs.readFile(absolutePath, 'utf8'),
       size: stats.size,
     };
   },

@@ -1,33 +1,33 @@
-import { Tool, ToolContext } from "../../core/types.js";
+import { Tool, ToolContext } from '../../core/types.js';
 
 export interface RespawnInput {
   respawnContext: string;
 }
 
 export const respawnTool: Tool = {
-  name: "respawn",
+  name: 'respawn',
   description:
-    "Resets the agent context to just the system prompt and provided context",
+    'Resets the agent context to just the system prompt and provided context',
   parameters: {
-    type: "object",
+    type: 'object',
     properties: {
       respawnContext: {
-        type: "string",
-        description: "The context to keep after respawning",
+        type: 'string',
+        description: 'The context to keep after respawning',
       },
     },
-    required: ["respawnContext"],
+    required: ['respawnContext'],
     additionalProperties: false,
   },
   returns: {
-    type: "string",
-    description: "A message indicating that the respawn has been initiated",
+    type: 'string',
+    description: 'A message indicating that the respawn has been initiated',
   },
   execute: (
     _params: Record<string, any>,
     _context: ToolContext,
   ): Promise<string> => {
     // This is a special case tool - the actual respawn logic is handled in toolAgent
-    return Promise.resolve("Respawn initiated");
+    return Promise.resolve('Respawn initiated');
   },
 };

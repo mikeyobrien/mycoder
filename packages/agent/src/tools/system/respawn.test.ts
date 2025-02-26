@@ -1,22 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from 'vitest';
 
-import { Logger } from "../../utils/logger";
+import { Logger } from '../../utils/logger';
 
-import { respawnTool } from "./respawn";
+import { respawnTool } from './respawn';
 
-describe("respawnTool", () => {
-  const mockLogger = new Logger({ name: "test" });
+describe('respawnTool', () => {
+  const mockLogger = new Logger({ name: 'test' });
 
-  it("should have correct name and description", () => {
-    expect(respawnTool.name).toBe("respawn");
-    expect(respawnTool.description).toContain("Resets the agent context");
+  it('should have correct name and description', () => {
+    expect(respawnTool.name).toBe('respawn');
+    expect(respawnTool.description).toContain('Resets the agent context');
   });
 
-  it("should execute and return confirmation message", async () => {
+  it('should execute and return confirmation message', async () => {
     const result = await respawnTool.execute(
-      { respawnContext: "new context" },
+      { respawnContext: 'new context' },
       { logger: mockLogger },
     );
-    expect(result).toBe("Respawn initiated");
+    expect(result).toBe('Respawn initiated');
   });
 });

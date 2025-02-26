@@ -1,7 +1,7 @@
-import { getTools } from "mycoder-agent";
+import { getTools } from 'mycoder-agent';
 
-import type { CommandModule } from "yargs";
-import type { JsonSchema7Type } from "zod-to-json-schema";
+import type { CommandModule } from 'yargs';
+import type { JsonSchema7Type } from 'zod-to-json-schema';
 
 interface ToolsArgs {
   [key: string]: unknown;
@@ -11,14 +11,14 @@ function formatSchema(schema: {
   properties?: Record<string, JsonSchema7Type>;
   required?: string[];
 }) {
-  let output = "";
+  let output = '';
 
   if (schema.properties) {
     for (const [paramName, param] of Object.entries(schema.properties)) {
       const required = schema.required?.includes(paramName)
-        ? ""
-        : " (optional)";
-      const description = (param as any).description || "";
+        ? ''
+        : ' (optional)';
+      const description = (param as any).description || '';
       output += `${paramName}${required}: ${description}\n`;
 
       if ((param as any).type) {
@@ -37,22 +37,22 @@ function formatSchema(schema: {
 }
 
 export const command: CommandModule<object, ToolsArgs> = {
-  command: "tools",
-  describe: "List all available tools and their capabilities",
+  command: 'tools',
+  describe: 'List all available tools and their capabilities',
   handler: () => {
     try {
       const tools = getTools();
 
-      console.log("Available Tools:\\n");
+      console.log('Available Tools:\\n');
 
       for (const tool of tools) {
         // Tool name and description
         console.log(`${tool.name}`);
-        console.log("-".repeat(tool.name.length));
+        console.log('-'.repeat(tool.name.length));
         console.log(`Description: ${tool.description}\\n`);
 
         // Parameters section
-        console.log("Parameters:");
+        console.log('Parameters:');
         console.log(
           formatSchema(
             tool.parameters as {
@@ -63,7 +63,7 @@ export const command: CommandModule<object, ToolsArgs> = {
         );
 
         // Returns section
-        console.log("Returns:");
+        console.log('Returns:');
         if (tool.returns) {
           console.log(
             formatSchema(
@@ -74,14 +74,14 @@ export const command: CommandModule<object, ToolsArgs> = {
             ),
           );
         } else {
-          console.log("    Type: any");
-          console.log("    Description: Tool execution result or error\\n");
+          console.log('    Type: any');
+          console.log('    Description: Tool execution result or error\\n');
         }
 
         console.log(); // Add spacing between tools
       }
     } catch (error) {
-      console.error("Error listing tools:", error);
+      console.error('Error listing tools:', error);
       process.exit(1);
     }
   },

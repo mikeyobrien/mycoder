@@ -1,12 +1,12 @@
-import { chromium } from "@playwright/test";
-import { v4 as uuidv4 } from "uuid";
+import { chromium } from '@playwright/test';
+import { v4 as uuidv4 } from 'uuid';
 
 import {
   BrowserConfig,
   BrowserSession,
   BrowserError,
   BrowserErrorCode,
-} from "./types.js";
+} from './types.js';
 
 export class BrowserManager {
   private sessions: Map<string, BrowserSession> = new Map();
@@ -26,7 +26,7 @@ export class BrowserManager {
       const context = await browser.newContext({
         viewport: null,
         userAgent:
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
       });
 
       const page = await context.newPage();
@@ -44,7 +44,7 @@ export class BrowserManager {
       return session;
     } catch (error) {
       throw new BrowserError(
-        "Failed to create browser session",
+        'Failed to create browser session',
         BrowserErrorCode.LAUNCH_FAILED,
         error,
       );
@@ -55,7 +55,7 @@ export class BrowserManager {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new BrowserError(
-        "Session not found",
+        'Session not found',
         BrowserErrorCode.SESSION_ERROR,
       );
     }
@@ -67,7 +67,7 @@ export class BrowserManager {
       this.sessions.delete(sessionId);
     } catch (error) {
       throw new BrowserError(
-        "Failed to close session",
+        'Failed to close session',
         BrowserErrorCode.SESSION_ERROR,
         error,
       );
@@ -76,17 +76,17 @@ export class BrowserManager {
 
   private setupCleanup(session: BrowserSession): void {
     // Handle browser disconnection
-    session.browser.on("disconnected", () => {
+    session.browser.on('disconnected', () => {
       this.sessions.delete(session.id);
     });
 
     // Handle process exit
-    process.on("exit", () => {
+    process.on('exit', () => {
       this.closeSession(session.id).catch(() => {});
     });
 
     // Handle unexpected errors
-    process.on("uncaughtException", () => {
+    process.on('uncaughtException', () => {
       this.closeSession(session.id).catch(() => {});
     });
   }
@@ -102,7 +102,7 @@ export class BrowserManager {
     const session = this.sessions.get(sessionId);
     if (!session) {
       throw new BrowserError(
-        "Session not found",
+        'Session not found',
         BrowserErrorCode.SESSION_ERROR,
       );
     }

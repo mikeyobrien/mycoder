@@ -1,15 +1,15 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect } from 'vitest';
 
-import { getTools } from "./getTools.js";
+import { getTools } from './getTools.js';
 
-describe("getTools", () => {
-  it("should return a successful result with tools", () => {
+describe('getTools', () => {
+  it('should return a successful result with tools', () => {
     const tools = getTools();
     expect(tools).toBeInstanceOf(Array);
     expect(tools.length).toBeGreaterThanOrEqual(5); // At least core tools
   });
 
-  it("should include core tools", () => {
+  it('should include core tools', () => {
     const tools = getTools();
     const toolNames = tools.map((tool) => tool.name);
 
@@ -17,7 +17,7 @@ describe("getTools", () => {
     expect(toolNames.length).greaterThan(0);
   });
 
-  it("should have unique tool names", () => {
+  it('should have unique tool names', () => {
     const tools = getTools();
     const toolNames = tools.map((tool) => tool.name);
     const uniqueNames = new Set(toolNames);
@@ -25,7 +25,7 @@ describe("getTools", () => {
     expect(toolNames).toHaveLength(uniqueNames.size);
   });
 
-  it("should have valid schema for each tool", () => {
+  it('should have valid schema for each tool', () => {
     const tools = getTools();
 
     for (const tool of tools) {
@@ -39,11 +39,11 @@ describe("getTools", () => {
     }
   });
 
-  it("should have executable functions", () => {
+  it('should have executable functions', () => {
     const tools = getTools();
 
     for (const tool of tools) {
-      expect(tool.execute).toBeTypeOf("function");
+      expect(tool.execute).toBeTypeOf('function');
     }
   });
 });

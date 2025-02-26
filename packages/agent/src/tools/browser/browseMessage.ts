@@ -1,31 +1,31 @@
-import { z } from "zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
+import { z } from 'zod';
+import { zodToJsonSchema } from 'zod-to-json-schema';
 
-import { Tool } from "../../core/types.js";
-import { errorToString } from "../../utils/errorToString.js";
+import { Tool } from '../../core/types.js';
+import { errorToString } from '../../utils/errorToString.js';
 
-import { browserSessions, type BrowserAction, SelectorType } from "./types.js";
+import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 
 // Schema for browser action
 const browserActionSchema = z
   .object({
-    type: z.enum(["goto", "click", "type", "wait", "content", "close"]),
+    type: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
     url: z.string().url().optional(),
     selector: z.string().optional(),
     selectorType: z.nativeEnum(SelectorType).optional(),
     text: z.string().optional(),
     options: z.object({}).optional(),
   })
-  .describe("Browser action to perform");
+  .describe('Browser action to perform');
 
 // Main parameter schema
 const parameterSchema = z.object({
-  instanceId: z.string().describe("The ID returned by browseStart"),
+  instanceId: z.string().describe('The ID returned by browseStart'),
   action: browserActionSchema,
   description: z
     .string()
     .max(80)
-    .describe("The reason for this browser action (max 80 chars)"),
+    .describe('The reason for this browser action (max 80 chars)'),
 });
 
 // Return schema
@@ -51,8 +51,8 @@ const getSelector = (selector: string, type?: SelectorType): string => {
 };
 
 export const browseMessageTool: Tool<Parameters, ReturnType> = {
-  name: "browseMessage",
-  description: "Performs actions in an active browser session",
+  name: 'browseMessage',
+  description: 'Performs actions in an active browser session',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
@@ -68,19 +68,19 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
       const { page } = session;
 
       switch (action.type) {
-        case "goto": {
+        case 'goto': {
           if (!action.url) {
-            throw new Error("URL required for goto action");
+            throw new Error('URL required for goto action');
           }
-          await page.goto(action.url, { waitUntil: "networkidle" });
+          await page.goto(action.url, { waitUntil: 'networkidle' });
           const content = await page.content();
-          logger.verbose("Navigation completed successfully");
-          return { status: "success", content };
+          logger.verbose('Navigation completed successfully');
+          return { status: 'success', content };
         }
 
-        case "click": {
+        case 'click': {
           if (!action.selector) {
-            throw new Error("Selector required for click action");
+            throw new Error('Selector required for click action');
           }
           const clickSelector = getSelector(
             action.selector,
@@ -91,12 +91,12 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           logger.verbose(
             `Click action completed on selector: ${clickSelector}`,
           );
-          return { status: "success", content };
+          return { status: 'success', content };
         }
 
-        case "type": {
+        case 'type': {
           if (!action.selector || !action.text) {
-            throw new Error("Selector and text required for type action");
+            throw new Error('Selector and text required for type action');
           }
           const typeSelector = getSelector(
             action.selector,
@@ -104,12 +104,12 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           );
           await page.fill(typeSelector, action.text);
           logger.verbose(`Type action completed on selector: ${typeSelector}`);
-          return { status: "success" };
+          return { status: 'success' };
         }
 
-        case "wait": {
+        case 'wait': {
           if (!action.selector) {
-            throw new Error("Selector required for wait action");
+            throw new Error('Selector required for wait action');
           }
           const waitSelector = getSelector(
             action.selector,
@@ -117,21 +117,21 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           );
           await page.waitForSelector(waitSelector);
           logger.verbose(`Wait action completed for selector: ${waitSelector}`);
-          return { status: "success" };
+          return { status: 'success' };
         }
 
-        case "content": {
+        case 'content': {
           const content = await page.content();
-          logger.verbose("Page content retrieved successfully");
-          return { status: "success", content };
+          logger.verbose('Page content retrieved successfully');
+          return { status: 'success', content };
         }
 
-        case "close": {
+        case 'close': {
           await session.page.context().close();
           await session.browser.close();
           browserSessions.delete(instanceId);
-          logger.verbose("Browser session closed successfully");
-          return { status: "closed" };
+          logger.verbose('Browser session closed successfully');
+          return { status: 'closed' };
         }
 
         default: {
@@ -141,9 +141,9 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
         }
       }
     } catch (error) {
-      logger.error("Browser action failed:", { error });
+      logger.error('Browser action failed:', { error });
       return {
-        status: "error",
+        status: 'error',
         error: errorToString(error),
       };
     }
