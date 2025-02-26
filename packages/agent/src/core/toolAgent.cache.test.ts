@@ -6,6 +6,8 @@ import { toolAgent } from './toolAgent.js';
 
 const logger = new MockLogger();
 
+process.env.ANTHROPIC_API_KEY = 'sk-ant-api03-1234567890';
+
 // Mock Anthropic client
 vi.mock('@anthropic-ai/sdk', () => {
   return {
