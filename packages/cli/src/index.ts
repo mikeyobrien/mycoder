@@ -14,6 +14,8 @@ import { checkForUpdates } from './utils/versionCheck.js';
 
 import type { PackageJson } from 'type-fest';
 
+// Add global declaration for our patched toolAgent
+
 sourceMapSupport.install();
 
 const nameToLogIndex = (logLevelName: string) => {

@@ -12,7 +12,10 @@ describe('sleep tool', () => {
   });
 
   it('should sleep for the specified duration', async () => {
-    const sleepPromise = sleepTool.execute({ seconds: 2 }, { logger });
+    const sleepPromise = sleepTool.execute(
+      { seconds: 2 },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+    );
 
     await vi.advanceTimersByTimeAsync(2000);
     const result = await sleepPromise;
@@ -22,13 +25,19 @@ describe('sleep tool', () => {
 
   it('should reject negative sleep duration', async () => {
     await expect(
-      sleepTool.execute({ seconds: -1 }, { logger }),
+      sleepTool.execute(
+        { seconds: -1 },
+        { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      ),
     ).rejects.toThrow();
   });
 
   it('should reject sleep duration over 1 hour', async () => {
     await expect(
-      sleepTool.execute({ seconds: 3601 }, { logger }),
+      sleepTool.execute(
+        { seconds: 3601 },
+        { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      ),
     ).rejects.toThrow();
   });
 });

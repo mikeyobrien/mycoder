@@ -58,14 +58,14 @@ export const browserSessions: Map<string, BrowserSession> = new Map();
 
 // Browser action types
 export type BrowserAction =
-  | { type: 'goto'; url: string }
-  | { type: 'click'; selector: string; selectorType?: SelectorType }
+  | { actionType: 'goto'; url: string }
+  | { actionType: 'click'; selector: string; selectorType?: SelectorType }
   | {
-      type: 'type';
+      actionType: 'type';
       selector: string;
       text: string;
       selectorType?: SelectorType;
     }
-  | { type: 'wait'; selector: string; selectorType?: SelectorType }
-  | { type: 'content' }
-  | { type: 'close' };
+  | { actionType: 'wait'; selector: string; selectorType?: SelectorType }
+  | { actionType: 'content' }
+  | { actionType: 'close' };

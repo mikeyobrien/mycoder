@@ -10,10 +10,7 @@ import { browserSessions } from './types.js';
 
 const parameterSchema = z.object({
   url: z.string().url().optional().describe('Initial URL to navigate to'),
-  headless: z
-    .boolean()
-    .optional()
-    .describe('Run browser in headless mode (default: true)'),
+
   timeout: z
     .number()
     .optional()
@@ -41,8 +38,8 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
   returns: zodToJsonSchema(returnSchema),
 
   execute: async (
-    { url, headless = true, timeout = 30000 },
-    { logger },
+    { url, timeout = 30000 },
+    { logger, headless = true },
   ): Promise<ReturnType> => {
     logger.verbose(`Starting browser session${url ? ` at ${url}` : ''}`);
 

@@ -15,7 +15,12 @@ describe('respawnTool', () => {
   it('should execute and return confirmation message', async () => {
     const result = await respawnTool.execute(
       { respawnContext: 'new context' },
-      { logger: mockLogger },
+      {
+        logger: mockLogger,
+        headless: true,
+        workingDirectory: '.',
+        tokenLevel: 'debug',
+      },
     );
     expect(result).toBe('Respawn initiated');
   });

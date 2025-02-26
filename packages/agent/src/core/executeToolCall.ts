@@ -1,6 +1,6 @@
 import { Logger } from '../utils/logger.js';
 
-import { Tool, ToolCall } from './types.js';
+import { Tool, ToolCall, ToolContext } from './types.js';
 
 const OUTPUT_LIMIT = 12 * 1024; // 10KB limit
 
@@ -10,12 +10,11 @@ const OUTPUT_LIMIT = 12 * 1024; // 10KB limit
 export const executeToolCall = async (
   toolCall: ToolCall,
   tools: Tool[],
-  parentLogger: Logger,
-  options?: { workingDirectory?: string },
+  context: ToolContext,
 ): Promise<string> => {
   const logger = new Logger({
     name: `Tool:${toolCall.name}`,
-    parent: parentLogger,
+    parent: context.logger,
   });
 
   const tool = tools.find((t) => t.name === toolCall.name);
@@ -23,7 +22,10 @@ export const executeToolCall = async (
     throw new Error(`No tool with the name '${toolCall.name}' exists.`);
   }
 
-  const toolContext = { logger };
+  const toolContext = {
+    ...context,
+    logger,
+  };
 
   // for each parameter log it and its name
   if (tool.logParameters) {
@@ -36,10 +38,7 @@ export const executeToolCall = async (
   }
 
   // TODO: validate JSON schema for input
-  const output = await tool.execute(toolCall.input, {
-    logger,
-    workingDirectory: options?.workingDirectory,
-  });
+  const output = await tool.execute(toolCall.input, toolContext);
 
   // for each result log it and its name
   if (tool.logReturns) {

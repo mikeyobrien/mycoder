@@ -67,7 +67,7 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
     'Creates a sub-agent that has access to all tools to solve a specific task',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
-  execute: async (params, { logger }) => {
+  execute: async (params, context) => {
     // Validate parameters
     const { description, goal, projectContext, fileContext } =
       parameterSchema.parse(params);
@@ -100,7 +100,11 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
       ...subAgentConfig,
     };
 
-    const result = await toolAgent(prompt, tools, logger, config);
+    const result = await toolAgent(prompt, tools, config, {
+      ...context,
+      workingDirectory:
+        fileContext?.workingDirectory ?? context.workingDirectory,
+    });
     return result.result; // Return the result string directly
   },
   logParameters: (input, { logger }) => {

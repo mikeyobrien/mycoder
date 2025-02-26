@@ -10,7 +10,7 @@ describe('shellExecute', () => {
   it('should execute shell commands', async () => {
     const { stdout } = await shellExecuteTool.execute(
       { command: "echo 'test'", description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(stdout).toContain('test');
   });
@@ -18,7 +18,7 @@ describe('shellExecute', () => {
   it('should handle command errors', async () => {
     const { error } = await shellExecuteTool.execute(
       { command: 'nonexistentcommand', description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(error).toContain('Command failed:');
   });

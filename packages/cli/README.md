@@ -53,6 +53,7 @@ mycoder --promptFile=your-prompt.txt
 - `-i, --interactive`: Run in interactive mode, asking for prompts
 - `-f, --file`: Read prompt from a specified file
 - `--log`: Set log level (info, verbose, warn, error)
+- `--tokenUsage`: Output token usage at info log level
 - `-h, --help`: Show help
 - `-V, --version`: Show version
 

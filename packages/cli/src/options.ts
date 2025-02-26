@@ -4,6 +4,7 @@ export type SharedOptions = {
   readonly log: LogLevel;
   readonly interactive: boolean;
   readonly file?: string;
+  readonly tokenUsage?: boolean;
 };
 
 export const sharedOptions = {
@@ -24,5 +25,10 @@ export const sharedOptions = {
     type: 'string',
     alias: 'f',
     description: 'Read prompt from a file',
+  } as const,
+  tokenUsage: {
+    type: 'boolean',
+    description: 'Output token usage at info log level',
+    default: false,
   } as const,
 };

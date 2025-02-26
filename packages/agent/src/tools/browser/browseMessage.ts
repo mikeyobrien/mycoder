@@ -9,12 +9,26 @@ import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 // Schema for browser action
 const browserActionSchema = z
   .object({
-    type: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
-    url: z.string().url().optional(),
-    selector: z.string().optional(),
-    selectorType: z.nativeEnum(SelectorType).optional(),
-    text: z.string().optional(),
-    options: z.object({}).optional(),
+    actionType: z.enum(['goto', 'click', 'type', 'wait', 'content', 'close']),
+    url: z
+      .string()
+      .url()
+      .optional()
+      .describe('URL to navigate to if "goto" actionType'),
+    selector: z
+      .string()
+      .optional()
+      .describe('Selector to click if "click" actionType'),
+    selectorType: z
+      .nativeEnum(SelectorType)
+      .optional()
+      .describe('Type of selector if "click" actionType'),
+    text: z
+      .string()
+      .optional()
+      .describe(
+        'Text to type if "type" actionType, for other actionType, this is ignored',
+      ),
   })
   .describe('Browser action to perform');
 
@@ -57,7 +71,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   returns: zodToJsonSchema(returnSchema),
 
   execute: async ({ instanceId, action }, { logger }): Promise<ReturnType> => {
-    logger.verbose(`Executing browser action: ${action.type}`);
+    logger.verbose(`Executing browser action: ${action.actionType}`);
 
     try {
       const session = browserSessions.get(instanceId);
@@ -67,7 +81,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
 
       const { page } = session;
 
-      switch (action.type) {
+      switch (action.actionType) {
         case 'goto': {
           if (!action.url) {
             throw new Error('URL required for goto action');
@@ -136,7 +150,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
 
         default: {
           throw new Error(
-            `Unsupported action type: ${(action as BrowserAction).type}`,
+            `Unsupported action type: ${(action as BrowserAction).actionType}`,
           );
         }
       }
@@ -150,7 +164,9 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   },
 
   logParameters: ({ action, description }, { logger }) => {
-    logger.info(`Performing browser action: ${action.type}, ${description}`);
+    logger.info(
+      `Performing browser action: ${action.actionType}, ${description}`,
+    );
   },
 
   logReturns: (output, { logger }) => {

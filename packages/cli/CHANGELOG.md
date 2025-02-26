@@ -1,5 +1,17 @@
 # mycoder
 
+## 0.2.2
+
+### Patch Changes
+
+- Replaced `--tokenLog` with `--tokenUsage` boolean flag that outputs token usage at info log level when enabled
+
+## 0.2.1
+
+### Patch Changes
+
+- Added `--tokenLog` option to output token usage at specified log level (defaults to debug), helping to monitor token caching effectiveness
+
 ## 0.2.0
 
 ### Minor Changes

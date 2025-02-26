@@ -11,3 +11,6 @@ export class MockLogger extends Logger {
   warn(..._messages: any[]): void {}
   error(..._messages: any[]): void {}
 }
+
+// Export an instance of MockLogger for tests
+export const mockLogger = new MockLogger();
