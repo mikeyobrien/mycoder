@@ -9,6 +9,7 @@ export type ToolContext = {
   workingDirectory: string;
   headless: boolean;
   tokenLevel: TokenLevel;
+  tokenUsage?: boolean;
 };
 
 export type Tool<TParams = Record<string, any>, TReturn = any> = {

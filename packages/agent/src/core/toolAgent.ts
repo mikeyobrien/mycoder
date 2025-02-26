@@ -238,7 +238,7 @@ export const toolAgent = async (
   config = CONFIG,
   context: ToolContext,
 ): Promise<ToolAgentResult> => {
-  const { logger, tokenLevel } = context;
+  const { logger, tokenLevel, tokenUsage } = context;
 
   logger.verbose('Starting agent execution');
   logger.verbose('Initial prompt:', initialPrompt);
@@ -335,7 +335,9 @@ export const toolAgent = async (
       logger.info(assistantMessage);
     }
 
-    logger[tokenLevel](
+    // Use the appropriate log level based on tokenUsage flag
+    const logLevel = tokenUsage ? 'info' : tokenLevel;
+    logger[logLevel](
       chalk.blue(`[Token Usage/Message] ${getTokenString(tokenPerMessage)}`),
     );
 
@@ -365,7 +367,9 @@ export const toolAgent = async (
         tokens,
         interactions,
       };
-      logger[tokenLevel](
+      // Use the appropriate log level based on tokenUsage flag
+      const logLevel = tokenUsage ? 'info' : tokenLevel;
+      logger[logLevel](
         chalk.blueBright(`[Token Usage/Agent] ${getTokenString(tokens)}`),
       );
       return result;
@@ -378,7 +382,9 @@ export const toolAgent = async (
     tokens,
     interactions,
   };
-  logger[tokenLevel](
+  // Use the appropriate log level based on tokenUsage flag
+  const logLevel = tokenUsage ? 'info' : tokenLevel;
+  logger[logLevel](
     chalk.blueBright(`[Token Usage/Agent]  ${getTokenString(tokens)}`),
   );
   return result;

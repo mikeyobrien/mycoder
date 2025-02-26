@@ -33,7 +33,8 @@ export const command: CommandModule<object, DefaultArgs> = {
     const logger = new Logger({ name: 'Default' });
     const packageInfo = getPackageInfo();
 
-    const tokenLevel = (argv.tokenLog as TokenLevel) ?? 'debug';
+    // Use 'info' log level for token logging when tokenUsage is enabled, otherwise use 'debug'
+    const tokenLevel: TokenLevel = argv.tokenUsage ? 'info' : 'debug';
 
     logger.info(
       `MyCoder v${packageInfo.version} - AI-powered coding assistant`,
@@ -125,6 +126,7 @@ export const command: CommandModule<object, DefaultArgs> = {
         headless: true,
         workingDirectory: '.',
         tokenLevel,
+        tokenUsage: argv.tokenUsage,
       });
       const output =
         typeof result.result === 'string'
