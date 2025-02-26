@@ -7,6 +7,7 @@ import {
   Logger,
   getTools,
   getAnthropicApiKeyError,
+  TokenLevel,
 } from 'mycoder-agent';
 
 import { SharedOptions } from '../options.js';
@@ -31,6 +32,8 @@ export const command: CommandModule<object, DefaultArgs> = {
   handler: async (argv) => {
     const logger = new Logger({ name: 'Default' });
     const packageInfo = getPackageInfo();
+
+    const tokenLevel = (argv.tokenLog as TokenLevel) ?? 'debug';
 
     logger.info(
       `MyCoder v${packageInfo.version} - AI-powered coding assistant`,
@@ -116,7 +119,13 @@ export const command: CommandModule<object, DefaultArgs> = {
       ].join('\n');
 
       const tools = getTools();
-      const result = await toolAgent(prompt, tools, logger);
+
+      const result = await toolAgent(prompt, tools, undefined, {
+        logger,
+        headless: true,
+        workingDirectory: '.',
+        tokenLevel,
+      });
       const output =
         typeof result.result === 'string'
           ? result.result

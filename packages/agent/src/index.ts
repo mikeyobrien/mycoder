@@ -24,7 +24,6 @@ export * from './tools/interaction/subAgent.js';
 export * from './tools/interaction/userPrompt.js';
 
 // Core
-export * from './core/toolContext.js';
 export * from './core/executeToolCall.js';
 export * from './core/types.js';
 export * from './core/toolAgent.js';

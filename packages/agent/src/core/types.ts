@@ -2,9 +2,13 @@ import { JsonSchema7Type } from 'zod-to-json-schema';
 
 import { Logger } from '../utils/logger.js';
 
+export type TokenLevel = 'debug' | 'verbose' | 'info' | 'warn' | 'error';
+
 export type ToolContext = {
   logger: Logger;
-  workingDirectory?: string;
+  workingDirectory: string;
+  headless: boolean;
+  tokenLevel: TokenLevel;
 };
 
 export type Tool<TParams = Record<string, any>, TReturn = any> = {
@@ -37,11 +41,6 @@ export type ToolUseContent = {
 export type AssistantMessage = {
   role: 'assistant';
   content: (TextContent | ToolUseContent)[];
-  tokenUsage?: {
-    promptTokens: number;
-    completionTokens: number;
-    totalTokens: number;
-  };
 };
 
 export type ToolResultContent = {

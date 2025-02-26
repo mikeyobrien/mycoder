@@ -1,25 +1,30 @@
 import { execSync } from 'child_process';
 
 import Anthropic from '@anthropic-ai/sdk';
+import { ContentBlockParam } from '@anthropic-ai/sdk/resources/messages/messages.js';
+import chalk from 'chalk';
 
 import { getAnthropicApiKeyError } from '../utils/errors.js';
-import { Logger } from '../utils/logger.js';
 
 import { executeToolCall } from './executeToolCall.js';
+import {
+  addTokenUsage,
+  getTokenString,
+  getTokenUsage,
+  TokenUsage,
+} from './tokens.js';
 import {
   Tool,
   TextContent,
   ToolUseContent,
   ToolResultContent,
   Message,
+  ToolContext,
 } from './types.js';
 
 export interface ToolAgentResult {
   result: string;
-  tokens: {
-    input: number;
-    output: number;
-  };
+  tokens: TokenUsage;
   interactions: number;
 }
 
@@ -116,12 +121,13 @@ async function executeTools(
   toolCalls: ToolUseContent[],
   tools: Tool[],
   messages: Message[],
-  logger: Logger,
-  workingDirectory?: string,
+  context: ToolContext,
 ): Promise<ToolCallResult & { respawn?: { context: string } }> {
   if (toolCalls.length === 0) {
     return { sequenceCompleted: false, toolResults: [] };
   }
+
+  const { logger } = context;
 
   logger.verbose(`Executing ${toolCalls.length} tool calls`);
 
@@ -147,9 +153,7 @@ async function executeTools(
     toolCalls.map(async (call) => {
       let toolResult = '';
       try {
-        toolResult = await executeToolCall(call, tools, logger, {
-          workingDirectory,
-        });
+        toolResult = await executeToolCall(call, tools, context);
       } catch (error: any) {
         toolResult = `Error: Exception thrown during tool execution.  Type: ${error.constructor.name}, Message: ${error.message}`;
       }
@@ -171,7 +175,10 @@ async function executeTools(
   const sequenceCompleted = results.some((r) => r.isComplete);
   const completionResult = results.find((r) => r.isComplete)?.content;
 
-  messages.push({ role: 'user', content: toolResults });
+  messages.push({
+    role: 'user',
+    content: toolResults,
+  });
 
   if (sequenceCompleted) {
     logger.verbose('Sequence completed', { completionResult });
@@ -180,18 +187,68 @@ async function executeTools(
   return { sequenceCompleted, completionResult, toolResults };
 }
 
+// a function that takes a list of messages and returns a list of messages but with the last message having a cache_control of ephemeral
+function addCacheControlToTools<T>(messages: T[]): T[] {
+  return messages.map((m, i) => ({
+    ...m,
+    ...(i === messages.length - 1
+      ? { cache_control: { type: 'ephemeral' } }
+      : {}),
+  }));
+}
+
+function addCacheControlToContentBlocks(
+  content: ContentBlockParam[],
+): ContentBlockParam[] {
+  return content.map((c, i) => {
+    if (i === content.length - 1) {
+      if (c.type === 'text' || c.type === 'document' || c.type === 'image') {
+        return { ...c, cache_control: { type: 'ephemeral' } };
+      }
+    }
+    return c;
+  });
+}
+function addCacheControlToMessages(
+  messages: Anthropic.Messages.MessageParam[],
+): Anthropic.Messages.MessageParam[] {
+  return messages.map((m, i) => {
+    if (typeof m.content === 'string') {
+      return {
+        ...m,
+        content: [
+          {
+            type: 'text',
+            text: m.content,
+            cache_control: { type: 'ephemeral' },
+          },
+        ] as ContentBlockParam[],
+      };
+    }
+    return {
+      ...m,
+      content: addCacheControlToContentBlocks(m.content),
+    };
+  });
+}
+
 export const toolAgent = async (
   initialPrompt: string,
   tools: Tool[],
-  logger: Logger,
   config = CONFIG,
-  workingDirectory?: string,
+  context: ToolContext,
 ): Promise<ToolAgentResult> => {
+  const { logger, tokenLevel } = context;
+
   logger.verbose('Starting agent execution');
   logger.verbose('Initial prompt:', initialPrompt);
 
-  let totalInputTokens = 0;
-  let totalOutputTokens = 0;
+  let tokens: TokenUsage = {
+    input: 0,
+    inputCacheWrites: 0,
+    inputCacheReads: 0,
+    output: 0,
+  };
   let interactions = 0;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -218,19 +275,31 @@ export const toolAgent = async (
     );
 
     interactions++;
-    const response = await client.messages.create({
+
+    // Create request parameters
+    const requestParams: Anthropic.MessageCreateParams = {
       model: config.model,
       max_tokens: config.maxTokens,
       temperature: config.temperature,
-      messages,
-      system: systemPrompt,
-      tools: tools.map((t) => ({
-        name: t.name,
-        description: t.description,
-        input_schema: t.parameters as Anthropic.Tool.InputSchema,
-      })),
+      messages: addCacheControlToMessages(messages),
+      system: [
+        {
+          type: 'text',
+          text: systemPrompt,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      tools: addCacheControlToTools(
+        tools.map((t) => ({
+          name: t.name,
+          description: t.description,
+          input_schema: t.parameters as Anthropic.Tool.InputSchema,
+        })),
+      ),
       tool_choice: { type: 'auto' },
-    });
+    };
+
+    const response = await client.messages.create(requestParams);
 
     if (!response.content.length) {
       // Instead of treating empty response as completion, remind the agent
@@ -247,14 +316,15 @@ export const toolAgent = async (
       continue;
     }
 
-    totalInputTokens += response.usage.input_tokens;
-    totalOutputTokens += response.usage.output_tokens;
-    logger.verbose(
-      `  Token usage: ${response.usage.input_tokens} input, ${response.usage.output_tokens} output`,
-    );
+    // Track both regular and cached token usage
+    const tokenPerMessage = getTokenUsage(response);
+    tokens = addTokenUsage(tokens, tokenPerMessage);
 
     const { content, toolCalls } = processResponse(response);
-    messages.push({ role: 'assistant', content });
+    messages.push({
+      role: 'assistant',
+      content,
+    });
 
     // Log the assistant's message
     const assistantMessage = content
@@ -265,12 +335,15 @@ export const toolAgent = async (
       logger.info(assistantMessage);
     }
 
+    logger[tokenLevel](
+      chalk.blue(`[Token Usage/Message] ${getTokenString(tokenPerMessage)}`),
+    );
+
     const { sequenceCompleted, completionResult, respawn } = await executeTools(
       toolCalls,
       tools,
       messages,
-      logger,
-      workingDirectory,
+      context,
     );
 
     if (respawn) {
@@ -289,14 +362,11 @@ export const toolAgent = async (
         result:
           completionResult ??
           'Sequence explicitly completed with an empty result',
-        tokens: {
-          input: totalInputTokens,
-          output: totalOutputTokens,
-        },
+        tokens,
         interactions,
       };
-      logger.verbose(
-        `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
+      logger[tokenLevel](
+        chalk.blueBright(`[Token Usage/Agent] ${getTokenString(tokens)}`),
       );
       return result;
     }
@@ -305,14 +375,11 @@ export const toolAgent = async (
   logger.warn('Maximum iterations reached');
   const result = {
     result: 'Maximum sub-agent iterations reach without successful completion',
-    tokens: {
-      input: totalInputTokens,
-      output: totalOutputTokens,
-    },
+    tokens,
     interactions,
   };
-  logger.verbose(
-    `Agent completed with ${result.tokens.input} input tokens, ${result.tokens.output} output tokens in ${result.interactions} interactions`,
+  logger[tokenLevel](
+    chalk.blueBright(`[Token Usage/Agent]  ${getTokenString(tokens)}`),
   );
   return result;
 };

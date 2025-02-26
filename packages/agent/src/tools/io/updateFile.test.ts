@@ -23,7 +23,7 @@ describe('updateFile', () => {
   afterEach(async () => {
     await shellExecuteTool.execute(
       { command: `rm -rf "${testDir}"`, description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
   });
 
@@ -41,7 +41,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Verify return value
@@ -51,7 +51,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(readResult.content).toBe(testContent);
   });
@@ -72,7 +72,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Append content
@@ -85,7 +85,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Verify return value
@@ -95,7 +95,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(readResult.content).toBe(expectedContent);
   });
@@ -117,7 +117,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Update specific text
@@ -131,7 +131,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Verify return value
@@ -141,7 +141,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(readResult.content).toBe(expectedContent);
   });
@@ -162,7 +162,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Attempt update that should fail
@@ -177,7 +177,7 @@ describe('updateFile', () => {
           },
           description: 'test',
         },
-        { logger },
+        { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
       ),
     ).rejects.toThrow('Found 2 occurrences of oldStr, expected exactly 1');
   });
@@ -196,7 +196,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     // Verify return value
@@ -206,7 +206,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: nestedPath, description: 'test' },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(readResult.content).toBe(testContent);
   });

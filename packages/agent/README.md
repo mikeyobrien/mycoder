@@ -36,6 +36,7 @@ Get an API key from https://www.anthropic.com/api
 - Categories: Interaction, I/O, System, Data Management
 - Parallel execution capability
 - Type-safe definitions
+- Input token caching to reduce API costs
 
 ### Agent System
 

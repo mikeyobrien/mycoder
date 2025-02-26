@@ -40,7 +40,7 @@ describe('shellMessageTool', () => {
         description: 'Test interactive process',
         timeout: 50, // Force async mode for interactive process
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     testInstanceId = getInstanceId(startResult);
@@ -52,7 +52,7 @@ describe('shellMessageTool', () => {
         stdin: 'hello world',
         description: 'Test interaction',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(result.stdout).toBe('hello world');
@@ -66,7 +66,7 @@ describe('shellMessageTool', () => {
         instanceId: 'nonexistent-id',
         description: 'Test invalid process',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(result.error).toBeDefined();
@@ -81,7 +81,7 @@ describe('shellMessageTool', () => {
         description: 'Test completion',
         timeout: 0, // Force async mode
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     const instanceId = getInstanceId(startResult);
@@ -94,7 +94,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check completion',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(result.completed).toBe(true);
@@ -110,7 +110,7 @@ describe('shellMessageTool', () => {
         description: 'Test SIGTERM handling',
         timeout: 0, // Force async mode
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     const instanceId = getInstanceId(startResult);
@@ -121,7 +121,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send SIGTERM',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
     expect(result.signaled).toBe(true);
 
@@ -132,7 +132,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check on status',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(result2.completed).toBe(true);
@@ -147,7 +147,7 @@ describe('shellMessageTool', () => {
         description: 'Test signal handling on terminated process',
         timeout: 0, // Force async mode
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     const instanceId = getInstanceId(startResult);
@@ -159,7 +159,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send signal to terminated process',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(result.signaled).toBe(true);
@@ -174,7 +174,7 @@ describe('shellMessageTool', () => {
         description: 'Test signal flag verification',
         timeout: 0, // Force async mode
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     const instanceId = getInstanceId(startResult);
@@ -186,7 +186,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send SIGTERM',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     await sleep(50);
@@ -197,7 +197,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check signal state',
       },
-      { logger },
+      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
     );
 
     expect(checkResult.signaled).toBe(true);

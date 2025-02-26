@@ -101,7 +101,12 @@ describe('toolAgent', () => {
         input: { input: 'test' },
       },
       [mockTool],
-      logger,
+      {
+        logger,
+        headless: true,
+        workingDirectory: '.',
+        tokenLevel: 'debug',
+      },
     );
 
     expect(result.includes('Processed: test')).toBeTruthy();
@@ -116,7 +121,12 @@ describe('toolAgent', () => {
           input: {},
         },
         [mockTool],
-        logger,
+        {
+          logger,
+          headless: true,
+          workingDirectory: '.',
+          tokenLevel: 'debug',
+        },
       ),
     ).rejects.toThrow("No tool with the name 'nonexistentTool' exists.");
   });
@@ -147,7 +157,12 @@ describe('toolAgent', () => {
           input: {},
         },
         [errorTool],
-        logger,
+        {
+          logger,
+          headless: true,
+          workingDirectory: '.',
+          tokenLevel: 'debug',
+        },
       ),
     ).rejects.toThrow('Deliberate failure');
   });
@@ -166,8 +181,13 @@ describe('toolAgent', () => {
     const result = await toolAgent(
       'Test prompt',
       [sequenceCompleteTool],
-      logger,
       testConfig,
+      {
+        logger,
+        headless: true,
+        workingDirectory: '.',
+        tokenLevel: 'debug',
+      },
     );
 
     // Verify that create was called twice (once for empty response, once for completion)
@@ -184,8 +204,13 @@ describe('toolAgent', () => {
     const result = await toolAgent(
       'Test prompt',
       [sequenceCompleteTool],
-      logger,
       testConfig,
+      {
+        logger,
+        headless: true,
+        workingDirectory: '.',
+        tokenLevel: 'debug',
+      },
     );
 
     expect(result.result).toBe('Test complete');
