@@ -1,112 +1,149 @@
-# Contributing
+# Contributing to MyCoder
 
-Key points:
+First off, thank you for considering contributing to MyCoder! It's people like you that make MyCoder such a great tool.
 
-- Run build, test, and lint before submitting changes
-- Use TypeScript types over interfaces
-- Maintain test coverage
-- Keep documentation updated
-- Use the logger system for output
+## Code of Conduct
+
+This project and everyone participating in it is governed by our Code of Conduct. By participating, you are expected to uphold this code.
 
 ## Development Setup
 
-```bash
-# Clone the repository
-git clone https://github.com/bhouston/mycoder.git
+### Prerequisites
 
-# Change directory
-cd mycoder
+- Node.js >= 20.0.0
+- pnpm >= 10.2.1
+- PostgreSQL (for Dashboard)
+- Google Cloud SDK (for cloud features)
+- Git
 
-# Install dependencies
-pnpm install
+### Getting Started
 
-# Create a .env with your API key
-echo "ANTHROPIC_API_KEY=[your-api-key]" > .env
-```
+1. Fork the repository
+2. Clone your fork:
+   ```bash
+   git clone https://github.com/your-username/mycoder-monorepo.git
+   cd mycoder-monorepo
+   ```
+3. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+4. Build all packages:
+   ```bash
+   pnpm build
+   ```
+5. Start development servers:
+   ```bash
+   pnpm dev
+   ```
 
-### Development Commands
+## Project Architecture
 
-- `pnpm run build` - Build the TypeScript code
-- `pnpm start` - Run the application
-- `pnpm test` - Run tests
-- `pnpm run lint` - Lint the code
-- `pnpm run format` - Format the code
-- `pnpm run clean` - Clean build artifacts
+### Monorepo Structure
 
-## Architecture
+- `/packages/*` - All project packages
+  - `agent` - Core AI agent system
+  - `cli` - Command-line interface
 
-### Core Components
+## Development Workflow
 
-1. **Tool System**
+1. Create a new branch for your feature/fix:
 
-   - Modular tools for specific functionalities
-   - Categories: Interaction, I/O, System, Data Management
-   - Parallel execution capability
-   - Type-safe definitions
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-2. **Agent System**
+2. Make your changes, following our coding standards:
 
-   - Main agent for orchestration
-   - Sub-agents for parallel task execution
-   - Anthropic Claude API integration
-   - Hierarchical logging
+   - Use TypeScript for all new code
+   - Follow the existing code style
+   - Add tests for new functionality
+   - Update documentation as needed
 
-3. **Logger System**
-   - Color-coded component output
-   - Hierarchical indentation
-   - Multiple log levels (info, verbose, warn, error)
-   - Structured data logging
+3. Run tests and checks:
 
-## Project Structure
+   ```bash
+   pnpm test        # Run tests
+   pnpm typecheck   # Type checking
+   pnpm lint        # Linting
+   pnpm format      # Code formatting
+   ```
 
-```
-src/
-├── core/           # Core agent and executor logic
-├── interfaces/     # Type definitions and interfaces
-├── tools/         # Tool implementations
-│   ├── interaction/
-│   ├── io/
-│   ├── system/
-│   └── record/
-└── utils/         # Utilities including logger
-```
+4. Commit your changes:
 
-## Coding Style
+   ```bash
+   git commit -m "feat: add your feature description"
+   ```
 
-### Terse and Simple
+   Follow [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
-Favor a terse coding style that focuses on simplicity and readability.
+5. Push to your fork and create a Pull Request
 
-## Prefer Types over Interfaces
+## Package-Specific Guidelines
 
-When writing types please use type rather than interfaces as they are more robust.
+### Agent Development
 
-### Use Logger in Tools/Agents for Output
+- Test all new tools thoroughly
+- Document tool interfaces completely
+- Consider parallel execution opportunities
+- Add comprehensive error handling
 
-The project uses a hierarchical logging system (Logger) that helps distinguish between different agents and tools in the output. The logging system has the following features:
+### CLI Development
 
-- `verbose`: Detailed debug information (dimmed version of agent/tool color)
-- `info`: Normal operational messages (colored according to agent/tool color)
-- `warn`: Warning messages (yellow)
-- `error`: Error messages (red)
+- Follow command naming conventions
+- Include help text for all commands
+- Add examples to documentation
+- Test interactive features thoroughly
 
-## Check Build Works after Changes
+### Dashboard & Website
 
-Ensure that `pnpm run build` works after making changes to the code, otherwise you need to make fixes.
+- Follow component architecture
+- Use existing UI components
+- Add Storybook stories for new components
+- Ensure responsive design
 
-## Keep Tests & Lint & Format Up-to-Date With Changes
+### GitHub Integration
 
-Please add tests when making changes to the code. Try to sensible tests that a senior dev would write, try to avoid useless tests that don't add value.
+- Test webhook handlers thoroughly
+- Document API interactions
+- Follow security best practices
+- Add integration tests
 
-Ensure that the `pnpm test` passes after making changes to the code as well as `pnpm run lint` passes with no warnings or errors. Also run `pnpm run format` to ensure the code is formatted correctly.
+## Testing Guidelines
 
-If a test fails, but it is not clear why, you can add more tests around that test as well as add more verbose messages to the failed test to help you identify the cause. This will both help you and help others going forward.
+1. Write tests for new features
+2. Maintain existing test coverage
+3. Use appropriate testing tools:
+   - Vitest for unit tests
+   - Playwright for E2E tests
+   - Component testing where appropriate
 
-## Keep Documentation Up-to-Date with Changes
+## Documentation
 
-When making changes to the code, please ensure that the documentation in these files says up to date:
+- Update README.md files as needed
+- Document new features and changes
+- Include code examples
+- Update API documentation
 
-- `README.md`
-- `ARCHITECTURE.md`
-- `CONTRIBUTING.md`
-- `TOOLS.md`
+## Getting Help
+
+- Check existing issues and discussions
+- Join our community chat
+- Ask questions in pull requests
+- Reach out to maintainers
+
+## Review Process
+
+1. All changes require review
+2. Address review feedback promptly
+3. Maintain civil and professional discourse
+4. Be patient with the process
+
+## Release Process
+
+1. Maintainers will handle releases
+2. Follow semantic versioning
+3. Update changelog entries
+4. Tag releases appropriately
+
+Thank you for contributing to MyCoder! 👍

@@ -1,78 +1,80 @@
 // eslint.config.js
-import js from '@eslint/js';
-import ts from 'typescript-eslint';
-import prettierRecommended from 'eslint-plugin-prettier/recommended';
-import importPlugin from 'eslint-plugin-import';
-import unusedImports from 'eslint-plugin-unused-imports';
-import pluginPromise from 'eslint-plugin-promise';
+import js from "@eslint/js";
+import pluginImport from "eslint-plugin-import";
+import prettierRecommended from "eslint-plugin-prettier/recommended";
+import pluginPromise from "eslint-plugin-promise";
+import pluginUnusedImports from "eslint-plugin-unused-imports";
+import ts from "typescript-eslint";
 
 export default ts.config(
   js.configs.recommended,
-  ts.configs.recommendedTypeChecked,
+  ts.configs.recommended,
   prettierRecommended,
-  importPlugin.flatConfigs.recommended,
-  pluginPromise.configs['flat/recommended'],
+  pluginPromise.configs["flat/recommended"],
   {
-    languageOptions: {
-      ecmaVersion: 2022,
-      sourceType: 'module',
-      parserOptions: {
-        project: ['./tsconfig.eslint.json'],
-        tsconfigRootDir: import.meta.dirname,
+    plugins: {
+      import: pluginImport,
+      "unused-imports": pluginUnusedImports,
+    },
+    rules: {
+      "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "off", // turned off in favor of unused-imports/no-unused-vars
+      "@typescript-eslint/no-require-imports": "warn",
+
+      // Remove unused imports
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "error",
+        {
+          vars: "all",
+          varsIgnorePattern: "^_",
+          args: "after-used",
+          argsIgnorePattern: "^_",
+        },
+      ],
+
+      // Import organization
+      "import/order": [
+        "error",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "object",
+            "type",
+          ],
+          "newlines-between": "always",
+          alphabetize: { order: "asc", caseInsensitive: true },
+          warnOnUnassignedImports: true,
+        },
+      ],
+      "import/no-duplicates": "error",
+    },
+    settings: {
+      "import/parsers": {
+        "@typescript-eslint/parser": [".ts", ".tsx"],
+      },
+      "import/resolver": {
+        typescript: {
+          alwaysTryTypes: true,
+          project: ["./packages/*/tsconfig.json"],
+        },
       },
     },
-    plugins: {
-      'unused-imports': unusedImports,
-    },
-    files: ['{src,test}/**/*.{js,ts}'],
-    rules: {
-      // Basic code quality rules
-      'no-console': 'off',
-      'prefer-const': 'warn',
-      'no-var': 'warn',
-      eqeqeq: ['warn', 'always'],
-
-      // Light complexity rules
-      complexity: ['warn', { max: 20 }],
-      'max-depth': ['warn', { max: 4 }],
-      'max-lines-per-function': ['warn', { max: 150 }],
-
-      '@typescript-eslint/no-unsafe-assignment': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unsafe-member-access': 'off',
-      '@typescript-eslint/no-unsafe-call': 'off',
-      '@typescript-eslint/no-unsafe-return': 'off',
-      '@typescript-eslint/no-unsafe-argument': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
-      ],
-
-      'import/no-unresolved': 'off',
-      'import/named': 'off',
-      'import/extensions': [
-        'error',
-        'ignorePackages',
-        { js: 'always', ts: 'never' },
-      ],
-
-      'no-unused-vars': 'off', // or "@typescript-eslint/no-unused-vars": "off",
-      'unused-imports/no-unused-imports': 'error',
-
-      'promise/always-return': 'error',
-      'promise/no-return-wrap': 'error',
-      'promise/param-names': 'error',
-      'promise/catch-or-return': 'error',
-      'promise/no-native': 'off',
-      'promise/no-nesting': 'warn',
-      'promise/no-promise-in-callback': 'warn',
-      'promise/no-callback-in-promise': 'warn',
-      'promise/avoid-new': 'off',
-      'promise/no-new-statics': 'error',
-      'promise/no-return-in-finally': 'warn',
-      'promise/valid-params': 'warn',
-      'promise/no-multiple-resolved': 'error',
-    },
+  },
+  {
+    ignores: [
+      "**/dist",
+      "**/_doNotUse",
+      "**/node_modules",
+      "**/.vinxi",
+      "**/.output",
+      "**/pnpm-lock.yaml",
+      "**/routeTree.gen.ts",
+    ],
   },
 );

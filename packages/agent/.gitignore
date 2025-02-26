@@ -1,0 +1,6 @@
+.DS_Store
+node_modules
+serviceAccountKey.json
+.env
+dist
+bhouston-general-hosting-a254cfa6b15a.json
