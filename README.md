@@ -1,168 +1,130 @@
-# MyCoder
+# MyCoder Mono-repository
 
-[![NPM Package][npm]][npm-url]
-[![NPM Downloads][npm-downloads]][npmtrends-url]
-[![CI Status][ci]][ci-url]
-[![Discord][discord]][discord-url]
+An open-source mono-repository containing the MyCoder agent and cli.
 
-## Overview
+!NOTE: To get started with the mycoder agent, [please see the CLI package](packages/cli)
 
-MyCoder is a simple to install, powerful command-line based AI agent system that can perform arbitrary tasks with a particular focus on coding tasks. It uses a modular tool-based architecture that allows it to interact with files, execute commands, make network requests, and spawn sub-agents for parallel task execution.
+## 🚀 Quick Start
 
-Please join the MyCoder.ai discord for support: https://discord.gg/5K6TYrHGHt
+### Prerequisites
 
-![MyCoder Screenshot](./docs/Screenshot1.gif)
+- Node.js >= 20.0.0
+- pnpm >= 10.2.1
+- ANTHROPIC_API_KEY (for AI features)
 
-## WARNING and LIABILITY WAIVER
-
-This tool can do anything on your command line that you ask it to. It can delete files, install software, and even send data to remote servers. It is a powerful tool that should be used with caution. By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool.
-
-## API Key Required
-
-Before using MyCoder, you must have an ANTHROPIC_API_KEY specified either:
-
-- As an environment variable, "export ANTHROPIC_API_KEY=[your-api-key]" or
-- In a .env file in the folder you run `mycoder` from
-
-Get an API key from https://www.anthropic.com/api
-
-## Quick Start
+### Installation
 
 ```bash
-# Install globally
-npm install -g mycoder
+# Install dependencies
+pnpm install
 
-# Start MyCoder with a prompt
-mycoder "fix all build errors and ensure the tests pass"
+# Build all packages
+pnpm build
 
-# Start in interactive mode
-mycoder -i
-
-# Read prompt from a file
-mycoder --promptFile=your-prompt.txt
+# Run locally built cli in interactive mode
+pnpm -f mycoder -i
 ```
 
-## Key Features
+## 📦 Packages
 
-- 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent decision making
-- 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
-- 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
-- 📝 **Self-Modification**: Can modify code, it was built and testing by writing itself
-- 🔍 **Smart Logging**: Hierarchical, color-coded logging system for clear output
-- 👤 **Human Compatible**: Uses README.md, project files and shell commands to build its own context
+All packages are contained in the folder `/packages/*`
 
-### CLI Options
+### [`cli`](packages/cli)
 
-- `[prompt]`: Main prompt text (positional argument)
-- `-i, --interactive`: Run in interactive mode, asking for prompts
-- `-f, --file`: Read prompt from a specified file
-- `--log`: Set log level (info, verbose, warn, error)
-- `-h, --help`: Show help
-- `-V, --version`: Show version
+Command-line interface for AI-powered coding tasks:
 
-## Available Tools
+- Interactive mode
+- File-based prompt support
+- Code migration and refactoring capabilities
 
-To list the current tools that the agent makes use of run:
+### [`agent`](packages/agent)
+
+Core AI agent system powering MyCoder's intelligent features:
+
+- Extensible Tool System
+- Parallel Execution with sub-agents
+- AI-Powered using Anthropic's Claude API
+
+## 🛠 Development
+
+### Common Commands
 
 ```bash
-mycoder tools
+# Development mode
+pnpm dev
+
+# Build all packages
+pnpm build
+
+# Run tests
+pnpm test
+
+# Type checking
+pnpm typecheck
+
+# Linting
+pnpm lint
+
+# Formatting
+pnpm format
+
+# Clean build artifacts
+pnpm clean
+
+# Clean everything including node_modules
+pnpm clean:all
 ```
 
-## Example Use Cases & Prompts
+## 📚 Documentation
 
-MyCoder excels at various software development tasks. Here are some example prompts and use cases:
+Each package contains detailed documentation in its respective README.md file. See individual package directories for:
 
-### Code Migration & Updates
+- Detailed setup instructions
+- API documentation
+- Development guidelines
+- Package-specific commands
 
-```bash
-# Converting test framework
-mycoder "Convert all Jest tests in the src/ directory to Vitest, updating any necessary configuration files and dependencies"
+## 📦 Publishing
 
-# Dependency updates
-mycoder "Update all dependencies to their latest versions, handle any breaking changes, and ensure all tests pass"
-```
+This monorepo uses [Changesets](https://github.com/changesets/changesets) to manage versions and publish packages. The following packages are published to npm:
 
-### Code Refactoring
+- `mycoder` - CLI package
+- `mycoder-agent` - Core agent functionality
 
-```bash
-# Class refactoring
-mycoder "Refactor the UserService class in src/services/UserService.ts to use the repository pattern, update all files that use this class, and ensure tests pass"
+To publish changes:
 
-# API modernization
-mycoder "Convert all callback-based functions in the project to use async/await, update tests accordingly"
-```
+1. Make your code changes
+2. Create a changeset (documents your changes):
 
-### Feature Implementation
+   ```bash
+   pnpm changeset
+   ```
 
-```bash
-# CLI enhancement
-mycoder "Add a new global --debug command line option that enables verbose logging throughout the application"
+3. Select the packages that have changes
+4. Write a clear description of the changes
+5. Commit the generated changeset file
 
-# New functionality
-mycoder "Create a new caching system for API responses using Redis, including configuration options and unit tests"
-```
+When ready to publish:
 
-### Maintenance & Fixes
+1. Update versions based on changesets:
 
-```bash
-# Build fixes
-mycoder "Fix all TypeScript build errors and ensure all tests pass"
+   ```bash
+   pnpm changeset version
+   ```
 
-# Test coverage
-mycoder "Add unit tests for all untested functions in the src/utils directory, aiming for 80% coverage"
-```
+2. Review the changes
+3. Publish packages:
 
-### Documentation
+   ```bash
+   pnpm publish -r
+   ```
 
-```bash
-# Documentation generation
-mycoder "Generate comprehensive JSDoc documentation for all exported functions and update the API documentation in the docs/ directory"
+Note: Both packages are versioned together to ensure compatibility.
 
-# Architecture documentation
-mycoder "Analyze the current codebase and create detailed architecture documentation including component diagrams and data flow"
-```
+## 🤝 Contributing
 
-These examples showcase MyCoder's ability to handle complex software development tasks. The tool uses its understanding of software development best practices, project structure, and coding standards to execute these tasks while maintaining code quality and test coverage.
-
-## Technical Requirements
-
-- Node.js >=18.0.0
-- npm or pnpm
-
-## Contributing
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for our development workflow, coding guidelines, and testing procedures.
-
-## Development Workflow
-
-### Commit Messages
-
-This project uses [Conventional Commits](https://www.conventionalcommits.org/) for commit messages. See [COMMIT_CONVENTION.md](COMMIT_CONVENTION.md) for detailed guidelines.
-
-### CI/CD Pipeline
-
-The project uses GitHub Actions for continuous integration:
-
-- A single CI pipeline automatically builds and tests the code on all branches and pull requests to main
-
-The release process is managed manually using [changesets](https://github.com/changesets/changesets) which:
-
-1. Determines version bumps based on commit messages
-2. Generates changelogs
-
-Releases to GitHub and publishing to npm are performed manually after review.
-
-## License
-
-MIT License
-
-[npm]: https://img.shields.io/npm/v/mycoder
-[npm-downloads]: https://img.shields.io/npm/dw/mycoder
-[npm]: https://img.shields.io/npm/v/mycoder
-[npm-url]: https://www.npmjs.com/package/mycoder
-[npm-downloads]: https://img.shields.io/npm/dw/mycoder
-[npmtrends-url]: https://www.npmtrends.com/mycoder
-[ci]: https://img.shields.io/github/checks-status/bhouston/mycoder/main
-[ci-url]: https://github.com/bhouston/mycoder/actions
-[discord]: https://img.shields.io/discord/1339025847331328000
-[discord-url]: https://discord.gg/5K6TYrHGHt
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request

@@ -1,87 +1,54 @@
 {
-  "name": "mycoder",
-  "description": "A command line tool using agent that can do arbitrary tasks, including coding tasks",
-  "version": "0.1.2",
+  "name": "mycoder-monorepo",
+  "version": "0.0.1",
   "type": "module",
-  "bin": "./bin/cli.js",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "packageManager": "pnpm@10.2.1",
   "engines": {
     "node": ">=18.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/bhouston/mycoder.git"
-  },
-  "homepage": "https://mycoder.ai",
-  "bugs": {
-    "url": "https://github.com/bhouston/mycoder/issues"
-  },
   "scripts": {
-    "start": "node --no-deprecation dist/index.js",
-    "build": "tsc --noEmit && tsc",
-    "build:ci": "tsc",
-    "clean": "rimraf dist",
-    "clean:all": "rimraf dist node_modules",
-    "lint": "eslint \"{src,test}/**/*.{js,ts}\" --fix",
-    "format": "prettier --write .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:ci": "vitest --run --coverage",
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "start": "pnpm -r start",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "eslint . --fix",
+    "format": "prettier . --write",
+    "clean": "pnpm -r clean",
+    "clean:all": "pnpm -r clean:all && rimraf node_modules",
+    "cloc": "npx cloc * --exclude-dir=node_modules,dist,.vinxi,.output",
+    "gcloud-setup": "gcloud auth application-default login && gcloud config set account \"ben@drivecore.ai\" && gcloud config set project drivecore-primary && gcloud config set run/region us-central1",
     "changeset": "changeset",
     "version": "changeset version",
-    "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
+    "release": "changeset publish"
   },
-  "keywords": [
-    "ai",
-    "agent",
-    "mycoder",
-    "swe",
-    "swe-agent",
-    "claude",
-    "auto-coder",
-    "auto-gpt",
-    "typescript",
-    "openai",
-    "automation"
-  ],
-  "author": "Ben Houston",
-  "license": "MIT",
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.36",
-    "@playwright/test": "^1.50.1",
-    "@vitest/browser": "^3.0.5",
-    "chalk": "^5",
-    "dotenv": "^16",
-    "playwright": "^1.50.1",
-    "semver": "^7.7.1",
-    "source-map-support": "^0.5",
-    "uuid": "^11",
-    "yargs": "^17",
-    "yargs-file-commands": "^0.0.19",
-    "zod": "^3",
-    "zod-to-json-schema": "^3"
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
-    "@changesets/cli": "^2",
+    "@changesets/cli": "^2.28.1",
     "@eslint/js": "^9",
-    "@types/node": "^18",
-    "@types/uuid": "^10",
-    "@types/yargs": "^17",
-    "@typescript-eslint/eslint-plugin": "^8",
-    "@typescript-eslint/parser": "^8",
-    "eslint": "^9",
+    "@typescript-eslint/eslint-plugin": "^8.23.0",
+    "@typescript-eslint/parser": "^8.23.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^9",
+    "eslint-import-resolver-typescript": "^3.8.3",
     "eslint-plugin-import": "^2",
     "eslint-plugin-prettier": "^5",
     "eslint-plugin-promise": "^7.2.1",
-    "eslint-plugin-unused-imports": "^4",
-    "prettier": "^3",
-    "rimraf": "^5",
-    "type-fest": "^4",
-    "typescript": "^5",
-    "typescript-eslint": "^8",
-    "vitest": "^3"
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "prettier": "^3.5.1",
+    "typescript-eslint": "^8.23.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@prisma/client",
+      "@prisma/engines",
+      "bcrypt",
+      "esbuild",
+      "msw",
+      "prisma"
+    ]
   }
 }

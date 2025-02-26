@@ -1,0 +1,70 @@
+{
+  "name": "mycoder",
+  "description": "A command line tool using agent that can do arbitrary tasks, including coding tasks",
+  "version": "0.1.3",
+  "type": "module",
+  "bin": "./bin/cli.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "packageManager": "pnpm@10.2.1",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/drivecore/mycoder-monorepo.git"
+  },
+  "homepage": "https://mycoder.ai",
+  "bugs": {
+    "url": "https://github.com/drivecore/mycoder-monorepo/issues"
+  },
+  "scripts": {
+    "start": "node --no-deprecation dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "clean:all": "rimraf dist node_modules",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ci": "vitest --run --coverage",
+    "changeset": "changeset",
+    "version": "changeset version",
+    "prepublishOnly": "pnpm run clean && pnpm run build && pnpm run test"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "mycoder",
+    "swe",
+    "swe-agent",
+    "claude",
+    "auto-coder",
+    "auto-gpt",
+    "typescript",
+    "openai",
+    "automation"
+  ],
+  "author": "Ben Houston",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5",
+    "dotenv": "^16",
+    "mycoder-agent": "workspace:*",
+    "semver": "^7.7.1",
+    "source-map-support": "^0.5",
+    "uuid": "^11",
+    "yargs": "^17",
+    "yargs-file-commands": "^0.0.20",
+    "zod": "^3",
+    "zod-to-json-schema": "^3"
+  },
+  "devDependencies": {
+    "@types/node": "^18",
+    "@types/uuid": "^10",
+    "@types/yargs": "^17",
+    "rimraf": "^5",
+    "type-fest": "^4",
+    "typescript": "^5",
+    "vitest": "^3"
+  }
+}
