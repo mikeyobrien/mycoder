@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import { createInterface } from 'readline/promises';
 
+import chalk from 'chalk';
 import {
   toolAgent,
   Logger,
@@ -9,6 +10,7 @@ import {
 } from 'mycoder-agent';
 
 import { SharedOptions } from '../options.js';
+import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
 import { getPackageInfo } from '../utils/versionCheck.js';
 
 import type { CommandModule, Argv } from 'yargs';
@@ -33,12 +35,29 @@ export const command: CommandModule<object, DefaultArgs> = {
     logger.info(
       `MyCoder v${packageInfo.version} - AI-powered coding assistant`,
     );
-    logger.warn(
-      'WARNING: This tool can do anything on your command line that you ask it to.',
-      'It can delete files, install software, and even send data to remote servers.',
-      'It is a powerful tool that should be used with caution.',
-      'By using this tool, you agree that the authors and contributors are not responsible for any damage that may occur as a result of using this tool.',
-    );
+    if (!hasUserConsented()) {
+      const readline = createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      logger.warn(
+        'This tool can do anything on your command line that you ask it to.',
+        'It can delete files, install software, and even send data to remote servers.',
+        'It is a powerful tool that should be used with caution.',
+        'Do you consent to using this tool at your own risk? (y/N)',
+      );
+
+      const answer = (await readline.question('> ')).trim().toLowerCase();
+      readline.close();
+
+      if (answer === 'y' || answer === 'yes') {
+        saveUserConsent();
+      } else {
+        logger.info('User did not consent. Exiting.');
+        process.exit(0);
+      }
+    }
     try {
       // Early API key check
       if (!process.env.ANTHROPIC_API_KEY) {
@@ -68,8 +87,10 @@ export const command: CommandModule<object, DefaultArgs> = {
         });
 
         try {
-          logger.info(
-            "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
+          console.log(
+            chalk.green(
+              "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
+            ),
           );
           prompt = await readline.question('\n> ');
         } finally {
