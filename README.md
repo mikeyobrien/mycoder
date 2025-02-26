@@ -47,7 +47,7 @@ mycoder --promptFile=your-prompt.txt
 - 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent decision making
 - 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
 - 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
-- 📝 **Self-Modification**: Can modify code, it was built and testing by writing itself
+- 📝 **Self-Modification**: Can modify code, it was built and tested by writing itself
 - 🔍 **Smart Logging**: Hierarchical, color-coded logging system for clear output
 - 👤 **Human Compatible**: Uses README.md, project files and shell commands to build its own context
 
