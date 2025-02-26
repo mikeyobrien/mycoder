@@ -15,8 +15,7 @@ const parameterSchema = z.object({
     .describe('The main objective that the sub-agent needs to achieve'),
   projectContext: z
     .string()
-    .optional()
-    .describe('Additional context about the project or environment'),
+    .describe('Context about the problem or environment'),
   fileContext: z
     .object({
       workingDirectory: z
@@ -24,10 +23,10 @@ const parameterSchema = z.object({
         .optional()
         .describe('The directory where the sub-agent should operate'),
       relevantFiles: z
-        .array(z.string())
+        .string()
         .optional()
         .describe(
-          'List of files or regular expressions that are relevant to the task',
+          'A list of files, which may include ** or * wildcard characters',
         ),
     })
     .describe(
@@ -77,15 +76,14 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
     const prompt = [
       `Description: ${description}`,
       `Goal: ${goal}`,
-      projectContext ? `- Project Context: ${projectContext}` : '',
-
+      `Project Context: ${projectContext}`,
       fileContext
         ? `\nContext:\n${[
             fileContext.workingDirectory
               ? `- Working Directory: ${fileContext.workingDirectory}`
               : '',
-            fileContext.relevantFiles?.length
-              ? `- Relevant Files:\n  ${fileContext.relevantFiles.map((f) => `- ${f}`).join('\n  ')}`
+            fileContext.relevantFiles
+              ? `- Relevant Files:\n  ${fileContext.relevantFiles}`
               : '',
           ]
             .filter(Boolean)
