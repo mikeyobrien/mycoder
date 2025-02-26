@@ -9,6 +9,13 @@
 
 MyCoder is a simple to install, powerful command-line AI agent that can perform arbitrary tasks with a particular focus on coding tasks. It uses the [mycoder-agent](https://www.npmjs.com/package/mycoder-agent) package to provide AI-powered automation capabilities.
 
+- 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent decision making
+- 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
+- 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
+- 📝 **Self-Modification**: Can modify code, it was built and tested by writing itself
+- 🔍 **Smart Logging**: Hierarchical, color-coded logging system for clear output
+- 👤 **Human Compatible**: Uses README.md, project files and shell commands to build its own context
+
 Please join the MyCoder.ai discord for support: https://discord.gg/5K6TYrHGHt
 
 ## WARNING and LIABILITY WAIVER

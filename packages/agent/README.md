@@ -11,6 +11,8 @@ The MyCoder Agent system is built around a few key concepts:
 - 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent decision making
 - 🔍 **Smart Logging**: Hierarchical, color-coded logging system for clear output
 
+Please join the MyCoder.ai discord for support: https://discord.gg/5K6TYrHGHt
+
 ## Installation
 
 ```bash
