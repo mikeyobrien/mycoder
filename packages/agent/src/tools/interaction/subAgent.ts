@@ -13,7 +13,11 @@ const parameterSchema = z.object({
   goal: z
     .string()
     .describe('The main objective that the sub-agent needs to achieve'),
-  context: z
+  projectContext: z
+    .string()
+    .optional()
+    .describe('Additional context about the project or environment'),
+  fileContext: z
     .object({
       workingDirectory: z
         .string()
@@ -25,11 +29,10 @@ const parameterSchema = z.object({
         .describe(
           'List of files or regular expressions that are relevant to the task',
         ),
-      projectContext: z
-        .string()
-        .optional()
-        .describe('Additional context about the project or environment'),
     })
+    .describe(
+      'When working with files and directories, it is best to be very specific to avoid sub-agents making incorrect assumptions',
+    )
     .optional(),
 });
 
@@ -67,21 +70,22 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
   returns: zodToJsonSchema(returnSchema),
   execute: async (params, { logger }) => {
     // Validate parameters
-    const { goal, context } = parameterSchema.parse(params);
+    const { description, goal, projectContext, fileContext } =
+      parameterSchema.parse(params);
 
     // Construct a well-structured prompt
     const prompt = [
+      `Description: ${description}`,
       `Goal: ${goal}`,
-      context
+      projectContext ? `- Project Context: ${projectContext}` : '',
+
+      fileContext
         ? `\nContext:\n${[
-            context.workingDirectory
-              ? `- Working Directory: ${context.workingDirectory}`
+            fileContext.workingDirectory
+              ? `- Working Directory: ${fileContext.workingDirectory}`
               : '',
-            context.relevantFiles?.length
-              ? `- Relevant Files:\n  ${context.relevantFiles.map((f) => `- ${f}`).join('\n  ')}`
-              : '',
-            context.projectContext
-              ? `- Project Context: ${context.projectContext}`
+            fileContext.relevantFiles?.length
+              ? `- Relevant Files:\n  ${fileContext.relevantFiles.map((f) => `- ${f}`).join('\n  ')}`
               : '',
           ]
             .filter(Boolean)
