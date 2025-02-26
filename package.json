@@ -20,7 +20,8 @@
     "gcloud-setup": "gcloud auth application-default login && gcloud config set account \"ben@drivecore.ai\" && gcloud config set project drivecore-primary && gcloud config set run/region us-central1",
     "changeset": "changeset",
     "version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "cli": "cd packages/cli && node --no-deprecation bin/cli.js"
   },
   "dependencies": {
     "rimraf": "^6.0.1"

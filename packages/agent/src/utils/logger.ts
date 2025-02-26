@@ -1,4 +1,4 @@
-import chalk, { ChalkInstance } from "chalk";
+import chalk, { ChalkInstance } from 'chalk';
 
 export enum LogLevel {
   debug = 0,
@@ -34,7 +34,7 @@ export const BasicLoggerStyler = {
   ): string =>
     level === LogLevel.debug || level === LogLevel.verbose
       ? chalk.dim(prefix)
-      : "",
+      : '',
 };
 
 const loggerStyle = BasicLoggerStyler;
@@ -73,17 +73,17 @@ export class Logger {
       currentParent = currentParent.parent;
     }
 
-    this.prefix = " ".repeat(offsetSpaces);
+    this.prefix = ' '.repeat(offsetSpaces);
   }
 
   private toStrings(messages: unknown[]) {
     return messages
       .map((message) =>
-        typeof message === "object"
+        typeof message === 'object'
           ? JSON.stringify(message, null, 2)
           : String(message),
       )
-      .join(" ");
+      .join(' ');
   }
 
   private formatMessages(level: LogLevel, messages: unknown[]): string {
@@ -95,10 +95,15 @@ export class Logger {
       this.nesting,
     );
 
+    let combinedPrefix = `${this.prefix}${prefix}`;
+    if (combinedPrefix.length > 0) {
+      combinedPrefix += ' ';
+    }
+
     return formatted
-      .split("\n")
-      .map((line) => `${this.prefix}${prefix} ${messageColor(line)}`)
-      .join("\n");
+      .split('\n')
+      .map((line) => `${combinedPrefix}${messageColor(line)}`)
+      .join('\n');
   }
 
   debug(...messages: unknown[]): void {

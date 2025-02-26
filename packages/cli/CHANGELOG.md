@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.2.0
+
+### Minor Changes
+
+- Make the warning a consent based single show to reduce distractions. Made the initial user prompt green to better conform to the user prompts from the agents being green.
+
 ## 0.1.3
 
 ### Patch Changes
