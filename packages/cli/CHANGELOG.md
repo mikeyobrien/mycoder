@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.2.2
+
+### Patch Changes
+
+- Fix version check to handle packages in the future (like during dev)
+
 ## 0.2.1
 
 ### Patch Changes
