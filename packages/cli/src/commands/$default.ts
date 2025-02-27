@@ -14,7 +14,8 @@ import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
 import { SharedOptions } from '../options.js';
 import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
-import { getPackageInfo } from '../utils/versionCheck.js';
+import { nameToLogIndex } from '../utils/nameToLogIndex.js';
+import { checkForUpdates, getPackageInfo } from '../utils/versionCheck.js';
 
 import type { CommandModule, Argv } from 'yargs';
 
@@ -22,7 +23,7 @@ interface DefaultArgs extends SharedOptions {
   prompt?: string;
 }
 
-export const command: CommandModule<object, DefaultArgs> = {
+export const command: CommandModule<SharedOptions, DefaultArgs> = {
   command: '* [prompt]',
   describe: 'Execute a prompt or start interactive mode',
   builder: (yargs: Argv<object>): Argv<DefaultArgs> => {
@@ -32,12 +33,19 @@ export const command: CommandModule<object, DefaultArgs> = {
     }) as Argv<DefaultArgs>;
   },
   handler: async (argv) => {
-    const logger = new Logger({ name: 'Default' });
+    const logger = new Logger({
+      name: 'Default',
+      logLevel: nameToLogIndex(argv.logLevel),
+    });
+
     const packageInfo = getPackageInfo();
 
     logger.info(
       `MyCoder v${packageInfo.version} - AI-powered coding assistant`,
     );
+
+    await checkForUpdates(logger);
+
     if (!hasUserConsented()) {
       const readline = createInterface({
         input: process.stdin,
