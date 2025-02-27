@@ -43,6 +43,7 @@ export type LoggerProps = {
   name: string;
   logLevel?: LogLevel;
   parent?: Logger;
+  customPrefix?: string;
 };
 
 export class Logger {
@@ -52,12 +53,15 @@ export class Logger {
   private readonly parent?: Logger;
   private readonly name: string;
   private readonly nesting: number;
+  private readonly customPrefix?: string;
 
   constructor({
     name,
     parent = undefined,
     logLevel = parent?.logLevel ?? LogLevel.info,
+    customPrefix,
   }: LoggerProps) {
+    this.customPrefix = customPrefix;
     this.name = name;
     this.parent = parent;
     this.logLevel = logLevel;
@@ -96,7 +100,9 @@ export class Logger {
     );
 
     let combinedPrefix = `${this.prefix}${prefix}`;
-    if (combinedPrefix.length > 0) {
+    if (this.customPrefix) {
+      combinedPrefix = `${this.prefix}${this.customPrefix} `;
+    } else if (combinedPrefix.length > 0) {
       combinedPrefix += ' ';
     }
 

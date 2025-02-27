@@ -71,6 +71,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: 'shellStart',
   description:
     'Starts a shell command with fast sync mode (default 100ms timeout) that falls back to async mode for longer-running commands',
+  logPrefix: '💻',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
@@ -193,9 +194,9 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   },
   logReturns: (output, { logger }) => {
     if (output.mode === 'async') {
-      logger.info(`🖥️ Process started with instance ID: ${output.instanceId}`);
+      logger.info(`Process started with instance ID: ${output.instanceId}`);
     } else {
-      logger.info(`🖥️ Process completed with exit code: ${output.exitCode}`);
+      logger.info(`Process completed with exit code: ${output.exitCode}`);
     }
   },
 };

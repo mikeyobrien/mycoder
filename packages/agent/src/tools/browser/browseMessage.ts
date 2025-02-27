@@ -66,6 +66,7 @@ const getSelector = (selector: string, type?: SelectorType): string => {
 
 export const browseMessageTool: Tool<Parameters, ReturnType> = {
   name: 'browseMessage',
+  logPrefix: '🏄',
   description: 'Performs actions in an active browser session',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
@@ -165,7 +166,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
 
   logParameters: ({ action, description }, { logger }) => {
     logger.info(
-      `🏄 Performing browser action: ${action.actionType}, ${description}`,
+      `Performing browser action: ${action.actionType}, ${description}`,
     );
   },
 

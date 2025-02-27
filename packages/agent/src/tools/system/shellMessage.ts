@@ -76,6 +76,7 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
   name: 'shellMessage',
   description:
     'Interacts with a running shell process, sending input and receiving output',
+  logPrefix: '💻',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
@@ -167,7 +168,7 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
   logParameters: (input, { logger }) => {
     const processState = processStates.get(input.instanceId);
     logger.info(
-      `🖥️ Interacting with shell command "${processState ? processState.command : '<unknown instanceId>'}", ${input.description}`,
+      `Interacting with shell command "${processState ? processState.command : '<unknown instanceId>'}", ${input.description}`,
     );
   },
   logReturns: () => {},

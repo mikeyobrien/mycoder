@@ -47,6 +47,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 export const readFileTool: Tool<Parameters, ReturnType> = {
   name: 'readFile',
   description: 'Reads file content within size limits and optional range',
+  logPrefix: '📖',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
@@ -96,7 +97,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
     };
   },
   logParameters: (input, { logger }) => {
-    logger.info(` 📖 Reading "${input.path}", ${input.description}`);
+    logger.info(`Reading "${input.path}", ${input.description}`);
   },
   logReturns: () => {},
 };

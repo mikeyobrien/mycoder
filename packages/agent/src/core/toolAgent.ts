@@ -23,7 +23,7 @@ export interface ToolAgentResult {
 }
 
 const CONFIG = {
-  maxIterations: 50,
+  maxIterations: 200,
   model: 'claude-3-7-sonnet-latest',
   maxTokens: 4096,
   temperature: 0.7,

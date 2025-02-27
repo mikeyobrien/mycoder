@@ -8,6 +8,7 @@ export const respawnTool: Tool = {
   name: 'respawn',
   description:
     'Resets the agent context to just the system prompt and provided context',
+  logPrefix: '🔄',
   parameters: {
     type: 'object',
     properties: {

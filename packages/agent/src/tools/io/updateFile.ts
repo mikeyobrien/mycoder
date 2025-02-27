@@ -44,6 +44,7 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
   name: 'updateFile',
   description:
     'Creates a file or updates a file by rewriting, patching, or appending content',
+  logPrefix: '📝',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
@@ -85,7 +86,7 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
   logParameters: (input, { logger }) => {
     const isFile = fs.existsSync(input.path);
     logger.info(
-      `${isFile ? '✏️ Modifying' : '✏️ Creating'} "${input.path}", ${input.description}`,
+      `${isFile ? 'Modifying' : '✏️ Creating'} "${input.path}", ${input.description}`,
     );
   },
   logReturns: () => {},

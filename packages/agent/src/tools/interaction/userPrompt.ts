@@ -16,6 +16,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 export const userPromptTool: Tool<Parameters, ReturnType> = {
   name: 'userPrompt',
   description: 'Prompts the user for input and returns their response',
+  logPrefix: '🗣️',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async ({ prompt }, { logger }) => {

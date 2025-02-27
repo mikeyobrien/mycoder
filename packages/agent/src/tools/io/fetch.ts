@@ -37,6 +37,7 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
   name: 'fetch',
   description:
     'Executes HTTP requests using native Node.js fetch API, for using APIs, not for browsing the web.',
+  logPrefix: '🌐',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: async (
@@ -93,12 +94,12 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
   logParameters(params, { logger }) {
     const { method, url, params: queryParams } = params;
     logger.info(
-      `🌐 ${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams).toString()}` : ''} ==>`,
+      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams).toString()}` : ''}`,
     );
   },
 
   logReturns: (result, { logger }) => {
     const { status, statusText } = result;
-    logger.info(`🌐 ==> ${status} ${statusText}`);
+    logger.info(`${status} ${statusText}`);
   },
 };

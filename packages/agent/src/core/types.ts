@@ -18,6 +18,7 @@ export type Tool<TParams = Record<string, any>, TReturn = any> = {
   description: string;
   parameters: JsonSchema7Type;
   returns: JsonSchema7Type;
+  logPrefix?: string;
 
   logParameters?: (params: TParams, context: ToolContext) => void;
   logReturns?: (returns: TReturn, context: ToolContext) => void;
