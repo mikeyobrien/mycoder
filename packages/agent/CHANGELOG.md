@@ -1,5 +1,11 @@
 # mycoder-agent
 
+## 0.3.0
+
+### Minor Changes
+
+- Better browser experience: show browser, take over user session, content filter, robustness improvements to browsing.
+
 ## 0.2.1
 
 ### Patch Changes

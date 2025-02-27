@@ -5,11 +5,14 @@ import { getTools } from '../../src/tools/getTools.js';
 import { MockLogger } from '../utils/mockLogger.js';
 
 import { TokenTracker } from './tokens.js';
+import { ToolContext } from './types.js';
 
-const toolContext = {
+const toolContext: ToolContext = {
   logger: new MockLogger(),
   headless: true,
   workingDirectory: '.',
+  userSession: false,
+  pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
 };
 // Mock Anthropic SDK

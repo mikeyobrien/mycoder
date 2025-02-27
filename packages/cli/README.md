@@ -54,6 +54,8 @@ mycoder --promptFile=your-prompt.txt
 - `-f, --file`: Read prompt from a specified file
 - `--log`: Set log level (info, verbose, warn, error)
 - `--tokenUsage`: Output token usage at info log level
+- `--headless`: Use browser in headless mode with no UI showing (default: true)
+- `--userSession`: Use user's existing browser session instead of sandboxed session (default: false)
 - `-h, --help`: Show help
 - `-V, --version`: Show version
 

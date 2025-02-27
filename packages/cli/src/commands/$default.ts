@@ -9,6 +9,7 @@ import {
   getAnthropicApiKeyError,
   userPrompt,
   LogLevel,
+  subAgentTool,
 } from 'mycoder-agent';
 import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
@@ -36,6 +37,7 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
     const logger = new Logger({
       name: 'Default',
       logLevel: nameToLogIndex(argv.logLevel),
+      customPrefix: subAgentTool.logPrefix,
     });
 
     const packageInfo = getPackageInfo();
@@ -128,6 +130,8 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       const result = await toolAgent(prompt, tools, undefined, {
         logger,
         headless: argv.headless ?? true,
+        userSession: argv.userSession ?? false,
+        pageFilter: argv.pageFilter ?? 'none',
         workingDirectory: '.',
         tokenTracker,
       });

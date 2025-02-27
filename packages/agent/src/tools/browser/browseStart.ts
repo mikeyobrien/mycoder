@@ -5,12 +5,13 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import { Tool } from '../../core/types.js';
 import { errorToString } from '../../utils/errorToString.js';
+import { sleep } from '../../utils/sleep.js';
 
+import { filterPageContent } from './filterPageContent.js';
 import { browserSessions } from './types.js';
 
 const parameterSchema = z.object({
   url: z.string().url().optional().describe('Initial URL to navigate to'),
-
   timeout: z
     .number()
     .optional()
@@ -40,23 +41,37 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
 
   execute: async (
     { url, timeout = 30000 },
-    { logger, headless = true },
+    { logger, headless, userSession, pageFilter },
   ): Promise<ReturnType> => {
     logger.verbose(`Starting browser session${url ? ` at ${url}` : ''}`);
+    logger.verbose(
+      `User session mode: ${userSession ? 'enabled' : 'disabled'}`,
+    );
+    logger.verbose(`Webpage processing mode: ${pageFilter}`);
 
     try {
       const instanceId = uuidv4();
 
       // Launch browser
-      const browser = await chromium.launch({
+      const launchOptions = {
         headless,
-      });
+      };
+
+      // Use system Chrome installation if userSession is true
+      if (userSession) {
+        logger.verbose('Using system Chrome installation');
+        // For Chrome, we use the channel option to specify Chrome
+        launchOptions['channel'] = 'chrome';
+      }
+
+      const browser = await chromium.launch(launchOptions);
 
       // Create new context with default settings
       const context = await browser.newContext({
         viewport: null,
         userAgent:
           'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+        serviceWorkers: 'block', // Block service workers which can cause continuous network activity
       });
 
       // Create new page
@@ -80,11 +95,42 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
       // Navigate to URL if provided
       let content = '';
       if (url) {
-        await page.goto(url, { waitUntil: 'networkidle' });
-        content = await page.content();
+        try {
+          // Try with 'domcontentloaded' first which is more reliable than 'networkidle'
+          logger.verbose(
+            `Navigating to ${url} with 'domcontentloaded' waitUntil`,
+          );
+          await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
+          await sleep(3000);
+          content = await filterPageContent(page, pageFilter);
+          logger.verbose(`Content: ${content}`);
+          logger.verbose('Navigation completed with domcontentloaded strategy');
+        } catch (error) {
+          // If that fails, try with no waitUntil option at all (most basic)
+          logger.warn(
+            `Failed with domcontentloaded strategy: ${errorToString(error)}`,
+          );
+          logger.verbose(
+            `Retrying navigation to ${url} with no waitUntil option`,
+          );
+
+          try {
+            await page.goto(url, { timeout });
+            await sleep(3000);
+            content = await filterPageContent(page, pageFilter);
+            logger.verbose(`Content: ${content}`);
+            logger.verbose('Navigation completed with basic strategy');
+          } catch (innerError) {
+            logger.error(
+              `Failed with basic navigation strategy: ${errorToString(innerError)}`,
+            );
+            throw innerError; // Re-throw to be caught by outer catch block
+          }
+        }
       }
 
       logger.verbose('Browser session started successfully');
+      logger.verbose(`Content length: ${content.length} characters`);
 
       return {
         instanceId,
@@ -101,9 +147,9 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
     }
   },
 
-  logParameters: ({ url, description }, { logger }) => {
+  logParameters: ({ url, description }, { logger, pageFilter = 'simple' }) => {
     logger.info(
-      `Starting browser session${url ? ` at ${url}` : ''}, ${description}`,
+      `Starting browser session${url ? ` at ${url}` : ''} with ${pageFilter} processing, ${description}`,
     );
   },
 

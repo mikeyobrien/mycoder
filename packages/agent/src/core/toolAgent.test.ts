@@ -5,12 +5,14 @@ import { MockLogger } from '../utils/mockLogger.js';
 import { executeToolCall } from './executeToolCall.js';
 import { TokenTracker } from './tokens.js';
 import { toolAgent } from './toolAgent.js';
-import { Tool } from './types.js';
+import { Tool, ToolContext } from './types.js';
 
-const toolContext = {
+const toolContext: ToolContext = {
   logger: new MockLogger(),
   headless: true,
   workingDirectory: '.',
+  userSession: false,
+  pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
 };
 

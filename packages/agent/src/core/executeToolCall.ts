@@ -23,7 +23,7 @@ export const executeToolCall = async (
     customPrefix: tool.logPrefix,
   });
 
-  const toolContext = {
+  const toolContext: ToolContext = {
     ...context,
     logger,
   };
