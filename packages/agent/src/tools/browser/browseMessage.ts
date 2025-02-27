@@ -3,7 +3,9 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import { Tool } from '../../core/types.js';
 import { errorToString } from '../../utils/errorToString.js';
+import { sleep } from '../../utils/sleep.js';
 
+import { getRenderedDOM } from './getRenderedDOM.js';
 import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 
 // Schema for browser action
@@ -111,7 +113,8 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
               `Navigating to ${action.url} with 'domcontentloaded' waitUntil`,
             );
             await page.goto(action.url, { waitUntil: 'domcontentloaded' });
-            const content = await page.content();
+            await sleep(3000);
+            const content = await getRenderedDOM(page);
             logger.verbose(
               'Navigation completed with domcontentloaded strategy',
             );
@@ -128,7 +131,8 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
 
             try {
               await page.goto(action.url);
-              const content = await page.content();
+              await sleep(3000);
+              const content = await getRenderedDOM(page);
               logger.verbose('Navigation completed with basic strategy');
               logger.verbose(`Content: ${content}`);
               return { status: 'success', content };

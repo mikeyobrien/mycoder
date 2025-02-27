@@ -5,7 +5,9 @@ import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import { Tool } from '../../core/types.js';
 import { errorToString } from '../../utils/errorToString.js';
+import { sleep } from '../../utils/sleep.js';
 
+import { getRenderedDOM } from './getRenderedDOM.js';
 import { browserSessions } from './types.js';
 
 const parameterSchema = z.object({
@@ -99,7 +101,8 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
             `Navigating to ${url} with 'domcontentloaded' waitUntil`,
           );
           await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
-          content = await page.content();
+          await sleep(3000);
+          content = await getRenderedDOM(page);
           logger.verbose('Navigation completed with domcontentloaded strategy');
         } catch (error) {
           // If that fails, try with no waitUntil option at all (most basic)
@@ -112,7 +115,8 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
 
           try {
             await page.goto(url, { timeout });
-            content = await page.content();
+            await sleep(3000);
+            content = await getRenderedDOM(page);
             logger.verbose('Navigation completed with basic strategy');
           } catch (innerError) {
             logger.error(
