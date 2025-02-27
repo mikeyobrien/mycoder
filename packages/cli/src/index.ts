@@ -3,14 +3,12 @@ import { join } from 'path';
 import { fileURLToPath } from 'url';
 
 import * as dotenv from 'dotenv';
-import { Logger, LogLevel, getTools } from 'mycoder-agent';
 import sourceMapSupport from 'source-map-support';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { fileCommands } from 'yargs-file-commands';
 
 import { sharedOptions } from './options.js';
-import { checkForUpdates } from './utils/versionCheck.js';
 
 import type { PackageJson } from 'type-fest';
 
@@ -18,32 +16,8 @@ import type { PackageJson } from 'type-fest';
 
 sourceMapSupport.install();
 
-const nameToLogIndex = (logLevelName: string) => {
-  // look up the log level name in the enum to get the value
-  return LogLevel[logLevelName as keyof typeof LogLevel];
-};
-
 const main = async () => {
   dotenv.config();
-
-  const logger = new Logger({ name: 'Main' });
-
-  const updateMessage = await checkForUpdates();
-  if (updateMessage) {
-    console.log();
-    logger.info(updateMessage);
-    console.log();
-  }
-
-  process.on('uncaughtException', (error) => {
-    logger.error(
-      'Fatal error:',
-      error.constructor.name,
-      error.message,
-      error.stack,
-    );
-    process.exit(1);
-  });
 
   const require = createRequire(import.meta.url);
   const packageInfo = require('../package.json') as PackageJson;
@@ -59,14 +33,6 @@ const main = async () => {
     .options(sharedOptions)
     .alias('h', 'help')
     .alias('V', 'version')
-    .middleware((argv) => {
-      // Set up logger with the specified log level
-      argv.logger = new Logger({
-        name: packageInfo.name!,
-        logLevel: nameToLogIndex(argv.log),
-      });
-      argv.tools = getTools();
-    })
     .command(
       await fileCommands({
         commandDirs: [commandsDir],
@@ -78,4 +44,7 @@ const main = async () => {
     .help().argv;
 };
 
-await main();
+await main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

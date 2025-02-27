@@ -12,7 +12,6 @@ import { getSettingsDir } from '../settings/settings.js';
 import type { PackageJson } from 'type-fest';
 
 const require = createRequire(import.meta.url);
-const logger = new Logger({ name: 'version-check' });
 
 export function getPackageInfo(): {
   name: string;
@@ -56,18 +55,19 @@ export function generateUpgradeMessage(
     : null;
 }
 
-export async function checkForUpdates(): Promise<string | null> {
+export async function checkForUpdates(logger: Logger) {
   try {
     const { name: packageName, version: currentVersion } = getPackageInfo();
 
-    console.log('packageName', packageName);
-    console.log('currentVersion', currentVersion);
+    logger.debug(`checkForUpdates: currentVersion: ${currentVersion}`);
+
     const settingDir = getSettingsDir();
     const versionFilePath = path.join(settingDir, 'lastVersionCheck');
+    logger.debug(`checkForUpdates: versionFilePath: ${versionFilePath}`);
 
     fetchLatestVersion(packageName)
       .then(async (latestVersion) => {
-        console.log('latestVersion', latestVersion);
+        logger.debug(`checkForUpdates: latestVersion: ${latestVersion}`);
         return fsPromises.writeFile(versionFilePath, latestVersion, 'utf8');
       })
       .catch((error) => {
@@ -79,18 +79,18 @@ export async function checkForUpdates(): Promise<string | null> {
         versionFilePath,
         'utf8',
       );
-      console.log('lastVersionCheck', lastVersionCheck);
-      return generateUpgradeMessage(
+      logger.debug(`checkForUpdates: lastVersionCheck: ${lastVersionCheck}`);
+      const updateMessage = generateUpgradeMessage(
         currentVersion,
         lastVersionCheck,
         packageName,
       );
+      if (updateMessage) {
+        logger.info('\n' + updateMessage + '\n');
+      }
     }
-
-    return null;
   } catch (error) {
     // Log error but don't throw to handle gracefully
     logger.warn('Error checking for updates:', errorToString(error));
-    return null;
   }
 }

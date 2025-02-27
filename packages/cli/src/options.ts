@@ -1,7 +1,5 @@
-import { LogLevel } from 'mycoder-agent';
-
 export type SharedOptions = {
-  readonly log: LogLevel;
+  readonly logLevel: string;
   readonly interactive: boolean;
   readonly file?: string;
   readonly tokenUsage?: boolean;
@@ -9,7 +7,7 @@ export type SharedOptions = {
 };
 
 export const sharedOptions = {
-  log: {
+  logLevel: {
     type: 'string',
     alias: 'l',
     description: 'Set minimum logging level',
