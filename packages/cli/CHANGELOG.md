@@ -1,5 +1,11 @@
 # mycoder
 
+## 0.2.3
+
+### Patch Changes
+
+- Ensure all logging follows logLevel cli option.
+
 ## 0.2.2
 
 ### Patch Changes
