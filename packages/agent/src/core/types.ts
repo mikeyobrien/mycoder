@@ -6,11 +6,14 @@ import { TokenTracker } from './tokens.js';
 
 export type TokenLevel = 'debug' | 'verbose' | 'info' | 'warn' | 'error';
 
+export type pageFilter = 'simple' | 'none' | 'readability';
+
 export type ToolContext = {
   logger: Logger;
   workingDirectory: string;
   headless: boolean;
-  userSession?: boolean;
+  userSession: boolean;
+  pageFilter: pageFilter;
   tokenTracker: TokenTracker;
 };
 

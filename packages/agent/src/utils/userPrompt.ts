@@ -9,7 +9,11 @@ export const userPrompt = async (prompt: string): Promise<string> => {
   });
 
   try {
-    return await rl.question(chalk.green('\n' + prompt + '\n') + '\n> ');
+    const result = await rl.question(
+      chalk.green('\n' + prompt + '\n') + '\n> ',
+    );
+    console.log();
+    return result;
   } finally {
     rl.close();
   }

@@ -5,6 +5,7 @@ export type SharedOptions = {
   readonly tokenUsage?: boolean;
   readonly headless?: boolean;
   readonly userSession?: boolean;
+  readonly pageFilter?: 'simple' | 'none' | 'readability';
 };
 
 export const sharedOptions = {
@@ -41,5 +42,11 @@ export const sharedOptions = {
     description:
       "Use user's existing browser session instead of sandboxed session",
     default: false,
+  } as const,
+  pageFilter: {
+    type: 'string',
+    description: 'Method to process webpage content',
+    default: 'none',
+    choices: ['simple', 'none', 'readability'],
   } as const,
 };

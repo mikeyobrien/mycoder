@@ -1,14 +1,17 @@
 import { describe, it, expect } from 'vitest';
 
 import { TokenTracker } from '../../core/tokens';
+import { ToolContext } from '../../core/types';
 import { MockLogger } from '../../utils/mockLogger';
 
 import { respawnTool } from './respawn';
 
-const toolContext = {
+const toolContext: ToolContext = {
   logger: new MockLogger(),
   headless: true,
   workingDirectory: '.',
+  userSession: false,
+  pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
 };
 describe('respawnTool', () => {

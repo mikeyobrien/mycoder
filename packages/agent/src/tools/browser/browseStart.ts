@@ -7,12 +7,11 @@ import { Tool } from '../../core/types.js';
 import { errorToString } from '../../utils/errorToString.js';
 import { sleep } from '../../utils/sleep.js';
 
-import { getRenderedDOM } from './getRenderedDOM.js';
+import { filterPageContent } from './filterPageContent.js';
 import { browserSessions } from './types.js';
 
 const parameterSchema = z.object({
   url: z.string().url().optional().describe('Initial URL to navigate to'),
-
   timeout: z
     .number()
     .optional()
@@ -42,12 +41,13 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
 
   execute: async (
     { url, timeout = 30000 },
-    { logger, headless = true, userSession = false },
+    { logger, headless, userSession, pageFilter },
   ): Promise<ReturnType> => {
     logger.verbose(`Starting browser session${url ? ` at ${url}` : ''}`);
     logger.verbose(
       `User session mode: ${userSession ? 'enabled' : 'disabled'}`,
     );
+    logger.verbose(`Webpage processing mode: ${pageFilter}`);
 
     try {
       const instanceId = uuidv4();
@@ -102,7 +102,8 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
           );
           await page.goto(url, { waitUntil: 'domcontentloaded', timeout });
           await sleep(3000);
-          content = await getRenderedDOM(page);
+          content = await filterPageContent(page, pageFilter);
+          logger.verbose(`Content: ${content}`);
           logger.verbose('Navigation completed with domcontentloaded strategy');
         } catch (error) {
           // If that fails, try with no waitUntil option at all (most basic)
@@ -116,7 +117,8 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
           try {
             await page.goto(url, { timeout });
             await sleep(3000);
-            content = await getRenderedDOM(page);
+            content = await filterPageContent(page, pageFilter);
+            logger.verbose(`Content: ${content}`);
             logger.verbose('Navigation completed with basic strategy');
           } catch (innerError) {
             logger.error(
@@ -128,7 +130,7 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
       }
 
       logger.verbose('Browser session started successfully');
-      logger.verbose(`Content: ${content}`);
+      logger.verbose(`Content length: ${content.length} characters`);
 
       return {
         instanceId,
@@ -145,9 +147,9 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
     }
   },
 
-  logParameters: ({ url, description }, { logger }) => {
+  logParameters: ({ url, description }, { logger, pageFilter = 'simple' }) => {
     logger.info(
-      `Starting browser session${url ? ` at ${url}` : ''}, ${description}`,
+      `Starting browser session${url ? ` at ${url}` : ''} with ${pageFilter} processing, ${description}`,
     );
   },
 

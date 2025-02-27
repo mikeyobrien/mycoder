@@ -5,7 +5,7 @@ import { Tool } from '../../core/types.js';
 import { errorToString } from '../../utils/errorToString.js';
 import { sleep } from '../../utils/sleep.js';
 
-import { getRenderedDOM } from './getRenderedDOM.js';
+import { filterPageContent } from './filterPageContent.js';
 import { browserSessions, type BrowserAction, SelectorType } from './types.js';
 
 // Schema for browser action
@@ -73,7 +73,10 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 
-  execute: async ({ instanceId, action }, { logger }): Promise<ReturnType> => {
+  execute: async (
+    { instanceId, action },
+    { logger, pageFilter },
+  ): Promise<ReturnType> => {
     // Validate action format
     if (!action || typeof action !== 'object') {
       logger.error('Invalid action format: action must be an object');
@@ -92,6 +95,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
     }
 
     logger.verbose(`Executing browser action: ${action.actionType}`);
+    logger.verbose(`Webpage processing mode: ${pageFilter}`);
 
     try {
       const session = browserSessions.get(instanceId);
@@ -114,11 +118,12 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
             );
             await page.goto(action.url, { waitUntil: 'domcontentloaded' });
             await sleep(3000);
-            const content = await getRenderedDOM(page);
+            const content = await filterPageContent(page, pageFilter);
+            logger.verbose(`Content: ${content}`);
             logger.verbose(
               'Navigation completed with domcontentloaded strategy',
             );
-            logger.verbose(`Content: ${content}`);
+            logger.verbose(`Content length: ${content.length} characters`);
             return { status: 'success', content };
           } catch (navError) {
             // If that fails, try with no waitUntil option
@@ -132,9 +137,9 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
             try {
               await page.goto(action.url);
               await sleep(3000);
-              const content = await getRenderedDOM(page);
-              logger.verbose('Navigation completed with basic strategy');
+              const content = await filterPageContent(page, pageFilter);
               logger.verbose(`Content: ${content}`);
+              logger.verbose('Navigation completed with basic strategy');
               return { status: 'success', content };
             } catch (innerError) {
               logger.error(
@@ -154,7 +159,8 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
             action.selectorType,
           );
           await page.click(clickSelector);
-          const content = await page.content();
+          await sleep(1000); // Wait for any content changes after click
+          const content = await filterPageContent(page, pageFilter);
           logger.verbose(
             `Click action completed on selector: ${clickSelector}`,
           );
@@ -188,8 +194,9 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
         }
 
         case 'content': {
-          const content = await page.content();
+          const content = await filterPageContent(page, pageFilter);
           logger.verbose('Page content retrieved successfully');
+          logger.verbose(`Content length: ${content.length} characters`);
           return { status: 'success', content };
         }
 
@@ -216,9 +223,12 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
     }
   },
 
-  logParameters: ({ action, description }, { logger }) => {
+  logParameters: (
+    { action, description },
+    { logger, pageFilter = 'simple' },
+  ) => {
     logger.info(
-      `Performing browser action: ${action.actionType}, ${description}`,
+      `Performing browser action: ${action.actionType} with ${pageFilter} processing, ${description}`,
     );
   },
 
