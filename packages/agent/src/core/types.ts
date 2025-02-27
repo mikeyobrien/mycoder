@@ -2,14 +2,15 @@ import { JsonSchema7Type } from 'zod-to-json-schema';
 
 import { Logger } from '../utils/logger.js';
 
+import { TokenTracker } from './tokens.js';
+
 export type TokenLevel = 'debug' | 'verbose' | 'info' | 'warn' | 'error';
 
 export type ToolContext = {
   logger: Logger;
   workingDirectory: string;
   headless: boolean;
-  tokenLevel: TokenLevel;
-  tokenUsage?: boolean;
+  tokenTracker: TokenTracker;
 };
 
 export type Tool<TParams = Record<string, any>, TReturn = any> = {

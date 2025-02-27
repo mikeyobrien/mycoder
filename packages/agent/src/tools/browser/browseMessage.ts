@@ -165,7 +165,7 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
 
   logParameters: ({ action, description }, { logger }) => {
     logger.info(
-      `Performing browser action: ${action.actionType}, ${description}`,
+      `🏄 Performing browser action: ${action.actionType}, ${description}`,
     );
   },
 

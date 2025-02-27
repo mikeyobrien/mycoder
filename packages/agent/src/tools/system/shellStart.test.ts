@@ -1,12 +1,17 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
+import { TokenTracker } from '../../core/tokens.js';
 import { MockLogger } from '../../utils/mockLogger.js';
 import { sleep } from '../../utils/sleep.js';
 
 import { processStates, shellStartTool } from './shellStart.js';
 
-const logger = new MockLogger();
-
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 describe('shellStartTool', () => {
   beforeEach(() => {
     processStates.clear();
@@ -26,7 +31,7 @@ describe('shellStartTool', () => {
         description: 'Test process',
         timeout: 500, // Generous timeout to ensure sync mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.mode).toBe('sync');
@@ -44,7 +49,7 @@ describe('shellStartTool', () => {
         description: 'Slow command test',
         timeout: 50, // Short timeout to force async mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.mode).toBe('async');
@@ -60,7 +65,7 @@ describe('shellStartTool', () => {
         command: 'nonexistentcommand',
         description: 'Invalid command test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.mode).toBe('sync');
@@ -78,7 +83,7 @@ describe('shellStartTool', () => {
         description: 'Sync completion test',
         timeout: 500,
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Even sync results should be in processStates
@@ -96,7 +101,7 @@ describe('shellStartTool', () => {
         description: 'Async completion test',
         timeout: 50,
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     if (asyncResult.mode === 'async') {
@@ -111,7 +116,7 @@ describe('shellStartTool', () => {
         description: 'Pipe test',
         timeout: 50, // Force async for interactive command
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.mode).toBe('async');
@@ -144,7 +149,7 @@ describe('shellStartTool', () => {
         command: 'sleep 1',
         description: 'Default timeout test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.mode).toBe('sync');

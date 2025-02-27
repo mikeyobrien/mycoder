@@ -188,14 +188,14 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
     { logger },
   ) => {
     logger.info(
-      `Starting "${command}", ${description} (timeout: ${timeout}ms)`,
+      `🖥️ Starting "${command}", ${description} (timeout: ${timeout}ms)`,
     );
   },
   logReturns: (output, { logger }) => {
     if (output.mode === 'async') {
-      logger.info(`Process started with instance ID: ${output.instanceId}`);
+      logger.info(`🖥️ Process started with instance ID: ${output.instanceId}`);
     } else {
-      logger.info(`Process completed with exit code: ${output.exitCode}`);
+      logger.info(`🖥️ Process completed with exit code: ${output.exitCode}`);
     }
   },
 };

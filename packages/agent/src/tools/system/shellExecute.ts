@@ -107,7 +107,7 @@ export const shellExecuteTool: Tool<Parameters, ReturnType> = {
     }
   },
   logParameters: (input, { logger }) => {
-    logger.info(`Running "${input.command}", ${input.description}`);
+    logger.info(`🖥️ Running "${input.command}", ${input.description}`);
   },
   logReturns: () => {},
 };

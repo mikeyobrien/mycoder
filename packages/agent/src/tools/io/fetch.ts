@@ -93,7 +93,12 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
   logParameters(params, { logger }) {
     const { method, url, params: queryParams } = params;
     logger.info(
-      `${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams).toString()}` : ''}`,
+      `🌐 ${method} ${url}${queryParams ? `?${new URLSearchParams(queryParams).toString()}` : ''} ==>`,
     );
+  },
+
+  logReturns: (result, { logger }) => {
+    const { status, statusText } = result;
+    logger.info(`🌐 ==> ${status} ${statusText}`);
   },
 };

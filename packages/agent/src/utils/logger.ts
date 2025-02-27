@@ -106,6 +106,11 @@ export class Logger {
       .join('\n');
   }
 
+  log(level: LogLevel, ...messages: unknown[]): void {
+    if (this.logLevelIndex > level) return;
+    console.log(this.formatMessages(level, messages));
+  }
+
   debug(...messages: unknown[]): void {
     if (this.logLevelIndex > LogLevel.debug) return;
     console.log(this.formatMessages(LogLevel.debug, messages));

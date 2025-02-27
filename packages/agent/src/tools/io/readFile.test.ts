@@ -1,16 +1,22 @@
 import { describe, it, expect } from 'vitest';
 
-import { MockLogger } from '../../utils/mockLogger.js';
+import { TokenTracker } from '../../core/tokens.js';
+import { MockLogger } from '../../utils/mockLogger';
 
 import { readFileTool } from './readFile.js';
 
-const logger = new MockLogger();
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 
 describe('readFile', () => {
   it('should read a file', async () => {
     const { content } = await readFileTool.execute(
       { path: 'package.json', description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(content).toContain('mycoder');
   });
@@ -19,7 +25,7 @@ describe('readFile', () => {
     try {
       await readFileTool.execute(
         { path: 'nonexistent.txt', description: 'test' },
-        { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+        toolContext,
       );
       expect(true).toBe(false); // Should not reach here
     } catch (error: any) {

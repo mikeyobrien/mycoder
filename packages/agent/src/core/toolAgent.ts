@@ -7,12 +7,7 @@ import chalk from 'chalk';
 import { getAnthropicApiKeyError } from '../utils/errors.js';
 
 import { executeToolCall } from './executeToolCall.js';
-import {
-  addTokenUsage,
-  getTokenString,
-  getTokenUsage,
-  TokenUsage,
-} from './tokens.js';
+import { TokenTracker, TokenUsage } from './tokens.js';
 import {
   Tool,
   TextContent,
@@ -24,7 +19,6 @@ import {
 
 export interface ToolAgentResult {
   result: string;
-  tokens: TokenUsage;
   interactions: number;
 }
 
@@ -153,7 +147,10 @@ async function executeTools(
     toolCalls.map(async (call) => {
       let toolResult = '';
       try {
-        toolResult = await executeToolCall(call, tools, context);
+        toolResult = await executeToolCall(call, tools, {
+          ...context,
+          tokenTracker: new TokenTracker(call.name, context.tokenTracker),
+        });
       } catch (error: any) {
         toolResult = `Error: Exception thrown during tool execution.  Type: ${error.constructor.name}, Message: ${error.message}`;
       }
@@ -238,17 +235,11 @@ export const toolAgent = async (
   config = CONFIG,
   context: ToolContext,
 ): Promise<ToolAgentResult> => {
-  const { logger, tokenLevel, tokenUsage } = context;
+  const { logger, tokenTracker } = context;
 
   logger.verbose('Starting agent execution');
   logger.verbose('Initial prompt:', initialPrompt);
 
-  let tokens: TokenUsage = {
-    input: 0,
-    inputCacheWrites: 0,
-    inputCacheReads: 0,
-    output: 0,
-  };
   let interactions = 0;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -317,8 +308,8 @@ export const toolAgent = async (
     }
 
     // Track both regular and cached token usage
-    const tokenPerMessage = getTokenUsage(response);
-    tokens = addTokenUsage(tokens, tokenPerMessage);
+    const tokenUsagePerMessage = TokenUsage.fromMessage(response);
+    tokenTracker.tokenUsage.add(tokenUsagePerMessage);
 
     const { content, toolCalls } = processResponse(response);
     messages.push({
@@ -335,10 +326,9 @@ export const toolAgent = async (
       logger.info(assistantMessage);
     }
 
-    // Use the appropriate log level based on tokenUsage flag
-    const logLevel = tokenUsage ? 'info' : tokenLevel;
-    logger[logLevel](
-      chalk.blue(`[Token Usage/Message] ${getTokenString(tokenPerMessage)}`),
+    logger.log(
+      tokenTracker.logLevel,
+      chalk.blue(`[Token Usage/Message] ${tokenUsagePerMessage.toString()}`),
     );
 
     const { sequenceCompleted, completionResult, respawn } = await executeTools(
@@ -364,13 +354,11 @@ export const toolAgent = async (
         result:
           completionResult ??
           'Sequence explicitly completed with an empty result',
-        tokens,
         interactions,
       };
-      // Use the appropriate log level based on tokenUsage flag
-      const logLevel = tokenUsage ? 'info' : tokenLevel;
-      logger[logLevel](
-        chalk.blueBright(`[Token Usage/Agent] ${getTokenString(tokens)}`),
+      logger.log(
+        tokenTracker.logLevel,
+        chalk.blueBright(`[Token Usage/Agent] ${tokenTracker.toString()}`),
       );
       return result;
     }
@@ -379,13 +367,12 @@ export const toolAgent = async (
   logger.warn('Maximum iterations reached');
   const result = {
     result: 'Maximum sub-agent iterations reach without successful completion',
-    tokens,
     interactions,
   };
   // Use the appropriate log level based on tokenUsage flag
-  const logLevel = tokenUsage ? 'info' : tokenLevel;
-  logger[logLevel](
-    chalk.blueBright(`[Token Usage/Agent]  ${getTokenString(tokens)}`),
+  logger.log(
+    tokenTracker.logLevel,
+    chalk.blueBright(`[Token Usage/Agent] ${tokenTracker.toString()}`),
   );
   return result;
 };

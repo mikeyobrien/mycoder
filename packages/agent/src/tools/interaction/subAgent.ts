@@ -108,7 +108,7 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
     return result.result; // Return the result string directly
   },
   logParameters: (input, { logger }) => {
-    logger.info(`Delegating task "${input.description}"`);
+    logger.info(`🤖 Delegating task "${input.description}"`);
   },
   logReturns: () => {},
 };

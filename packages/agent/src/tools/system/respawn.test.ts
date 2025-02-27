@@ -1,12 +1,17 @@
 import { describe, it, expect } from 'vitest';
 
-import { Logger } from '../../utils/logger';
+import { TokenTracker } from '../../core/tokens';
+import { MockLogger } from '../../utils/mockLogger';
 
 import { respawnTool } from './respawn';
 
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 describe('respawnTool', () => {
-  const mockLogger = new Logger({ name: 'test' });
-
   it('should have correct name and description', () => {
     expect(respawnTool.name).toBe('respawn');
     expect(respawnTool.description).toContain('Resets the agent context');
@@ -15,12 +20,7 @@ describe('respawnTool', () => {
   it('should execute and return confirmation message', async () => {
     const result = await respawnTool.execute(
       { respawnContext: 'new context' },
-      {
-        logger: mockLogger,
-        headless: true,
-        workingDirectory: '.',
-        tokenLevel: 'debug',
-      },
+      toolContext,
     );
     expect(result).toBe('Respawn initiated');
   });

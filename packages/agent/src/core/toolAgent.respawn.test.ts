@@ -4,8 +4,14 @@ import { toolAgent } from '../../src/core/toolAgent.js';
 import { getTools } from '../../src/tools/getTools.js';
 import { MockLogger } from '../utils/mockLogger.js';
 
-const logger = new MockLogger();
+import { TokenTracker } from './tokens.js';
 
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 // Mock Anthropic SDK
 vi.mock('@anthropic-ai/sdk', () => {
   return {
@@ -52,12 +58,7 @@ describe('toolAgent respawn functionality', () => {
         temperature: 0,
         getSystemPrompt: () => 'test system prompt',
       },
-      {
-        logger,
-        headless: true,
-        workingDirectory: '.',
-        tokenLevel: 'debug',
-      },
+      toolContext,
     );
 
     expect(result.result).toBe(

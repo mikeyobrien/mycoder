@@ -85,7 +85,7 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
   logParameters: (input, { logger }) => {
     const isFile = fs.existsSync(input.path);
     logger.info(
-      `${isFile ? 'Modifying' : 'Creating'} "${input.path}", ${input.description}`,
+      `${isFile ? '✏️ Modifying' : '✏️ Creating'} "${input.path}", ${input.description}`,
     );
   },
   logReturns: () => {},

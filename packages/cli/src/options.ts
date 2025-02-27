@@ -5,6 +5,7 @@ export type SharedOptions = {
   readonly interactive: boolean;
   readonly file?: string;
   readonly tokenUsage?: boolean;
+  readonly headless?: boolean;
 };
 
 export const sharedOptions = {
@@ -30,5 +31,10 @@ export const sharedOptions = {
     type: 'boolean',
     description: 'Output token usage at info log level',
     default: false,
+  } as const,
+  headless: {
+    type: 'boolean',
+    description: 'Use browser in headless mode with no UI showing',
+    default: true,
   } as const,
 };

@@ -102,7 +102,7 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
 
   logParameters: ({ url, description }, { logger }) => {
     logger.info(
-      `Starting browser session${url ? ` at ${url}` : ''}, ${description}`,
+      `🏄 Starting browser session${url ? ` at ${url}` : ''}, ${description}`,
     );
   },
 

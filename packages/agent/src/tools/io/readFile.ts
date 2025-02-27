@@ -96,7 +96,7 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
     };
   },
   logParameters: (input, { logger }) => {
-    logger.info(`Looking at "${input.path}", ${input.description}`);
+    logger.info(` 📖 Reading "${input.path}", ${input.description}`);
   },
   logReturns: () => {},
 };
