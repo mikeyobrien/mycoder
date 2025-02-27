@@ -3,10 +3,16 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { MockLogger } from '../utils/mockLogger.js';
 
 import { executeToolCall } from './executeToolCall.js';
+import { TokenTracker } from './tokens.js';
 import { toolAgent } from './toolAgent.js';
 import { Tool } from './types.js';
 
-const logger = new MockLogger();
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 
 // Mock configuration for testing
 const testConfig = {
@@ -101,12 +107,7 @@ describe('toolAgent', () => {
         input: { input: 'test' },
       },
       [mockTool],
-      {
-        logger,
-        headless: true,
-        workingDirectory: '.',
-        tokenLevel: 'debug',
-      },
+      toolContext,
     );
 
     expect(result.includes('Processed: test')).toBeTruthy();
@@ -121,12 +122,7 @@ describe('toolAgent', () => {
           input: {},
         },
         [mockTool],
-        {
-          logger,
-          headless: true,
-          workingDirectory: '.',
-          tokenLevel: 'debug',
-        },
+        toolContext,
       ),
     ).rejects.toThrow("No tool with the name 'nonexistentTool' exists.");
   });
@@ -157,12 +153,7 @@ describe('toolAgent', () => {
           input: {},
         },
         [errorTool],
-        {
-          logger,
-          headless: true,
-          workingDirectory: '.',
-          tokenLevel: 'debug',
-        },
+        toolContext,
       ),
     ).rejects.toThrow('Deliberate failure');
   });
@@ -182,12 +173,7 @@ describe('toolAgent', () => {
       'Test prompt',
       [sequenceCompleteTool],
       testConfig,
-      {
-        logger,
-        headless: true,
-        workingDirectory: '.',
-        tokenLevel: 'debug',
-      },
+      toolContext,
     );
 
     // Verify that create was called twice (once for empty response, once for completion)
@@ -205,16 +191,9 @@ describe('toolAgent', () => {
       'Test prompt',
       [sequenceCompleteTool],
       testConfig,
-      {
-        logger,
-        headless: true,
-        workingDirectory: '.',
-        tokenLevel: 'debug',
-      },
+      toolContext,
     );
 
     expect(result.result).toBe('Test complete');
-    expect(result.tokens.input).toBe(10);
-    expect(result.tokens.output).toBe(10);
   });
 });

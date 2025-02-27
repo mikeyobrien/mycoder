@@ -17,6 +17,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 export const sequenceCompleteTool: Tool<Parameters, ReturnType> = {
   name: 'sequenceComplete',
   description: 'Completes the tool use sequence and returns the final result',
+  logPrefix: '✅',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
   execute: ({ result }) => Promise.resolve(result),

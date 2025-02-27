@@ -1,12 +1,18 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
+import { TokenTracker } from '../../core/tokens.js';
 import { MockLogger } from '../../utils/mockLogger.js';
 import { sleep } from '../../utils/sleep.js';
 
 import { shellMessageTool, NodeSignals } from './shellMessage.js';
 import { processStates, shellStartTool } from './shellStart.js';
 
-const logger = new MockLogger();
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 
 // Helper function to get instanceId from shellStart result
 const getInstanceId = (
@@ -40,7 +46,7 @@ describe('shellMessageTool', () => {
         description: 'Test interactive process',
         timeout: 50, // Force async mode for interactive process
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     testInstanceId = getInstanceId(startResult);
@@ -52,7 +58,7 @@ describe('shellMessageTool', () => {
         stdin: 'hello world',
         description: 'Test interaction',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.stdout).toBe('hello world');
@@ -66,7 +72,7 @@ describe('shellMessageTool', () => {
         instanceId: 'nonexistent-id',
         description: 'Test invalid process',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.error).toBeDefined();
@@ -81,7 +87,7 @@ describe('shellMessageTool', () => {
         description: 'Test completion',
         timeout: 0, // Force async mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     const instanceId = getInstanceId(startResult);
@@ -94,7 +100,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check completion',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.completed).toBe(true);
@@ -110,7 +116,7 @@ describe('shellMessageTool', () => {
         description: 'Test SIGTERM handling',
         timeout: 0, // Force async mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     const instanceId = getInstanceId(startResult);
@@ -121,7 +127,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send SIGTERM',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(result.signaled).toBe(true);
 
@@ -132,7 +138,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check on status',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result2.completed).toBe(true);
@@ -147,7 +153,7 @@ describe('shellMessageTool', () => {
         description: 'Test signal handling on terminated process',
         timeout: 0, // Force async mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     const instanceId = getInstanceId(startResult);
@@ -159,7 +165,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send signal to terminated process',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(result.signaled).toBe(true);
@@ -174,7 +180,7 @@ describe('shellMessageTool', () => {
         description: 'Test signal flag verification',
         timeout: 0, // Force async mode
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     const instanceId = getInstanceId(startResult);
@@ -186,7 +192,7 @@ describe('shellMessageTool', () => {
         signal: NodeSignals.SIGTERM,
         description: 'Send SIGTERM',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     await sleep(50);
@@ -197,7 +203,7 @@ describe('shellMessageTool', () => {
         instanceId,
         description: 'Check signal state',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     expect(checkResult.signaled).toBe(true);

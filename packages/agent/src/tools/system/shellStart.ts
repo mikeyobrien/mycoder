@@ -71,6 +71,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
   name: 'shellStart',
   description:
     'Starts a shell command with fast sync mode (default 100ms timeout) that falls back to async mode for longer-running commands',
+  logPrefix: '💻',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 

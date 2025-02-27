@@ -76,6 +76,7 @@ export const shellMessageTool: Tool<Parameters, ReturnType> = {
   name: 'shellMessage',
   description:
     'Interacts with a running shell process, sending input and receiving output',
+  logPrefix: '💻',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),
 

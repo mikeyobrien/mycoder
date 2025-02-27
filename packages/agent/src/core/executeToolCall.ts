@@ -12,15 +12,16 @@ export const executeToolCall = async (
   tools: Tool[],
   context: ToolContext,
 ): Promise<string> => {
-  const logger = new Logger({
-    name: `Tool:${toolCall.name}`,
-    parent: context.logger,
-  });
-
   const tool = tools.find((t) => t.name === toolCall.name);
   if (!tool) {
     throw new Error(`No tool with the name '${toolCall.name}' exists.`);
   }
+
+  const logger = new Logger({
+    name: `Tool:${toolCall.name}`,
+    parent: context.logger,
+    customPrefix: tool.logPrefix,
+  });
 
   const toolContext = {
     ...context,

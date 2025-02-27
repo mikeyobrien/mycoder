@@ -45,6 +45,7 @@ interface ExtendedExecException extends ExecException {
 
 export const shellExecuteTool: Tool<Parameters, ReturnType> = {
   name: 'shellExecute',
+  logPrefix: '💻',
   description:
     'Executes a bash shell command and returns its output, can do amazing things if you are a shell scripting wizard',
   parameters: zodToJsonSchema(parameterSchema),

@@ -1,16 +1,22 @@
 import { describe, it, expect } from 'vitest';
 
+import { TokenTracker } from '../../core/tokens.js';
 import { MockLogger } from '../../utils/mockLogger.js';
 
 import { shellExecuteTool } from './shellExecute.js';
 
-const logger = new MockLogger();
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 
 describe('shellExecute', () => {
   it('should execute shell commands', async () => {
     const { stdout } = await shellExecuteTool.execute(
       { command: "echo 'test'", description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(stdout).toContain('test');
   });
@@ -18,7 +24,7 @@ describe('shellExecute', () => {
   it('should handle command errors', async () => {
     const { error } = await shellExecuteTool.execute(
       { command: 'nonexistentcommand', description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(error).toContain('Command failed:');
   });

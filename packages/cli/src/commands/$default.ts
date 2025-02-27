@@ -7,8 +7,10 @@ import {
   Logger,
   getTools,
   getAnthropicApiKeyError,
-  TokenLevel,
+  userPrompt,
+  LogLevel,
 } from 'mycoder-agent';
+import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
 import { SharedOptions } from '../options.js';
 import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
@@ -33,9 +35,6 @@ export const command: CommandModule<object, DefaultArgs> = {
     const logger = new Logger({ name: 'Default' });
     const packageInfo = getPackageInfo();
 
-    // Use 'info' log level for token logging when tokenUsage is enabled, otherwise use 'debug'
-    const tokenLevel: TokenLevel = argv.tokenUsage ? 'info' : 'debug';
-
     logger.info(
       `MyCoder v${packageInfo.version} - AI-powered coding assistant`,
     );
@@ -59,47 +58,35 @@ export const command: CommandModule<object, DefaultArgs> = {
         saveUserConsent();
       } else {
         logger.info('User did not consent. Exiting.');
-        process.exit(0);
+        throw new Error('User did not consent');
       }
     }
+
+    const tokenTracker = new TokenTracker(
+      'Root',
+      undefined,
+      argv.tokenUsage ? LogLevel.info : LogLevel.debug,
+    );
+
     try {
       // Early API key check
       if (!process.env.ANTHROPIC_API_KEY) {
         logger.error(getAnthropicApiKeyError());
-        process.exit(1);
+        throw new Error('Anthropic API key not found');
       }
 
       let prompt: string | undefined;
 
       // If promptFile is specified, read from file
       if (argv.file) {
-        try {
-          prompt = await fs.readFile(argv.file, 'utf-8');
-        } catch (error: any) {
-          logger.error(
-            `Failed to read prompt file: ${argv.file}, ${error?.message}`,
-          );
-          process.exit(1);
-        }
+        prompt = await fs.readFile(argv.file, 'utf-8');
       }
 
       // If interactive mode
       if (argv.interactive) {
-        const readline = createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-
-        try {
-          console.log(
-            chalk.green(
-              "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
-            ),
-          );
-          prompt = await readline.question('\n> ');
-        } finally {
-          readline.close();
-        }
+        prompt = await userPrompt(
+          "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
+        );
       } else if (!prompt) {
         // Use command line prompt if provided
         prompt = argv.prompt;
@@ -109,7 +96,7 @@ export const command: CommandModule<object, DefaultArgs> = {
         logger.error(
           'No prompt provided. Either specify a prompt, use --promptFile, or run in --interactive mode.',
         );
-        process.exit(1);
+        throw new Error('No prompt provided');
       }
 
       // Add the standard suffix to all prompts
@@ -121,13 +108,22 @@ export const command: CommandModule<object, DefaultArgs> = {
 
       const tools = getTools();
 
+      // Error handling
+      process.on('SIGINT', () => {
+        logger.log(
+          tokenTracker.logLevel,
+          chalk.blueBright(`[Token Usage Total] ${tokenTracker.toString()}`),
+        );
+        process.exit(0);
+      });
+
       const result = await toolAgent(prompt, tools, undefined, {
         logger,
-        headless: true,
+        headless: argv.headless ?? true,
         workingDirectory: '.',
-        tokenLevel,
-        tokenUsage: argv.tokenUsage,
+        tokenTracker,
       });
+
       const output =
         typeof result.result === 'string'
           ? result.result
@@ -135,7 +131,11 @@ export const command: CommandModule<object, DefaultArgs> = {
       logger.info('\n=== Result ===\n', output);
     } catch (error) {
       logger.error('An error occurred:', error);
-      process.exit(1);
     }
+
+    logger.log(
+      tokenTracker.logLevel,
+      chalk.blueBright(`[Token Usage Total] ${tokenTracker.toString()}`),
+    );
   },
 };

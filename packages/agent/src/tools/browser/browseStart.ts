@@ -33,6 +33,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 
 export const browseStartTool: Tool<Parameters, ReturnType> = {
   name: 'browseStart',
+  logPrefix: '🏄',
   description: 'Starts a new browser session with optional initial URL',
   parameters: zodToJsonSchema(parameterSchema),
   returns: zodToJsonSchema(returnSchema),

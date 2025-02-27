@@ -1,5 +1,16 @@
 # mycoder
 
+## 0.2.0
+
+### Minor Changes
+
+- Add token caching, better user input handling, token usage logging (--tokenUsage), the ability to see the browser (--headless=false), and log prefixes with emojis.
+
+### Patch Changes
+
+- Updated dependencies
+  - mycoder-agent@0.2.0
+
 ## 0.2.2
 
 ### Patch Changes

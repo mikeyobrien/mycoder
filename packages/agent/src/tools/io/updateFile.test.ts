@@ -5,13 +5,19 @@ import { join } from 'path';
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 
+import { TokenTracker } from '../../core/tokens.js';
 import { MockLogger } from '../../utils/mockLogger.js';
 import { shellExecuteTool } from '../system/shellExecute.js';
 
 import { readFileTool } from './readFile.js';
 import { updateFileTool } from './updateFile.js';
 
-const logger = new MockLogger();
+const toolContext = {
+  logger: new MockLogger(),
+  headless: true,
+  workingDirectory: '.',
+  tokenTracker: new TokenTracker(),
+};
 
 describe('updateFile', () => {
   let testDir: string;
@@ -23,7 +29,7 @@ describe('updateFile', () => {
   afterEach(async () => {
     await shellExecuteTool.execute(
       { command: `rm -rf "${testDir}"`, description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
   });
 
@@ -41,7 +47,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Verify return value
@@ -51,7 +57,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(readResult.content).toBe(testContent);
   });
@@ -72,7 +78,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Append content
@@ -85,7 +91,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Verify return value
@@ -95,7 +101,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(readResult.content).toBe(expectedContent);
   });
@@ -117,7 +123,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Update specific text
@@ -131,7 +137,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Verify return value
@@ -141,7 +147,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: testPath, description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(readResult.content).toBe(expectedContent);
   });
@@ -162,7 +168,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Attempt update that should fail
@@ -177,7 +183,7 @@ describe('updateFile', () => {
           },
           description: 'test',
         },
-        { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+        toolContext,
       ),
     ).rejects.toThrow('Found 2 occurrences of oldStr, expected exactly 1');
   });
@@ -196,7 +202,7 @@ describe('updateFile', () => {
         },
         description: 'test',
       },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
 
     // Verify return value
@@ -206,7 +212,7 @@ describe('updateFile', () => {
     // Verify content
     const readResult = await readFileTool.execute(
       { path: nestedPath, description: 'test' },
-      { logger, headless: true, workingDirectory: '.', tokenLevel: 'debug' },
+      toolContext,
     );
     expect(readResult.content).toBe(testContent);
   });
