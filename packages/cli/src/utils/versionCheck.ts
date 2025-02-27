@@ -60,27 +60,32 @@ export async function checkForUpdates(): Promise<string | null> {
   try {
     const { name: packageName, version: currentVersion } = getPackageInfo();
 
+    console.log('packageName', packageName);
+    console.log('currentVersion', currentVersion);
     const settingDir = getSettingsDir();
     const versionFilePath = path.join(settingDir, 'lastVersionCheck');
+
+    fetchLatestVersion(packageName)
+      .then(async (latestVersion) => {
+        console.log('latestVersion', latestVersion);
+        return fsPromises.writeFile(versionFilePath, latestVersion, 'utf8');
+      })
+      .catch((error) => {
+        logger.warn('Error fetching latest version:', errorToString(error));
+      });
+
     if (fs.existsSync(versionFilePath)) {
       const lastVersionCheck = await fsPromises.readFile(
         versionFilePath,
         'utf8',
       );
+      console.log('lastVersionCheck', lastVersionCheck);
       return generateUpgradeMessage(
         currentVersion,
         lastVersionCheck,
         packageName,
       );
     }
-
-    fetchLatestVersion(packageName)
-      .then(async (latestVersion) => {
-        return fsPromises.writeFile(versionFilePath, latestVersion, 'utf8');
-      })
-      .catch((error) => {
-        logger.warn('Error fetching latest version:', errorToString(error));
-      });
 
     return null;
   } catch (error) {
