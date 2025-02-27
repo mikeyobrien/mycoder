@@ -1,6 +1,6 @@
 {
   "name": "mycoder-agent",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Agent module for mycoder - an AI-powered software development assistant",
   "type": "module",
   "main": "dist/index.js",
@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/drivecore/mycoder-monorepo.git"
+    "url": "git+https://github.com/drivecore/mycoder.git"
   },
   "homepage": "https://mycoder.ai",
   "bugs": {
-    "url": "https://github.com/drivecore/mycoder-monorepo/issues"
+    "url": "https://github.com/drivecore/mycoder/issues"
   },
   "publishConfig": {
     "access": "public"
