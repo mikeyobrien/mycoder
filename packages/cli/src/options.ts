@@ -38,7 +38,8 @@ export const sharedOptions = {
   } as const,
   userSession: {
     type: 'boolean',
-    description: 'Use user\'s existing browser session instead of sandboxed session',
+    description:
+      "Use user's existing browser session instead of sandboxed session",
     default: false,
   } as const,
 };

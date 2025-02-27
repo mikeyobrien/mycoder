@@ -43,7 +43,9 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
     { logger, headless = true, userSession = false },
   ): Promise<ReturnType> => {
     logger.verbose(`Starting browser session${url ? ` at ${url}` : ''}`);
-    logger.verbose(`User session mode: ${userSession ? 'enabled' : 'disabled'}`);
+    logger.verbose(
+      `User session mode: ${userSession ? 'enabled' : 'disabled'}`,
+    );
 
     try {
       const instanceId = uuidv4();
