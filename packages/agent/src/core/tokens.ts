@@ -95,6 +95,6 @@ export class TokenTracker {
   }
 
   toString() {
-    return `${this.name}: ${this.tokenUsage.toString()}`;
+    return `${this.name}: ${this.getTotalUsage().toString()}`;
   }
 }

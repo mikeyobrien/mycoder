@@ -35,12 +35,6 @@ const main = async () => {
     console.log();
   }
 
-  // Error handling
-  process.on('SIGINT', () => {
-    logger.warn('\nGracefully shutting down...');
-    process.exit(0);
-  });
-
   process.on('uncaughtException', (error) => {
     logger.error(
       'Fatal error:',

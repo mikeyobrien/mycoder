@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises';
 import { createInterface } from 'readline/promises';
 
+import chalk from 'chalk';
 import {
   toolAgent,
   Logger,
@@ -107,6 +108,15 @@ export const command: CommandModule<object, DefaultArgs> = {
 
       const tools = getTools();
 
+      // Error handling
+      process.on('SIGINT', () => {
+        logger.log(
+          tokenTracker.logLevel,
+          chalk.blueBright(`[Token Usage Total] ${tokenTracker.toString()}`),
+        );
+        process.exit(0);
+      });
+
       const result = await toolAgent(prompt, tools, undefined, {
         logger,
         headless: argv.headless ?? true,
@@ -123,6 +133,9 @@ export const command: CommandModule<object, DefaultArgs> = {
       logger.error('An error occurred:', error);
     }
 
-    logger.info(`Token Usage: ${tokenTracker.toString()}`);
+    logger.log(
+      tokenTracker.logLevel,
+      chalk.blueBright(`[Token Usage Total] ${tokenTracker.toString()}`),
+    );
   },
 };

@@ -189,7 +189,7 @@ export const shellStartTool: Tool<Parameters, ReturnType> = {
     { logger },
   ) => {
     logger.info(
-      `🖥️ Starting "${command}", ${description} (timeout: ${timeout}ms)`,
+      `Starting "${command}", ${description} (timeout: ${timeout}ms)`,
     );
   },
   logReturns: (output, { logger }) => {

@@ -199,7 +199,15 @@ function addCacheControlToContentBlocks(
 ): ContentBlockParam[] {
   return content.map((c, i) => {
     if (i === content.length - 1) {
-      if (c.type === 'text' || c.type === 'document' || c.type === 'image') {
+      if (
+        c.type === 'text' ||
+        c.type === 'document' ||
+        c.type === 'image' ||
+        c.type === 'tool_use' ||
+        c.type === 'tool_result' ||
+        c.type === 'thinking' ||
+        c.type === 'redacted_thinking'
+      ) {
         return { ...c, cache_control: { type: 'ephemeral' } };
       }
     }
@@ -209,7 +217,7 @@ function addCacheControlToContentBlocks(
 function addCacheControlToMessages(
   messages: Anthropic.Messages.MessageParam[],
 ): Anthropic.Messages.MessageParam[] {
-  return messages.map((m) => {
+  return messages.map((m, i) => {
     if (typeof m.content === 'string') {
       return {
         ...m,
@@ -224,7 +232,10 @@ function addCacheControlToMessages(
     }
     return {
       ...m,
-      content: addCacheControlToContentBlocks(m.content),
+      content:
+        i >= messages.length - 2
+          ? addCacheControlToContentBlocks(m.content)
+          : m.content,
     };
   });
 }
