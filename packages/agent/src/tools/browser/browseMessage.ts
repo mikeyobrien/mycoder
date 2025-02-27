@@ -72,6 +72,23 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   returns: zodToJsonSchema(returnSchema),
 
   execute: async ({ instanceId, action }, { logger }): Promise<ReturnType> => {
+    // Validate action format
+    if (!action || typeof action !== 'object') {
+      logger.error('Invalid action format: action must be an object');
+      return {
+        status: 'error',
+        error: 'Invalid action format: action must be an object',
+      };
+    }
+
+    if (!action.actionType) {
+      logger.error('Invalid action format: actionType is required');
+      return {
+        status: 'error',
+        error: 'Invalid action format: actionType is required',
+      };
+    }
+
     logger.verbose(`Executing browser action: ${action.actionType}`);
 
     try {
@@ -87,10 +104,41 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
           if (!action.url) {
             throw new Error('URL required for goto action');
           }
-          await page.goto(action.url, { waitUntil: 'networkidle' });
-          const content = await page.content();
-          logger.verbose('Navigation completed successfully');
-          return { status: 'success', content };
+
+          try {
+            // Try with 'domcontentloaded' first which is more reliable than 'networkidle'
+            logger.verbose(
+              `Navigating to ${action.url} with 'domcontentloaded' waitUntil`,
+            );
+            await page.goto(action.url, { waitUntil: 'domcontentloaded' });
+            const content = await page.content();
+            logger.verbose(
+              'Navigation completed with domcontentloaded strategy',
+            );
+            logger.verbose(`Content: ${content}`);
+            return { status: 'success', content };
+          } catch (navError) {
+            // If that fails, try with no waitUntil option
+            logger.warn(
+              `Failed with domcontentloaded strategy: ${errorToString(navError)}`,
+            );
+            logger.verbose(
+              `Retrying navigation to ${action.url} with no waitUntil option`,
+            );
+
+            try {
+              await page.goto(action.url);
+              const content = await page.content();
+              logger.verbose('Navigation completed with basic strategy');
+              logger.verbose(`Content: ${content}`);
+              return { status: 'success', content };
+            } catch (innerError) {
+              logger.error(
+                `Failed with basic navigation strategy: ${errorToString(innerError)}`,
+              );
+              throw innerError; // Re-throw to be caught by outer catch block
+            }
+          }
         }
 
         case 'click': {

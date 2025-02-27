@@ -4,6 +4,7 @@ export type SharedOptions = {
   readonly file?: string;
   readonly tokenUsage?: boolean;
   readonly headless?: boolean;
+  readonly userSession?: boolean;
 };
 
 export const sharedOptions = {
@@ -34,5 +35,10 @@ export const sharedOptions = {
     type: 'boolean',
     description: 'Use browser in headless mode with no UI showing',
     default: true,
+  } as const,
+  userSession: {
+    type: 'boolean',
+    description: 'Use user\'s existing browser session instead of sandboxed session',
+    default: false,
   } as const,
 };

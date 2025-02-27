@@ -128,6 +128,7 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       const result = await toolAgent(prompt, tools, undefined, {
         logger,
         headless: argv.headless ?? true,
+        userSession: argv.userSession ?? false,
         workingDirectory: '.',
         tokenTracker,
       });

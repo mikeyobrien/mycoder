@@ -10,6 +10,7 @@ export type ToolContext = {
   logger: Logger;
   workingDirectory: string;
   headless: boolean;
+  userSession?: boolean;
   tokenTracker: TokenTracker;
 };
 
