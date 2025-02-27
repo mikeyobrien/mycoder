@@ -1,13 +1,13 @@
 import * as fs from 'fs/promises';
 import { createInterface } from 'readline/promises';
 
-import chalk from 'chalk';
 import {
   toolAgent,
   Logger,
   getTools,
   getAnthropicApiKeyError,
   TokenLevel,
+  userPrompt,
 } from 'mycoder-agent';
 
 import { SharedOptions } from '../options.js';
@@ -85,21 +85,9 @@ export const command: CommandModule<object, DefaultArgs> = {
 
       // If interactive mode
       if (argv.interactive) {
-        const readline = createInterface({
-          input: process.stdin,
-          output: process.stdout,
-        });
-
-        try {
-          console.log(
-            chalk.green(
-              "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
-            ),
-          );
-          prompt = await readline.question('\n> ');
-        } finally {
-          readline.close();
-        }
+        prompt = await userPrompt(
+          "Type your request below or 'help' for usage information. Use Ctrl+C to exit.",
+        );
       } else if (!prompt) {
         // Use command line prompt if provided
         prompt = argv.prompt;

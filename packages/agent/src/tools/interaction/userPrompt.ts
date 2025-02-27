@@ -1,10 +1,8 @@
-import * as readline from 'readline';
-
-import chalk from 'chalk';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 import { Tool } from '../../core/types.js';
+import { userPrompt } from '../../utils/userPrompt.js';
 
 const parameterSchema = z.object({
   prompt: z.string().describe('The prompt message to display to the user'),
@@ -23,26 +21,10 @@ export const userPromptTool: Tool<Parameters, ReturnType> = {
   execute: async ({ prompt }, { logger }) => {
     logger.verbose(`Prompting user with: ${prompt}`);
 
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      terminal: true,
-    });
-
-    // Disable the readline interface's internal input processing
-    if (rl.terminal) {
-      process.stdin.setRawMode(false);
-    }
-
-    const response = await new Promise<string>((resolve) => {
-      rl.question(chalk.green(prompt + ' '), (answer) => {
-        resolve(answer);
-      });
-    });
+    const response = await userPrompt(prompt);
 
     logger.verbose(`Received user response: ${response}`);
 
-    rl.close();
     return response;
   },
   logParameters: () => {},
