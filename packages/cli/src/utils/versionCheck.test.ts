@@ -23,9 +23,6 @@ import { getSettingsDir } from '../settings/settings.js';
 
 vi.mock('fs');
 vi.mock('fs/promises');
-vi.mock('mycoder-agent', () => ({
-  errorToString: vi.fn(),
-}));
 
 describe('versionCheck', () => {
   describe('generateUpgradeMessage', () => {
