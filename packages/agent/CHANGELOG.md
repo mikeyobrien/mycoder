@@ -1,5 +1,11 @@
 # mycoder-agent
 
+## 0.2.1
+
+### Patch Changes
+
+- Removed debug logging, fixed package.json urls for git repo.
+
 ## 0.2.0
 
 ### Minor Changes

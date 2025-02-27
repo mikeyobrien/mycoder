@@ -18,7 +18,7 @@ export class BrowserManager {
   async createSession(config?: BrowserConfig): Promise<BrowserSession> {
     try {
       const sessionConfig = { ...this.defaultConfig, ...config };
-      console.log('sessionConfig', sessionConfig);
+      //console.log('sessionConfig', sessionConfig);
       const browser = await chromium.launch({
         headless: sessionConfig.headless,
       });

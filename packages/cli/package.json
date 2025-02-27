@@ -1,7 +1,7 @@
 {
   "name": "mycoder",
   "description": "A command line tool using agent that can do arbitrary tasks, including coding tasks",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "bin": "./bin/cli.js",
   "main": "./dist/index.js",
@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/drivecore/mycoder-monorepo.git"
+    "url": "git+https://github.com/drivecore/mycoder.git"
   },
   "homepage": "https://mycoder.ai",
   "bugs": {
-    "url": "https://github.com/drivecore/mycoder-monorepo/issues"
+    "url": "https://github.com/drivecore/mycoder/issues"
   },
   "scripts": {
     "start": "node --no-deprecation bin/cli.js",
