@@ -1,5 +1,11 @@
 # mycoder-agent
 
+## 0.4.0
+
+### Minor Changes
+
+- Adds sentry error reporting for quality monitoring.
+
 ## 0.3.0
 
 ### Minor Changes
