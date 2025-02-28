@@ -8,6 +8,10 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { fileCommands } from 'yargs-file-commands';
 
+// Initialize Sentry as early as possible
+import { initSentry, captureException } from './sentry/index.js';
+initSentry();
+
 import { sharedOptions } from './options.js';
 
 import type { PackageJson } from 'type-fest';
@@ -46,5 +50,7 @@ const main = async () => {
 
 await main().catch((error) => {
   console.error(error);
+  // Capture the error with Sentry
+  captureException(error);
   process.exit(1);
 });
