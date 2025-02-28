@@ -6,6 +6,7 @@ export type SharedOptions = {
   readonly headless?: boolean;
   readonly userSession?: boolean;
   readonly pageFilter?: 'simple' | 'none' | 'readability';
+  readonly sentryDsn?: string;
 };
 
 export const sharedOptions = {
@@ -48,5 +49,10 @@ export const sharedOptions = {
     description: 'Method to process webpage content',
     default: 'none',
     choices: ['simple', 'none', 'readability'],
+  } as const,
+  sentryDsn: {
+    type: 'string',
+    description: 'Custom Sentry DSN for error tracking',
+    hidden: true,
   } as const,
 };

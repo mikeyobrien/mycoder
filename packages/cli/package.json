@@ -1,7 +1,7 @@
 {
   "name": "mycoder",
   "description": "A command line tool using agent that can do arbitrary tasks, including coding tasks",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "bin": "./bin/cli.js",
   "main": "./dist/index.js",
@@ -47,6 +47,7 @@
   "author": "Ben Houston",
   "license": "MIT",
   "dependencies": {
+    "@sentry/node": "^9.3.0",
     "chalk": "^5",
     "dotenv": "^16",
     "mycoder-agent": "workspace:*",

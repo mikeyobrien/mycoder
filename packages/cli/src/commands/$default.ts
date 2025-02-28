@@ -14,6 +14,7 @@ import {
 import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
 import { SharedOptions } from '../options.js';
+import { initSentry, captureException } from '../sentry/index.js';
 import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
 import { nameToLogIndex } from '../utils/nameToLogIndex.js';
 import { checkForUpdates, getPackageInfo } from '../utils/versionCheck.js';
@@ -34,6 +35,11 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
     }) as Argv<DefaultArgs>;
   },
   handler: async (argv) => {
+    // Initialize Sentry with custom DSN if provided
+    if (argv.sentryDsn) {
+      initSentry(argv.sentryDsn);
+    }
+
     const logger = new Logger({
       name: 'Default',
       logLevel: nameToLogIndex(argv.logLevel),
@@ -143,6 +149,8 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       logger.info('\n=== Result ===\n', output);
     } catch (error) {
       logger.error('An error occurred:', error);
+      // Capture the error with Sentry
+      captureException(error);
     }
 
     logger.log(
