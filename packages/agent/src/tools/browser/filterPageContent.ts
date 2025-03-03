@@ -80,13 +80,6 @@ async function getSimpleProcessedDOM(page: Page): Promise<string> {
 
     elementsToRemove.forEach((element) => element.remove());
 
-    console.log(
-      'removing ',
-      elementsToRemove.length,
-      ' elements out of a total ',
-      elements.length,
-    );
-
     return clone.outerHTML;
   });
 

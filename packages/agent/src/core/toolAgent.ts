@@ -293,7 +293,6 @@ export const toolAgent = async (
         parameters: tool.parameters,
       });
     });
-    console.log('toolSet', toolSet);
     const generateTextProps = {
       model: config.model,
       temperature: config.temperature,
@@ -301,7 +300,6 @@ export const toolAgent = async (
       system: systemPrompt,
       tools: toolSet,
     };
-    console.log('generateTextProps', generateTextProps);
     const { text, reasoning, reasoningDetails, toolCalls, toolResults } =
       await generateText(generateTextProps);
 

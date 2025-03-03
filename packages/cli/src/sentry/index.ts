@@ -1,5 +1,6 @@
-import * as Sentry from '@sentry/node';
 import { createRequire } from 'module';
+
+import * as Sentry from '@sentry/node';
 
 /**
  * Initialize Sentry for error tracking
@@ -10,7 +11,8 @@ export function initSentry(dsn?: string) {
   let packageVersion = 'unknown';
   try {
     const require = createRequire(import.meta.url);
-    packageVersion = process.env.npm_package_version || require('../../package.json').version;
+    packageVersion =
+      process.env.npm_package_version || require('../../package.json').version;
   } catch (error) {
     console.warn('Could not determine package version for Sentry:', error);
   }
@@ -18,27 +20,26 @@ export function initSentry(dsn?: string) {
   // Initialize Sentry
   Sentry.init({
     // Default DSN from Sentry.io integration instructions
-    dsn: dsn || 'https://2873d2518b60f645918b6a08ae5e69ae@o4508898407481344.ingest.us.sentry.io/4508898476687360',
-    
+    dsn:
+      dsn ||
+      'https://2873d2518b60f645918b6a08ae5e69ae@o4508898407481344.ingest.us.sentry.io/4508898476687360',
+
     // No profiling integration as requested
-    
+
     // Capture 100% of the transactions
     tracesSampleRate: 1.0,
-    
+
     // Set environment based on NODE_ENV
     environment: process.env.NODE_ENV || 'development',
-    
+
     // Add release version from package.json
     release: `mycoder@${packageVersion}`,
-    
-    // Don't capture errors in development mode unless explicitly enabled
-    enabled: process.env.NODE_ENV !== 'development' || process.env.ENABLE_SENTRY === 'true',
-  });
 
-  // Log confirmation that Sentry is initialized with version info
-  if (process.env.NODE_ENV !== 'test') {
-    console.log(`Sentry initialized for mycoder@${packageVersion}`);
-  }
+    // Don't capture errors in development mode unless explicitly enabled
+    enabled:
+      process.env.NODE_ENV !== 'development' ||
+      process.env.ENABLE_SENTRY === 'true',
+  });
 }
 
 /**
@@ -67,20 +68,27 @@ export function testSentryErrorReporting() {
     let packageVersion = 'unknown';
     try {
       const require = createRequire(import.meta.url);
-      packageVersion = process.env.npm_package_version || require('../../package.json').version;
+      packageVersion =
+        process.env.npm_package_version ||
+        require('../../package.json').version;
     } catch (error) {
-      console.warn('Could not determine package version for test error:', error);
+      console.warn(
+        'Could not determine package version for test error:',
+        error,
+      );
     }
-    
+
     // Throw a test error with version information
-    throw new Error(`Test error for Sentry.io integration from mycoder@${packageVersion}`);
+    throw new Error(
+      `Test error for Sentry.io integration from mycoder@${packageVersion}`,
+    );
   } catch (error) {
     // Capture the error with Sentry
     Sentry.captureException(error);
-    
+
     // Log a message about the test
     console.log('Test error sent to Sentry.io');
-    
+
     // Return the error for inspection
     return error;
   }
