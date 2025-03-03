@@ -8,6 +8,7 @@ import {
   ToolResultPart,
   ToolSet,
   tool as makeTool,
+  Message
 } from 'ai';
 import chalk from 'chalk';
 
@@ -191,62 +192,42 @@ async function executeTools(
   };
 }
 
-/*
-// a function that takes a list of messages and returns a list of messages but with the last message having a cache_control of ephemeral
-function addCacheControlToTools<T>(messages: T[]): T[] {
-  return messages.map((m, i) => ({
-    ...m,
-    ...(i === messages.length - 1
-      ? { cache_control: { type: 'ephemeral' } }
-      : {}),
-  }));
-}
-
-function addCacheControlToContentBlocks(
-  content: ContentBlockParam[],
-): ContentBlockParam[] {
-  return content.map((c, i) => {
-    if (i === content.length - 1) {
-      if (
-        c.type === 'text' ||
-        c.type === 'document' ||
-        c.type === 'image' ||
-        c.type === 'tool_use' ||
-        c.type === 'tool_result' ||
-        c.type === 'thinking' ||
-        c.type === 'redacted_thinking'
-      ) {
-        return { ...c, cache_control: { type: 'ephemeral' } };
+/**
+ * Adds cache control to the messages for token caching with the Vercel AI SDK
+ * This marks the last two messages as ephemeral which allows the conversation up to that
+ * point to be cached (with a ~5 minute window), reducing token usage when making multiple API calls
+ */
+function addCacheControlToMessages(messages: CoreMessage[]): CoreMessage[] {
+  if (messages.length <= 1) return messages;
+  
+  // Create a deep copy of the messages array to avoid mutating the original
+  const result = JSON.parse(JSON.stringify(messages)) as CoreMessage[];
+  
+  // Get the last two messages (if available)
+  const lastTwoMessageIndices = [
+    messages.length - 1, 
+    messages.length - 2
+  ];
+  
+  // Add providerOptions with anthropic cache control to the last two messages
+  lastTwoMessageIndices.forEach(index => {
+    if (index >= 0) {
+      const message = result[index];
+      if (message) {
+        // For the Vercel AI SDK, we need to add the providerOptions.anthropic property
+        // with cacheControl: 'ephemeral' to enable token caching
+        message.providerOptions = {
+          ...message.providerOptions,
+          anthropic: {
+            cacheControl: 'ephemeral'
+          }
+        };
       }
     }
-    return c;
   });
+  
+  return result;
 }
-function addCacheControlToMessages(
-  messages: Anthropic.Messages.MessageParam[],
-): Anthropic.Messages.MessageParam[] {
-  return messages.map((m, i) => {
-    if (typeof m.content === 'string') {
-      return {
-        ...m,
-        content: [
-          {
-            type: 'text',
-            text: m.content,
-            cache_control: { type: 'ephemeral' },
-          },
-        ] as ContentBlockParam[],
-      };
-    }
-    return {
-      ...m,
-      content:
-        i >= messages.length - 2
-          ? addCacheControlToContentBlocks(m.content)
-          : m.content,
-    };
-  });
-}*/
 
 export const toolAgent = async (
   initialPrompt: string,
@@ -293,10 +274,13 @@ export const toolAgent = async (
         parameters: tool.parameters,
       });
     });
+    // Apply cache control to messages for token caching
+    const messagesWithCacheControl = addCacheControlToMessages(messages);
+    
     const generateTextProps = {
       model: config.model,
       temperature: config.temperature,
-      messages,
+      messages: messagesWithCacheControl,
       system: systemPrompt,
       tools: toolSet,
     };
