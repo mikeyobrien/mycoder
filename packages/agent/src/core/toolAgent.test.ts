@@ -1,3 +1,4 @@
+import { anthropic } from '@ai-sdk/anthropic';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { MockLogger } from '../utils/mockLogger.js';
@@ -19,7 +20,7 @@ const toolContext: ToolContext = {
 // Mock configuration for testing
 const testConfig = {
   maxIterations: 50,
-  model: 'claude-3-7-sonnet-latest',
+  model: anthropic('claude-3-7-sonnet-20250219'),
   maxTokens: 4096,
   temperature: 0.7,
   getSystemPrompt: () => 'Test system prompt',

@@ -1,3 +1,4 @@
+import { anthropic } from '@ai-sdk/anthropic';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { toolAgent } from '../../src/core/toolAgent.js';
@@ -15,32 +16,6 @@ const toolContext: ToolContext = {
   pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
 };
-// Mock Anthropic SDK
-vi.mock('@anthropic-ai/sdk', () => {
-  return {
-    default: vi.fn().mockImplementation(() => ({
-      messages: {
-        create: vi
-          .fn()
-          .mockResolvedValueOnce({
-            content: [
-              {
-                type: 'tool_use',
-                name: 'respawn',
-                id: 'test-id',
-                input: { respawnContext: 'new context' },
-              },
-            ],
-            usage: { input_tokens: 10, output_tokens: 10 },
-          })
-          .mockResolvedValueOnce({
-            content: [],
-            usage: { input_tokens: 5, output_tokens: 5 },
-          }),
-      },
-    })),
-  };
-});
 
 describe('toolAgent respawn functionality', () => {
   const tools = getTools();
@@ -56,7 +31,7 @@ describe('toolAgent respawn functionality', () => {
       tools,
       {
         maxIterations: 2, // Need at least 2 iterations for respawn + empty response
-        model: 'test-model',
+        model: anthropic('claude-3-7-sonnet-20250219'),
         maxTokens: 100,
         temperature: 0,
         getSystemPrompt: () => 'test system prompt',
