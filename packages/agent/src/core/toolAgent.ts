@@ -300,8 +300,7 @@ export const toolAgent = async (
       system: systemPrompt,
       tools: toolSet,
     };
-    const { text, reasoning, reasoningDetails, toolCalls, toolResults } =
-      await generateText(generateTextProps);
+    const { text, toolCalls } = await generateText(generateTextProps);
 
     const localToolCalls: ToolUseContent[] = toolCalls.map((call) => ({
       type: 'tool_use',

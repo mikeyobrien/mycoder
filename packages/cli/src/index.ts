@@ -8,8 +8,6 @@ import { hideBin } from 'yargs/helpers';
 import { command as defaultCommand } from './commands/$default.js';
 import { command as testSentryCommand } from './commands/test-sentry.js';
 import { command as toolsCommand } from './commands/tools.js';
-
-// Initialize Sentry as early as possible
 import { sharedOptions } from './options.js';
 import { initSentry, captureException } from './sentry/index.js';
 initSentry();
