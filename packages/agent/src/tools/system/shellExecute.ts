@@ -48,8 +48,10 @@ export const shellExecuteTool: Tool<Parameters, ReturnType> = {
   logPrefix: '💻',
   description:
     'Executes a bash shell command and returns its output, can do amazing things if you are a shell scripting wizard',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  returns: returnSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
 
   execute: async (
     { command, timeout = 30000 },

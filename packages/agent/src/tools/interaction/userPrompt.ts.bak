@@ -17,10 +17,8 @@ export const userPromptTool: Tool<Parameters, ReturnType> = {
   name: 'userPrompt',
   description: 'Prompts the user for input and returns their response',
   logPrefix: '🗣️',
-  parameters: parameterSchema,
-  parametersJsonSchema: zodToJsonSchema(parameterSchema),
-  returns: returnSchema,
-  returnsJsonSchema: zodToJsonSchema(returnSchema),
+  parameters: zodToJsonSchema(parameterSchema),
+  returns: zodToJsonSchema(returnSchema),
   execute: async ({ prompt }, { logger }) => {
     logger.verbose(`Prompting user with: ${prompt}`);
 

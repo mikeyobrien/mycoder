@@ -1,5 +1,6 @@
 import { anthropic } from '@ai-sdk/anthropic';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { z } from 'zod';
 
 import { MockLogger } from '../utils/mockLogger.js';
 
@@ -65,7 +66,11 @@ describe('toolAgent', () => {
   const mockTool: Tool = {
     name: 'mockTool',
     description: 'A mock tool for testing',
-    parameters: {
+    parameters: z.object({
+      input: z.string().describe('Test input'),
+    }),
+    returns: z.string().describe('The processed result'),
+    parametersJsonSchema: {
       type: 'object',
       properties: {
         input: {
@@ -75,7 +80,7 @@ describe('toolAgent', () => {
       },
       required: ['input'],
     },
-    returns: {
+    returnsJsonSchema: {
       type: 'string',
       description: 'The processed result',
     },
@@ -85,7 +90,11 @@ describe('toolAgent', () => {
   const sequenceCompleteTool: Tool = {
     name: 'sequenceComplete',
     description: 'Completes the sequence',
-    parameters: {
+    parameters: z.object({
+      result: z.string().describe('The final result'),
+    }),
+    returns: z.string().describe('The final result'),
+    parametersJsonSchema: {
       type: 'object',
       properties: {
         result: {
@@ -95,7 +104,7 @@ describe('toolAgent', () => {
       },
       required: ['result'],
     },
-    returns: {
+    returnsJsonSchema: {
       type: 'string',
       description: 'The final result',
     },
@@ -134,12 +143,14 @@ describe('toolAgent', () => {
     const errorTool: Tool = {
       name: 'errorTool',
       description: 'A tool that always fails',
-      parameters: {
+      parameters: z.object({}),
+      returns: z.string().describe('Error message'),
+      parametersJsonSchema: {
         type: 'object',
         properties: {},
         required: [],
       },
-      returns: {
+      returnsJsonSchema: {
         type: 'string',
         description: 'Error message',
       },

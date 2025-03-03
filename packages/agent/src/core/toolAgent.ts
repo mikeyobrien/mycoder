@@ -7,6 +7,7 @@ import {
   generateText,
   ToolResultPart,
   ToolSet,
+  tool as makeTool,
 } from 'ai';
 import chalk from 'chalk';
 
@@ -287,20 +288,22 @@ export const toolAgent = async (
 
     const toolSet: ToolSet = {};
     tools.forEach((tool) => {
-      toolSet[tool.name] = {
+      toolSet[tool.name] = makeTool({
         description: tool.description,
         parameters: tool.parameters,
-      };
-    });
-    const { text, reasoning, reasoningDetails, toolCalls, toolResults } =
-      await generateText({
-        model: config.model,
-        temperature: config.temperature,
-        messages,
-        system: systemPrompt,
-        tools: toolSet,
-        toolChoice: 'auto',
       });
+    });
+    console.log('toolSet', toolSet);
+    const generateTextProps = {
+      model: config.model,
+      temperature: config.temperature,
+      messages,
+      system: systemPrompt,
+      tools: toolSet,
+    };
+    console.log('generateTextProps', generateTextProps);
+    const { text, reasoning, reasoningDetails, toolCalls, toolResults } =
+      await generateText(generateTextProps);
 
     const localToolCalls: ToolUseContent[] = toolCalls.map((call) => ({
       type: 'tool_use',

@@ -45,8 +45,10 @@ export const updateFileTool: Tool<Parameters, ReturnType> = {
   description:
     'Creates a file or updates a file by rewriting, patching, or appending content',
   logPrefix: '📝',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  returns: returnSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (
     { path: filePath, operation },
     { logger, workingDirectory },

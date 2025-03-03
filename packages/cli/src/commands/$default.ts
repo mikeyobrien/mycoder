@@ -10,6 +10,7 @@ import {
   userPrompt,
   LogLevel,
   subAgentTool,
+  errorToString,
 } from 'mycoder-agent';
 import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
@@ -148,7 +149,11 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
           : JSON.stringify(result.result, null, 2);
       logger.info('\n=== Result ===\n', output);
     } catch (error) {
-      logger.error('An error occurred:', error);
+      logger.error(
+        'An error occurred:',
+        errorToString(error),
+        error instanceof Error ? error.stack : '',
+      );
       // Capture the error with Sentry
       captureException(error);
     }

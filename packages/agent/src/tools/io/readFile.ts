@@ -48,8 +48,10 @@ export const readFileTool: Tool<Parameters, ReturnType> = {
   name: 'readFile',
   description: 'Reads file content within size limits and optional range',
   logPrefix: '📖',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  returns: returnSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (
     { path: filePath, range, maxSize = OUTPUT_LIMIT },
     context,

@@ -67,10 +67,8 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
   description:
     'Creates a sub-agent that has access to all tools to solve a specific task',
   logPrefix: '🤖',
-  parameters: parameterSchema,
-  parametersJsonSchema: zodToJsonSchema(parameterSchema),
-  returns: returnSchema,
-  returnsJsonSchema: zodToJsonSchema(returnSchema),
+  parameters: zodToJsonSchema(parameterSchema),
+  returns: zodToJsonSchema(returnSchema),
   execute: async (params, context) => {
     // Validate parameters
     const { description, goal, projectContext, fileContext } =
