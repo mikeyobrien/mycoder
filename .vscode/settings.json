@@ -1,17 +1,4 @@
 {
-  "eslint.probe": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "markdown",
-    "html",
-    "json"
-  ],
-
-  "editor.formatOnSave": true,
-  "editor.formatOnPaste": true,
-
   "cSpell.words": [
     "agentic",
     "agentify",
@@ -60,6 +47,18 @@
     "vinxi"
   ],
 
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "markdown",
+    "html",
+    "json"
+  ],
+
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
   "editor.rulers": [160],
 
   // Workbench
@@ -74,16 +73,5 @@
   "typescript.preferences.importModuleSpecifier": "relative",
 
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"],
-  "files.exclude": {
-    "**/.git": true,
-    "**/.nx": true
-  },
-
-  "css.validate": false,
-  "tailwindCSS.includeLanguages": {
-    "typescript": "javascript",
-    "typescriptreact": "javascript"
-  },
-  "tailwindCSS.emmetCompletions": true
+  "editor.codeActionsOnSave": ["source.formatDocument", "source.fixAll.eslint"]
 }
