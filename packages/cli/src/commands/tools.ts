@@ -54,7 +54,8 @@ export const command: CommandModule<object, ToolsArgs> = {
         // Parameters section
         console.log('Parameters:');
         // Use parametersJsonSchema if available, otherwise convert from ZodSchema
-        const parametersSchema = (tool as any).parametersJsonSchema || tool.parameters;
+        const parametersSchema =
+          (tool as any).parametersJsonSchema || tool.parameters;
         console.log(
           formatSchema(
             parametersSchema as {

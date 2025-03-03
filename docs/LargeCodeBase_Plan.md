@@ -11,16 +11,19 @@ This document presents research findings on how leading AI coding tools handle l
 While detailed technical documentation on Claude Code's internal architecture is limited in public sources, we can infer several approaches from Anthropic's general AI architecture and Claude Code's capabilities:
 
 1. **Chunking and Retrieval Augmentation**:
+
    - Claude Code likely employs retrieval-augmented generation (RAG) to handle large codebases
    - Files are likely chunked into manageable segments with semantic understanding
    - Relevant code chunks are retrieved based on query relevance
 
 2. **Hierarchical Code Understanding**:
+
    - Builds a hierarchical representation of code (project → modules → files → functions)
    - Maintains a graph of relationships between code components
    - Prioritizes context based on relevance to the current task
 
 3. **Incremental Context Management**:
+
    - Dynamically adjusts the context window to include only relevant code
    - Maintains a "working memory" of recently accessed or modified files
    - Uses sliding context windows to process large files sequentially
@@ -35,16 +38,19 @@ While detailed technical documentation on Claude Code's internal architecture is
 Aider's approach to handling large codebases can be inferred from its open-source codebase and documentation:
 
 1. **Git Integration**:
+
    - Leverages Git to track file changes and understand repository structure
    - Uses Git history to prioritize recently modified files
    - Employs Git's diff capabilities to minimize context needed for changes
 
 2. **Selective File Context**:
+
    - Only includes relevant files in the context rather than the entire codebase
    - Uses heuristics to identify related files based on imports, references, and naming patterns
    - Implements a "map-reduce" approach where it first analyzes the codebase structure, then selectively processes relevant files
 
 3. **Prompt Engineering and Chunking**:
+
    - Designs prompts that can work with limited context by focusing on specific tasks
    - Chunks large files and processes them incrementally
    - Uses summarization to compress information about non-focal code parts
@@ -90,6 +96,7 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ```
 
 **Implementation Details:**
+
 - Create a lightweight indexer that runs during project initialization
 - Generate embeddings for code files, focusing on API definitions, function signatures, and documentation
 - Build a graph of relationships between files based on imports/exports and references
@@ -120,6 +127,7 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ```
 
 **Implementation Details:**
+
 - Develop a working set manager that tracks currently relevant files
 - Implement a relevance scoring algorithm that considers:
   - Semantic similarity to the current task
@@ -148,6 +156,7 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ```
 
 **Implementation Details:**
+
 - Chunk files at meaningful boundaries (functions, classes, modules)
 - Implement overlapping chunks to maintain context across boundaries
 - Develop a progressive loading strategy:
@@ -181,6 +190,7 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ```
 
 **Implementation Details:**
+
 - Implement a multi-level caching system:
   - Token cache: Store tokenized representations of files to avoid re-tokenization
   - Embedding cache: Store vector embeddings for semantic search
@@ -209,6 +219,7 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ```
 
 **Implementation Details:**
+
 - Improve task decomposition to identify parallelizable sub-tasks
 - Implement smart context distribution to sub-agents:
   - Provide each sub-agent with only the context it needs
@@ -222,16 +233,19 @@ Based on the research findings, we recommend the following enhancements to MyCod
 ## Implementation Roadmap
 
 ### Phase 1: Foundation (1-2 months)
+
 - Develop the basic indexing system for project structure and file metadata
 - Implement a simple relevance-based context selection mechanism
 - Create a basic chunking strategy for large files
 
 ### Phase 2: Advanced Features (2-3 months)
+
 - Implement the semantic indexing system with code embeddings
 - Develop the full context management system with working sets
 - Create the multi-level caching system
 
 ### Phase 3: Optimization and Integration (1-2 months)
+
 - Enhance sub-agent coordination for parallel processing
 - Optimize performance with better caching and context management
 - Integrate all components into a cohesive system

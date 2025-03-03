@@ -17,6 +17,7 @@ npm install @sentry/node --save
 ## Configuration
 
 By default, Sentry is:
+
 - Enabled in production environments
 - Disabled in development environments (unless explicitly enabled)
 - Configured to capture 100% of transactions
@@ -56,7 +57,9 @@ Sentry.init({
   tracesSampleRate: 1.0,
   environment: process.env.NODE_ENV || 'development',
   release: `mycoder@${packageVersion}`,
-  enabled: process.env.NODE_ENV !== 'development' || process.env.ENABLE_SENTRY === 'true',
+  enabled:
+    process.env.NODE_ENV !== 'development' ||
+    process.env.ENABLE_SENTRY === 'true',
 });
 
 // Capture errors
@@ -76,6 +79,7 @@ mycoder test-sentry
 ```
 
 This command will:
+
 1. Generate a test error that includes the package version
 2. Report it to Sentry.io
 3. Output the result to the console
@@ -85,6 +89,7 @@ Note: In development environments, you may need to set `ENABLE_SENTRY=true` for 
 ## Privacy
 
 Error reports sent to Sentry include:
+
 - Stack traces
 - Error messages
 - Environment information

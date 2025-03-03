@@ -29,7 +29,7 @@ export type Tool<TParams = Record<string, any>, TReturn = any> = {
   logReturns?: (returns: TReturn, context: ToolContext) => void;
 
   execute: (params: TParams, context: ToolContext) => Promise<TReturn>;
-  
+
   // Keep JsonSchema7Type for backward compatibility and Vercel AI SDK integration
   parametersJsonSchema?: JsonSchema7Type;
   returnsJsonSchema?: JsonSchema7Type;
