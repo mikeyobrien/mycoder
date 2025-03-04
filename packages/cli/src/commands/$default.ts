@@ -109,6 +109,7 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
         );
         throw new Error('OpenAI API key not found');
       }
+      // No API key check needed for Ollama as it uses a local server
 
       // Validate model name
       if (!AVAILABLE_MODELS[userModelProvider].includes(userModelName)) {
@@ -166,8 +167,9 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       const agentConfig = {
         ...DEFAULT_CONFIG,
         model: getModel(
-          userModelProvider as 'anthropic' | 'openai',
+          userModelProvider as 'anthropic' | 'openai' | 'ollama',
           userModelName,
+          { ollamaBaseUrl: config.ollamaBaseUrl },
         ),
       };
 
