@@ -8,6 +8,7 @@ import {
   ToolResultPart,
   ToolSet,
   tool as makeTool,
+  ToolCallPart,
 } from 'ai';
 import chalk from 'chalk';
 
@@ -117,6 +118,11 @@ function processResponse(response: Anthropic.Message) {
 }
 */
 
+type ErrorResult = {
+  errorMessage: string;
+  errorType: string;
+};
+
 async function executeTools(
   toolCalls: ToolUseContent[],
   tools: Tool[],
@@ -159,8 +165,12 @@ async function executeTools(
           tokenTracker: new TokenTracker(call.name, context.tokenTracker),
         });
       } catch (error: any) {
-        toolResult = `Error: Exception thrown during tool execution.  Type: ${error.constructor.name}, Message: ${error.message}`;
+        toolResult = JSON.stringify({
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+        });
       }
+
       return {
         type: 'tool-result',
         toolCallId: call.id,
@@ -173,7 +183,8 @@ async function executeTools(
   const sequenceCompletedTool = toolResults.find(
     (r) => r.toolName === 'sequenceComplete',
   );
-  const completionResult = sequenceCompletedTool?.result as string;
+  const completionResult = (sequenceCompletedTool?.result as { result: string })
+    .result;
 
   messages.push({
     role: 'tool',
@@ -292,7 +303,13 @@ export const toolAgent = async (
       messages: messagesWithCacheControl,
       tools: toolSet,
     };
-    const { text, toolCalls } = await generateText(generateTextProps);
+    const { text, toolCalls, ...other } = await generateText(generateTextProps);
+
+    //console.log(
+    //  'providerMetadata',
+    //  JSON.stringify(other.providerMetadata, null, 2),
+    //);
+    //console.log('other data', JSON.stringify(other, null, 2));
 
     const localToolCalls: ToolUseContent[] = toolCalls.map((call) => ({
       type: 'tool_use',
@@ -327,6 +344,20 @@ export const toolAgent = async (
 
     if (text) {
       logger.info(text);
+    }
+
+    if (toolCalls.length > 0) {
+      const toolCallParts: Array<ToolCallPart> = toolCalls.map((toolCall) => ({
+        type: 'tool-call',
+        toolCallId: toolCall.toolCallId,
+        toolName: toolCall.toolName,
+        args: toolCall.args,
+      }));
+
+      messages.push({
+        role: 'assistant',
+        content: toolCallParts,
+      });
     }
 
     /*logger.log(

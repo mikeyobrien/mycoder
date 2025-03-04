@@ -36,11 +36,13 @@ const parameterSchema = z.object({
     .optional(),
 });
 
-const returnSchema = z
-  .string()
-  .describe(
-    'The response from the sub-agent including its reasoning and tool usage',
-  );
+const returnSchema = z.object({
+  response: z
+    .string()
+    .describe(
+      'The response from the sub-agent including its reasoning and tool usage',
+    ),
+});
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
@@ -109,7 +111,7 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
       workingDirectory:
         fileContext?.workingDirectory ?? context.workingDirectory,
     });
-    return result.result; // Return the result string directly
+    return { response: result.result };
   },
   logParameters: (input, { logger }) => {
     logger.info(`Delegating task "${input.description}"`);

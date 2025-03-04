@@ -11,9 +11,11 @@ const parameterSchema = z.object({
   respawnContext: z.string().describe('The context to keep after respawning'),
 });
 
-const returnSchema = z
-  .string()
-  .describe('A message indicating that the respawn has been initiated');
+const returnSchema = z.object({
+  result: z
+    .string()
+    .describe('A message indicating that the respawn has been initiated'),
+});
 
 export const respawnTool: Tool = {
   name: 'respawn',

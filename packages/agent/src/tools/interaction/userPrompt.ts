@@ -8,7 +8,9 @@ const parameterSchema = z.object({
   prompt: z.string().describe('The prompt message to display to the user'),
 });
 
-const returnSchema = z.string().describe("The user's response");
+const returnSchema = z.object({
+  userText: z.string().describe("The user's response"),
+});
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
@@ -28,7 +30,7 @@ export const userPromptTool: Tool<Parameters, ReturnType> = {
 
     logger.verbose(`Received user response: ${response}`);
 
-    return response;
+    return { userText: response };
   },
   logParameters: () => {},
   logReturns: () => {},
