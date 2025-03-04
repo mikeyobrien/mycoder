@@ -26,6 +26,7 @@ export * from './tools/interaction/userPrompt.js';
 export * from './core/executeToolCall.js';
 export * from './core/types.js';
 export * from './core/toolAgent.js';
+export * from './core/toolAgent/config.js';
 
 // Utils
 export * from './tools/getTools.js';
