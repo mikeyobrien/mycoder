@@ -1,13 +1,13 @@
 import chalk from 'chalk';
-import { Logger, LogLevel } from 'mycoder-agent';
+import { Logger } from 'mycoder-agent';
 
 import { SharedOptions } from '../options.js';
 import { getConfig, updateConfig } from '../settings/config.js';
 import { nameToLogIndex } from '../utils/nameToLogIndex.js';
 
-import type { CommandModule, Argv, ArgumentsCamelCase } from 'yargs';
+import type { CommandModule, ArgumentsCamelCase } from 'yargs';
 
-interface ConfigOptions extends SharedOptions {
+export interface ConfigOptions extends SharedOptions {
   command: 'get' | 'set' | 'list';
   key?: string;
   value?: string;
@@ -33,8 +33,14 @@ export const command: CommandModule<SharedOptions, ConfigOptions> = {
         type: 'string',
       })
       .example('$0 config list', 'List all configuration values')
-      .example('$0 config get githubMode', 'Get the value of githubMode setting')
-      .example('$0 config set githubMode true', 'Enable GitHub mode') as any;
+      .example(
+        '$0 config get githubMode',
+        'Get the value of githubMode setting',
+      )
+      .example(
+        '$0 config set githubMode true',
+        'Enable GitHub mode',
+      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
   },
   handler: async (argv: ArgumentsCamelCase<ConfigOptions>) => {
     const logger = new Logger({
@@ -61,7 +67,9 @@ export const command: CommandModule<SharedOptions, ConfigOptions> = {
       }
 
       if (argv.key in config) {
-        logger.info(`${argv.key}: ${chalk.green(config[argv.key as keyof typeof config])}`);
+        logger.info(
+          `${argv.key}: ${chalk.green(config[argv.key as keyof typeof config])}`,
+        );
       } else {
         logger.error(`Configuration key '${argv.key}' not found`);
       }
@@ -79,28 +87,35 @@ export const command: CommandModule<SharedOptions, ConfigOptions> = {
         logger.error('Value is required for set command');
         return;
       }
-      
+
       // Parse the value based on current type or infer boolean/number
-      let parsedValue: any = argv.value;
-      
+      let parsedValue: string | boolean | number = argv.value;
+
       // Check if config already exists to determine type
       if (argv.key in config) {
         if (typeof config[argv.key as keyof typeof config] === 'boolean') {
           parsedValue = argv.value.toLowerCase() === 'true';
-        } else if (typeof config[argv.key as keyof typeof config] === 'number') {
+        } else if (
+          typeof config[argv.key as keyof typeof config] === 'number'
+        ) {
           parsedValue = Number(argv.value);
         }
       } else {
         // If config doesn't exist yet, try to infer type
-        if (argv.value.toLowerCase() === 'true' || argv.value.toLowerCase() === 'false') {
+        if (
+          argv.value.toLowerCase() === 'true' ||
+          argv.value.toLowerCase() === 'false'
+        ) {
           parsedValue = argv.value.toLowerCase() === 'true';
         } else if (!isNaN(Number(argv.value))) {
           parsedValue = Number(argv.value);
         }
       }
-      
+
       const updatedConfig = updateConfig({ [argv.key]: parsedValue });
-      logger.info(`Updated ${argv.key}: ${chalk.green(updatedConfig[argv.key as keyof typeof updatedConfig])}`);
+      logger.info(
+        `Updated ${argv.key}: ${chalk.green(updatedConfig[argv.key as keyof typeof updatedConfig])}`,
+      );
       return;
     }
 
