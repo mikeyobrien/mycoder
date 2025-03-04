@@ -21,7 +21,9 @@ export function createCacheControlMessageFromSystemPrompt(
  * This marks the last two messages as ephemeral which allows the conversation up to that
  * point to be cached (with a ~5 minute window), reducing token usage when making multiple API calls
  */
-export function addCacheControlToMessages(messages: CoreMessage[]): CoreMessage[] {
+export function addCacheControlToMessages(
+  messages: CoreMessage[],
+): CoreMessage[] {
   if (messages.length <= 1) return messages;
 
   // Create a deep copy of the messages array to avoid mutating the original

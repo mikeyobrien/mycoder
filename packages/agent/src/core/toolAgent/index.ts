@@ -1,5 +1,4 @@
 import { CoreMessage, ToolSet, generateText, tool as makeTool } from 'ai';
-import chalk from 'chalk';
 
 import { getAnthropicApiKeyError } from '../../utils/errors.js';
 
@@ -10,8 +9,8 @@ import {
   createToolCallParts,
   formatToolCalls,
 } from './messageUtils.js';
-import { executeTools } from './toolExecutor.js';
 import { logTokenUsage } from './tokenTracking.js';
+import { executeTools } from './toolExecutor.js';
 import { Tool, ToolAgentResult, ToolContext } from './types.js';
 
 /**
@@ -62,7 +61,7 @@ export const toolAgent = async (
         parameters: tool.parameters,
       });
     });
-    
+
     // Apply cache control to messages for token caching
     const messagesWithCacheControl = [
       createCacheControlMessageFromSystemPrompt(systemPrompt),
@@ -75,7 +74,7 @@ export const toolAgent = async (
       messages: messagesWithCacheControl,
       tools: toolSet,
     };
-    const { text, toolCalls, ...other } = await generateText(generateTextProps);
+    const { text, toolCalls } = await generateText(generateTextProps);
 
     const localToolCalls = formatToolCalls(toolCalls);
 
@@ -145,7 +144,7 @@ export const toolAgent = async (
     result: 'Maximum sub-agent iterations reach without successful completion',
     interactions,
   };
-  
+
   logTokenUsage(tokenTracker);
   return result;
 };

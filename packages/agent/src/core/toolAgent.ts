@@ -14,7 +14,7 @@ export { toolAgent, ToolAgentResult, Tool, ToolContext };
 const deprecationWarning = () => {
   console.warn(
     'Warning: Importing directly from toolAgent.ts is deprecated. ' +
-    'Please import from the toolAgent directory instead.'
+      'Please import from the toolAgent directory instead.',
   );
 };
 

@@ -1,4 +1,3 @@
-import { anthropic } from '@ai-sdk/anthropic';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { z } from 'zod';
 

@@ -1,5 +1,3 @@
-import { CoreMessage } from 'ai';
-
 // Re-export all types from the original types.ts file
 export * from '../types.js';
 
