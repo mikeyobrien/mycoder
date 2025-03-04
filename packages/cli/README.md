@@ -57,6 +57,7 @@ mycoder config set githubMode false
 ```
 
 Requirements for GitHub mode:
+
 - GitHub CLI (`gh`) needs to be installed and authenticated
 - User needs to have appropriate GitHub permissions for the target repository
 

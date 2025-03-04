@@ -45,11 +45,13 @@ mycoder config get githubMode
 When GitHub mode is enabled, MyCoder will automatically include GitHub-specific instructions in its system prompt. You can ask MyCoder to:
 
 1. **Work on existing issues**:
+
    ```bash
    mycoder "Implement GitHub issue #42"
    ```
 
 2. **Create new issues**:
+
    ```bash
    mycoder "Create a GitHub issue for adding dark mode to the UI"
    ```
