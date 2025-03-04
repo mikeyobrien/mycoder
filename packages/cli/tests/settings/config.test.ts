@@ -36,7 +36,12 @@ describe('Config', () => {
 
       const config = getConfig();
 
-      expect(config).toEqual({ githubMode: false });
+      expect(config).toEqual({
+        githubMode: false,
+        headless: true,
+        userSession: false,
+        pageFilter: 'none',
+      });
       expect(fs.existsSync).toHaveBeenCalledWith(mockConfigFile);
     });
 
@@ -60,7 +65,12 @@ describe('Config', () => {
 
       const config = getConfig();
 
-      expect(config).toEqual({ githubMode: false });
+      expect(config).toEqual({
+        githubMode: false,
+        headless: true,
+        userSession: false,
+        pageFilter: 'none',
+      });
     });
   });
 
