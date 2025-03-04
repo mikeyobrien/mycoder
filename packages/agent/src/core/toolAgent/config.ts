@@ -1,6 +1,34 @@
 import { execSync } from 'child_process';
 
 import { anthropic } from '@ai-sdk/anthropic';
+import { openai } from '@ai-sdk/openai';
+
+/**
+ * Available model providers
+ */
+export type ModelProvider = 'anthropic' | 'openai';
+
+/**
+ * Available models by provider
+ */
+export const AVAILABLE_MODELS = {
+  anthropic: ['claude-3-7-sonnet-20250219', 'claude-3-opus-20240229'],
+  openai: ['gpt-4o-2024-05-13', 'o3-mini-2024-07-18'],
+};
+
+/**
+ * Get the model instance based on provider and model name
+ */
+export function getModel(provider: ModelProvider, modelName: string) {
+  switch (provider) {
+    case 'anthropic':
+      return anthropic(modelName);
+    case 'openai':
+      return openai(modelName);
+    default:
+      throw new Error(`Unknown model provider: ${provider}`);
+  }
+}
 
 /**
  * Default configuration for the tool agent

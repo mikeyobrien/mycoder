@@ -9,6 +9,8 @@ const configFile = path.join(getSettingsDir(), 'config.json');
 const defaultConfig = {
   // Add default configuration values here
   githubMode: false,
+  modelProvider: 'anthropic',
+  modelName: 'claude-3-7-sonnet-20250219',
 };
 
 export type Config = typeof defaultConfig;

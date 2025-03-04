@@ -1,7 +1,7 @@
-import { anthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
+import { getModel } from '../../core/toolAgent/config.js';
 import { toolAgent } from '../../core/toolAgent.js';
 import { Tool } from '../../core/types.js';
 import { getTools } from '../getTools.js';
@@ -50,7 +50,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 // Sub-agent specific configuration
 const subAgentConfig = {
   maxIterations: 50,
-  model: anthropic('claude-3-7-sonnet-20250219'),
+  model: getModel('anthropic', 'claude-3-7-sonnet-20250219'),
   maxTokens: 4096,
   temperature: 0.7,
   getSystemPrompt: () => {

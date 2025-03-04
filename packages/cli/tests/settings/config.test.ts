@@ -36,7 +36,11 @@ describe('Config', () => {
 
       const config = getConfig();
 
-      expect(config).toEqual({ githubMode: false });
+      expect(config).toEqual({
+        githubMode: false,
+        modelProvider: 'anthropic',
+        modelName: 'claude-3-7-sonnet-20250219',
+      });
       expect(fs.existsSync).toHaveBeenCalledWith(mockConfigFile);
     });
 
@@ -60,7 +64,11 @@ describe('Config', () => {
 
       const config = getConfig();
 
-      expect(config).toEqual({ githubMode: false });
+      expect(config).toEqual({
+        githubMode: false,
+        modelProvider: 'anthropic',
+        modelName: 'claude-3-7-sonnet-20250219',
+      });
     });
   });
 
