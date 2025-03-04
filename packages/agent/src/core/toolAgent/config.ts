@@ -2,6 +2,8 @@ import { execSync } from 'child_process';
 
 import { anthropic } from '@ai-sdk/anthropic';
 
+import { ToolContext } from '../types';
+
 /**
  * Default configuration for the tool agent
  */
@@ -16,9 +18,7 @@ export const DEFAULT_CONFIG = {
 /**
  * Gets the default system prompt with contextual information about the environment
  */
-export function getDefaultSystemPrompt(options?: {
-  githubMode?: boolean;
-}): string {
+export function getDefaultSystemPrompt(toolContext: ToolContext): string {
   // Gather context with error handling
   const getCommandOutput = (command: string, label: string): string => {
     try {
@@ -33,7 +33,7 @@ export function getDefaultSystemPrompt(options?: {
     files: getCommandOutput('ls -la', 'file listing'),
     system: getCommandOutput('uname -a', 'system information'),
     datetime: new Date().toString(),
-    githubMode: options?.githubMode || false,
+    githubMode: toolContext.githubMode,
   };
 
   const githubModeInstructions = context.githubMode
@@ -82,7 +82,7 @@ export function getDefaultSystemPrompt(options?: {
     '3. Update documentation as needed',
     '4. Consider adding documentation if you encountered setup/understanding challenges',
     '',
-    'Feel free to use Google and Bing via the browser tools to search for information or for ideas when you get stuck.',
+    'Feel free to use AI friendly search engines via the browser tools to search for information or for ideas when you get stuck.',
     '',
     'When you run into issues or unexpected results, take a step back and read the project documentation and configuration files and look at other source files in the project for examples of what works.',
     '',

@@ -16,6 +16,7 @@ import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
 import { SharedOptions } from '../options.js';
 import { initSentry, captureException } from '../sentry/index.js';
+import { getConfig } from '../settings/config.js';
 import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
 import { nameToLogIndex } from '../utils/nameToLogIndex.js';
 import { checkForUpdates, getPackageInfo } from '../utils/versionCheck.js';
@@ -133,14 +134,16 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
         );
         process.exit(0);
       });
+      const config = await getConfig();
 
       const result = await toolAgent(prompt, tools, undefined, {
         logger,
-        headless: argv.headless ?? true,
-        userSession: argv.userSession ?? false,
-        pageFilter: argv.pageFilter ?? 'none',
+        headless: argv.headless ?? config.headless,
+        userSession: argv.userSession ?? config.userSession,
+        pageFilter: argv.pageFilter ?? config.pageFilter,
         workingDirectory: '.',
         tokenTracker,
+        githubMode: config.githubMode,
       });
 
       const output =

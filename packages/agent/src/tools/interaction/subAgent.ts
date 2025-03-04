@@ -2,8 +2,9 @@ import { anthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
+import { getDefaultSystemPrompt } from '../../core/toolAgent/index.js';
 import { toolAgent } from '../../core/toolAgent.js';
-import { Tool } from '../../core/types.js';
+import { Tool, ToolContext } from '../../core/types.js';
 import { getTools } from '../getTools.js';
 
 const parameterSchema = z.object({
@@ -53,8 +54,9 @@ const subAgentConfig = {
   model: anthropic('claude-3-7-sonnet-20250219'),
   maxTokens: 4096,
   temperature: 0.7,
-  getSystemPrompt: () => {
+  getSystemPrompt: (context: ToolContext) => {
     return [
+      getDefaultSystemPrompt(context),
       'You are a focused AI sub-agent handling a specific task.',
       'You have access to the same tools as the main agent but should focus only on your assigned task.',
       'When complete, call the sequenceComplete tool with your results.',

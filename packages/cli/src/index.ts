@@ -6,6 +6,7 @@ import yargs, { CommandModule } from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { command as defaultCommand } from './commands/$default.js';
+import { command as configCommand } from './commands/config.js';
 import { command as testSentryCommand } from './commands/test-sentry.js';
 import { command as toolsCommand } from './commands/tools.js';
 import { sharedOptions } from './options.js';
@@ -35,6 +36,7 @@ const main = async () => {
       defaultCommand,
       testSentryCommand,
       toolsCommand,
+      configCommand,
     ] as CommandModule[])
     .strict()
     .showHelpOnFail(true)

@@ -49,11 +49,18 @@ export async function executeTools(
           ...context,
           tokenTracker: new TokenTracker(call.name, context.tokenTracker),
         });
-      } catch (error: any) {
-        toolResult = JSON.stringify({
-          errorMessage: error.message,
-          errorType: error.constructor.name,
-        });
+      } catch (errorStr: any) {
+        if (errorStr instanceof Error) {
+          if (errorStr.stack) {
+            context.logger.error(`Tool error stack trace: ${errorStr.stack}`);
+          }
+          toolResult = JSON.stringify(errorStr);
+        } else {
+          toolResult = JSON.stringify({
+            errorMessage: errorStr.message,
+            errorType: errorStr.name,
+          });
+        }
       }
 
       return {

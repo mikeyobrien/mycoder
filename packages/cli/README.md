@@ -76,6 +76,26 @@ mycoder config get githubMode
 mycoder config set githubMode true
 ```
 
+### Available Configuration Options
+
+- `githubMode`: Enable GitHub mode for working with issues and PRs (default: `false`)
+- `headless`: Run browser in headless mode with no UI showing (default: `true`)
+- `userSession`: Use user's existing browser session instead of sandboxed session (default: `false`)
+- `pageFilter`: Method to process webpage content: 'simple', 'none', or 'readability' (default: `none`)
+
+Example:
+
+```bash
+# Set browser to show UI
+mycoder config set headless false
+
+# Use existing browser session
+mycoder config set userSession true
+
+# Use readability for webpage processing
+mycoder config set pageFilter readability
+```
+
 ## Environment Variables
 
 - `ANTHROPIC_API_KEY`: Your Anthropic API key (required)
