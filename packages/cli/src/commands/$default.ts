@@ -107,6 +107,21 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
           'You can get an API key from https://platform.openai.com/api-keys',
         );
         throw new Error('OpenAI API key not found');
+      } else if (userModelProvider === 'xai' && !process.env.XAI_API_KEY) {
+        logger.error(
+          'No xAI API key found. Please set the XAI_API_KEY environment variable.',
+          'You can get an API key from https://platform.xai.com',
+        );
+        throw new Error('xAI API key not found');
+      } else if (
+        userModelProvider === 'mistral' &&
+        !process.env.MISTRAL_API_KEY
+      ) {
+        logger.error(
+          'No Mistral API key found. Please set the MISTRAL_API_KEY environment variable.',
+          'You can get an API key from https://console.mistral.ai/api-keys/',
+        );
+        throw new Error('Mistral API key not found');
       }
       // No API key check needed for Ollama as it uses a local server
 
@@ -157,7 +172,12 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       const agentConfig = {
         ...DEFAULT_CONFIG,
         model: getModel(
-          userModelProvider as 'anthropic' | 'openai' | 'ollama',
+          userModelProvider as
+            | 'anthropic'
+            | 'openai'
+            | 'ollama'
+            | 'xai'
+            | 'mistral',
           userModelName,
           { ollamaBaseUrl: config.ollamaBaseUrl },
         ),
