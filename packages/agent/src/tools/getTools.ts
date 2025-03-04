@@ -5,8 +5,7 @@ import { browseStartTool } from './browser/browseStart.js';
 import { subAgentTool } from './interaction/subAgent.js';
 import { userPromptTool } from './interaction/userPrompt.js';
 import { fetchTool } from './io/fetch.js';
-import { readFileTool } from './io/readFile.js';
-import { updateFileTool } from './io/updateFile.js';
+import { textEditorTool } from './io/textEditor.js';
 import { respawnTool } from './system/respawn.js';
 import { sequenceCompleteTool } from './system/sequenceComplete.js';
 import { shellMessageTool } from './system/shellMessage.js';
@@ -15,9 +14,8 @@ import { sleepTool } from './system/sleep.js';
 
 export function getTools(): Tool[] {
   return [
+    textEditorTool,
     subAgentTool,
-    readFileTool,
-    updateFileTool,
     userPromptTool,
     sequenceCompleteTool,
     fetchTool,
