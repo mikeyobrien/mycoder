@@ -12,6 +12,8 @@ const defaultConfig = {
   headless: true,
   userSession: false,
   pageFilter: 'none' as 'simple' | 'none' | 'readability',
+  modelProvider: 'anthropic',
+  modelName: 'claude-3-7-sonnet-20250219',
 };
 
 export type Config = typeof defaultConfig;

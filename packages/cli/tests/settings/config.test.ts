@@ -41,6 +41,8 @@ describe('Config', () => {
         headless: true,
         userSession: false,
         pageFilter: 'none',
+        modelProvider: 'anthropic',
+        modelName: 'claude-3-7-sonnet-20250219',
       });
       expect(fs.existsSync).toHaveBeenCalledWith(mockConfigFile);
     });
@@ -70,6 +72,8 @@ describe('Config', () => {
         headless: true,
         userSession: false,
         pageFilter: 'none',
+        modelProvider: 'anthropic',
+        modelName: 'claude-3-7-sonnet-20250219',
       });
     });
   });

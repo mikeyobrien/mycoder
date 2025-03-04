@@ -11,6 +11,9 @@ import {
   LogLevel,
   subAgentTool,
   errorToString,
+  getModel,
+  AVAILABLE_MODELS,
+  DEFAULT_CONFIG,
 } from 'mycoder-agent';
 import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
@@ -87,10 +90,33 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
     );
 
     try {
-      // Early API key check
-      if (!process.env.ANTHROPIC_API_KEY) {
+      // Get configuration for model provider and name
+      const userConfig = getConfig();
+      const userModelProvider = argv.modelProvider || userConfig.modelProvider;
+      const userModelName = argv.modelName || userConfig.modelName;
+
+      // Early API key check based on model provider
+      if (userModelProvider === 'anthropic' && !process.env.ANTHROPIC_API_KEY) {
         logger.error(getAnthropicApiKeyError());
         throw new Error('Anthropic API key not found');
+      } else if (
+        userModelProvider === 'openai' &&
+        !process.env.OPENAI_API_KEY
+      ) {
+        logger.error(
+          'No OpenAI API key found. Please set the OPENAI_API_KEY environment variable.',
+          'You can get an API key from https://platform.openai.com/api-keys',
+        );
+        throw new Error('OpenAI API key not found');
+      }
+
+      // Validate model name
+      if (!AVAILABLE_MODELS[userModelProvider].includes(userModelName)) {
+        logger.error(
+          `Invalid model name: ${userModelName} for provider ${userModelProvider}`,
+          `Available models for ${userModelProvider}: ${AVAILABLE_MODELS[userModelProvider].join(', ')}`,
+        );
+        throw new Error(`Invalid model name: ${userModelName}`);
       }
 
       let prompt: string | undefined;
@@ -136,7 +162,16 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
       });
       const config = await getConfig();
 
-      const result = await toolAgent(prompt, tools, undefined, {
+      // Create a config with the selected model
+      const agentConfig = {
+        ...DEFAULT_CONFIG,
+        model: getModel(
+          userModelProvider as 'anthropic' | 'openai',
+          userModelName,
+        ),
+      };
+
+      const result = await toolAgent(prompt, tools, agentConfig, {
         logger,
         headless: argv.headless ?? config.headless,
         userSession: argv.userSession ?? config.userSession,
