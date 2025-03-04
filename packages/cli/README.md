@@ -4,7 +4,7 @@ Command-line interface for AI-powered coding tasks.
 
 ## Features
 
-- 🤖 **AI-Powered**: Leverages Anthropic's Claude, OpenAI models, and Ollama for intelligent coding assistance
+- 🤖 **AI-Powered**: Leverages Anthropic's Claude, OpenAI models, xAI/Grok, Mistral AI, and Ollama for intelligent coding assistance
 - 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
 - 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
 - 📝 **Self-Modification**: Can modify code, it was built and tested by writing itself
@@ -82,7 +82,7 @@ mycoder config set modelName gpt-4o-2024-05-13
 
 ### Model Selection
 
-MyCoder supports Anthropic, OpenAI, and Ollama models. You can configure which model provider and model name to use with the following commands:
+MyCoder supports Anthropic, OpenAI, xAI/Grok, Mistral AI, and Ollama models. You can configure which model provider and model name to use with the following commands:
 
 ```bash
 # Use OpenAI models
@@ -92,6 +92,14 @@ mycoder config set modelName gpt-4o-2024-05-13  # or any other OpenAI model
 # Use Anthropic models
 mycoder config set modelProvider anthropic
 mycoder config set modelName claude-3-7-sonnet-20250219  # or any other Anthropic model
+
+# Use xAI/Grok models
+mycoder config set modelProvider xai
+mycoder config set modelName grok-1  # or any other xAI model
+
+# Use Mistral AI models
+mycoder config set modelProvider mistral
+mycoder config set modelName mistral-large-latest  # or any other Mistral model
 
 # Use Ollama models (local)
 mycoder config set modelProvider ollama
@@ -135,6 +143,8 @@ mycoder config set ollamaBaseUrl http://your-ollama-server:11434/api
 
 - `ANTHROPIC_API_KEY`: Your Anthropic API key (required when using Anthropic models)
 - `OPENAI_API_KEY`: Your OpenAI API key (required when using OpenAI models)
+- `XAI_API_KEY`: Your xAI API key (required when using xAI/Grok models)
+- `MISTRAL_API_KEY`: Your Mistral AI API key (required when using Mistral models)
 
 Note: Ollama models do not require an API key as they run locally or on a specified server.
 

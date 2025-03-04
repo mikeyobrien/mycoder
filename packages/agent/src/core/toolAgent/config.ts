@@ -1,13 +1,20 @@
 import { execSync } from 'child_process';
 
 import { anthropic } from '@ai-sdk/anthropic';
+import { mistral } from '@ai-sdk/mistral';
 import { openai } from '@ai-sdk/openai';
+import { xai } from '@ai-sdk/xai';
 import { createOllama, ollama } from 'ollama-ai-provider';
 
 /**
  * Available model providers
  */
-export type ModelProvider = 'anthropic' | 'openai' | 'ollama';
+export type ModelProvider =
+  | 'anthropic'
+  | 'openai'
+  | 'ollama'
+  | 'xai'
+  | 'mistral';
 
 /**
  * Get the model instance based on provider and model name
@@ -29,6 +36,10 @@ export function getModel(
         })(modelName);
       }
       return ollama(modelName);
+    case 'xai':
+      return xai(modelName);
+    case 'mistral':
+      return mistral(modelName);
     default:
       throw new Error(`Unknown model provider: ${provider}`);
   }
