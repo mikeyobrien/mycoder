@@ -4,7 +4,7 @@ Command-line interface for AI-powered coding tasks.
 
 ## Features
 
-- 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent coding assistance
+- 🤖 **AI-Powered**: Leverages Anthropic's Claude and OpenAI models for intelligent coding assistance
 - 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
 - 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
 - 📝 **Self-Modification**: Can modify code, it was built and tested by writing itself
@@ -74,11 +74,44 @@ mycoder config get githubMode
 
 # Set a configuration value
 mycoder config set githubMode true
+
+# Configure model provider and model name
+mycoder config set modelProvider openai
+mycoder config set modelName gpt-4o-2024-05-13
+```
+
+### Model Selection
+
+MyCoder supports both Anthropic and OpenAI models. You can configure which model to use with the following commands:
+
+```bash
+# Use OpenAI's GPT-4o model
+mycoder config set modelProvider openai
+mycoder config set modelName gpt-4o-2024-05-13
+
+# Use OpenAI's o3-mini model
+mycoder config set modelProvider openai
+mycoder config set modelName o3-mini-2024-07-18
+
+# Use Anthropic's Claude 3.7 Sonnet model
+mycoder config set modelProvider anthropic
+mycoder config set modelName claude-3-7-sonnet-20250219
+
+# Use Anthropic's Claude 3 Opus model
+mycoder config set modelProvider anthropic
+mycoder config set modelName claude-3-opus-20240229
+```
+
+You can also specify the model provider and name directly when running a command:
+
+```bash
+mycoder --modelProvider openai --modelName gpt-4o-2024-05-13 "Your prompt here"
 ```
 
 ## Environment Variables
 
-- `ANTHROPIC_API_KEY`: Your Anthropic API key (required)
+- `ANTHROPIC_API_KEY`: Your Anthropic API key (required when using Anthropic models)
+- `OPENAI_API_KEY`: Your OpenAI API key (required when using OpenAI models)
 
 ## Development
 

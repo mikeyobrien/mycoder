@@ -6,7 +6,7 @@ An open-source mono-repository containing the MyCoder agent and cli.
 
 ## Features
 
-- 🤖 **AI-Powered**: Leverages Anthropic's Claude API for intelligent decision making
+- 🤖 **AI-Powered**: Leverages Anthropic's Claude and OpenAI models for intelligent decision making
 - 🛠️ **Extensible Tool System**: Modular architecture with various tool categories
 - 🔄 **Parallel Execution**: Ability to spawn sub-agents for concurrent task processing
 - 📝 **Self-Modification**: Can modify code, it was built and tested by writing itself
