@@ -43,7 +43,7 @@ export const toolAgent = async (
   logger.debug('User message:', initialPrompt);
 
   // Get the system prompt once at the start
-  const systemPrompt = config.getSystemPrompt();
+  const systemPrompt = config.getSystemPrompt(context);
 
   for (let i = 0; i < config.maxIterations; i++) {
     logger.verbose(

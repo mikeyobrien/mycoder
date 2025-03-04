@@ -19,6 +19,7 @@ const toolContext: ToolContext = {
   userSession: false,
   pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
+  githubMode: false,
 };
 
 describe('textEditor', () => {
@@ -259,18 +260,16 @@ describe('textEditor', () => {
     const testPath = join(testDir, `${randomUUID()}.txt`);
 
     // Try to view a non-existent file
-    const result = await textEditorTool.execute(
-      {
-        command: 'view',
-        path: testPath,
-        description: 'test',
-      },
-      toolContext,
-    );
-
-    // Verify return value
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('not found');
+    await expect(async () => {
+      await textEditorTool.execute(
+        {
+          command: 'view',
+          path: testPath,
+          description: 'test',
+        },
+        toolContext,
+      );
+    }).rejects.toThrow(/not found/);
   });
 
   it('should handle errors for duplicate string replacements', async () => {
@@ -291,19 +290,17 @@ describe('textEditor', () => {
     );
 
     // Try to replace text with multiple occurrences
-    const result = await textEditorTool.execute(
-      {
-        command: 'str_replace',
-        path: testPath,
-        old_str: oldStr,
-        new_str: newStr,
-        description: 'test',
-      },
-      toolContext,
-    );
-
-    // Verify return value
-    expect(result.success).toBe(false);
-    expect(result.message).toContain('Found 2 occurrences');
+    await expect(async () => {
+      await textEditorTool.execute(
+        {
+          command: 'str_replace',
+          path: testPath,
+          old_str: oldStr,
+          new_str: newStr,
+          description: 'test',
+        },
+        toolContext,
+      );
+    }).rejects.toThrow(/Found 2 occurrences/);
   });
 });

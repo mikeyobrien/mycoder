@@ -14,6 +14,7 @@ const toolContext: ToolContext = {
   userSession: false,
   pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
+  githubMode: false,
 };
 
 // Mock tool for testing
@@ -98,16 +99,21 @@ describe('toolAgent', () => {
   });
 
   it('should handle tool execution errors', async () => {
-    await expect(
-      executeToolCall(
-        {
-          id: '1',
-          name: 'errorTool',
-          input: {},
-        },
-        [errorTool],
-        toolContext,
-      ),
-    ).rejects.toThrow('Deliberate failure');
+    const result = await executeToolCall(
+      {
+        id: '1',
+        name: 'errorTool',
+        input: {},
+      },
+      [errorTool],
+      toolContext,
+    );
+
+    // Parse the result as JSON
+    const parsedResult = JSON.parse(result);
+
+    // Check that it contains the expected error properties
+    expect(parsedResult.error).toBe(true);
+    expect(parsedResult.message).toContain('Deliberate failure');
   });
 });

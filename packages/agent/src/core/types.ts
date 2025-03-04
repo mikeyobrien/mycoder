@@ -16,6 +16,7 @@ export type ToolContext = {
   userSession: boolean;
   pageFilter: pageFilter;
   tokenTracker: TokenTracker;
+  githubMode: boolean;
 };
 
 export type Tool<TParams = Record<string, any>, TReturn = any> = {

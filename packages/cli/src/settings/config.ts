@@ -9,6 +9,9 @@ const configFile = path.join(getSettingsDir(), 'config.json');
 const defaultConfig = {
   // Add default configuration values here
   githubMode: false,
+  headless: true,
+  userSession: false,
+  pageFilter: 'none' as 'simple' | 'none' | 'readability',
   modelProvider: 'anthropic',
   modelName: 'claude-3-7-sonnet-20250219',
 };

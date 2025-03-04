@@ -38,6 +38,9 @@ describe('Config', () => {
 
       expect(config).toEqual({
         githubMode: false,
+        headless: true,
+        userSession: false,
+        pageFilter: 'none',
         modelProvider: 'anthropic',
         modelName: 'claude-3-7-sonnet-20250219',
       });
@@ -66,6 +69,9 @@ describe('Config', () => {
 
       expect(config).toEqual({
         githubMode: false,
+        headless: true,
+        userSession: false,
+        pageFilter: 'none',
         modelProvider: 'anthropic',
         modelName: 'claude-3-7-sonnet-20250219',
       });
