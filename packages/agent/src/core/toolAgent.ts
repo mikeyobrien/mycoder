@@ -183,8 +183,9 @@ async function executeTools(
   const sequenceCompletedTool = toolResults.find(
     (r) => r.toolName === 'sequenceComplete',
   );
-  const completionResult = (sequenceCompletedTool?.result as { result: string })
-    .result;
+  const completionResult = sequenceCompletedTool
+    ? (sequenceCompletedTool.result as { result: string }).result
+    : undefined;
 
   messages.push({
     role: 'tool',
