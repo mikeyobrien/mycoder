@@ -2,8 +2,6 @@ import { Logger } from 'mycoder-agent';
 import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
 import { command } from '../../src/commands/config.js';
-import type { ConfigOptions } from '../../src/commands/config.js';
-import type { ArgumentsCamelCase } from 'yargs';
 import { getConfig, updateConfig } from '../../src/settings/config.js';
 
 // Mock dependencies

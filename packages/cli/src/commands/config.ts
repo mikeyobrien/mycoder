@@ -37,10 +37,7 @@ export const command: CommandModule<SharedOptions, ConfigOptions> = {
         '$0 config get githubMode',
         'Get the value of githubMode setting',
       )
-      .example(
-        '$0 config set githubMode true',
-        'Enable GitHub mode',
-      ) as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+      .example('$0 config set githubMode true', 'Enable GitHub mode') as any; // eslint-disable-line @typescript-eslint/no-explicit-any
   },
   handler: async (argv: ArgumentsCamelCase<ConfigOptions>) => {
     const logger = new Logger({

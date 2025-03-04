@@ -1,7 +1,7 @@
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
+
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
 
 import { getConfig, updateConfig } from '../../src/settings/config.js';
 import { getSettingsDir } from '../../src/settings/settings.js';
@@ -21,7 +21,7 @@ vi.mock('fs', () => ({
 describe('Config', () => {
   const mockSettingsDir = '/mock/settings/dir';
   const mockConfigFile = path.join(mockSettingsDir, 'config.json');
-  
+
   beforeEach(() => {
     vi.mocked(getSettingsDir).mockReturnValue(mockSettingsDir);
   });
@@ -33,9 +33,9 @@ describe('Config', () => {
   describe('getConfig', () => {
     it('should return default config if config file does not exist', () => {
       vi.mocked(fs.existsSync).mockReturnValue(false);
-      
+
       const config = getConfig();
-      
+
       expect(config).toEqual({ githubMode: false });
       expect(fs.existsSync).toHaveBeenCalledWith(mockConfigFile);
     });
@@ -44,9 +44,9 @@ describe('Config', () => {
       const mockConfig = { githubMode: true, customSetting: 'value' };
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(mockConfig));
-      
+
       const config = getConfig();
-      
+
       expect(config).toEqual(mockConfig);
       expect(fs.existsSync).toHaveBeenCalledWith(mockConfigFile);
       expect(fs.readFileSync).toHaveBeenCalledWith(mockConfigFile, 'utf-8');
@@ -57,9 +57,9 @@ describe('Config', () => {
       vi.mocked(fs.readFileSync).mockImplementation(() => {
         throw new Error('Read error');
       });
-      
+
       const config = getConfig();
-      
+
       expect(config).toEqual({ githubMode: false });
     });
   });
@@ -70,13 +70,13 @@ describe('Config', () => {
       const newConfig = { githubMode: true };
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(currentConfig));
-      
+
       const result = updateConfig(newConfig);
-      
+
       expect(result).toEqual({ githubMode: true });
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         mockConfigFile,
-        JSON.stringify({ githubMode: true }, null, 2)
+        JSON.stringify({ githubMode: true }, null, 2),
       );
     });
 
@@ -85,9 +85,9 @@ describe('Config', () => {
       const partialConfig = { githubMode: true };
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue(JSON.stringify(currentConfig));
-      
+
       const result = updateConfig(partialConfig);
-      
+
       expect(result).toEqual({ githubMode: true, existingSetting: 'value' });
     });
   });
