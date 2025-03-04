@@ -10,15 +10,6 @@ import { createOllama, ollama } from 'ollama-ai-provider';
 export type ModelProvider = 'anthropic' | 'openai' | 'ollama';
 
 /**
- * Available models by provider
- */
-export const AVAILABLE_MODELS = {
-  anthropic: ['claude-3-7-sonnet-20250219', 'claude-3-opus-20240229'],
-  openai: ['gpt-4o-2024-05-13', 'o3-mini-2024-07-18'],
-  ollama: ['llama3-groq-tool-use'],
-};
-
-/**
  * Get the model instance based on provider and model name
  */
 export function getModel(

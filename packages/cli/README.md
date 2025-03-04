@@ -82,28 +82,20 @@ mycoder config set modelName gpt-4o-2024-05-13
 
 ### Model Selection
 
-MyCoder supports Anthropic, OpenAI, and Ollama models. You can configure which model to use with the following commands:
+MyCoder supports Anthropic, OpenAI, and Ollama models. You can configure which model provider and model name to use with the following commands:
 
 ```bash
-# Use OpenAI's GPT-4o model
+# Use OpenAI models
 mycoder config set modelProvider openai
-mycoder config set modelName gpt-4o-2024-05-13
+mycoder config set modelName gpt-4o-2024-05-13  # or any other OpenAI model
 
-# Use OpenAI's o3-mini model
-mycoder config set modelProvider openai
-mycoder config set modelName o3-mini-2024-07-18
-
-# Use Anthropic's Claude 3.7 Sonnet model
+# Use Anthropic models
 mycoder config set modelProvider anthropic
-mycoder config set modelName claude-3-7-sonnet-20250219
+mycoder config set modelName claude-3-7-sonnet-20250219  # or any other Anthropic model
 
-# Use Anthropic's Claude 3 Opus model
-mycoder config set modelProvider anthropic
-mycoder config set modelName claude-3-opus-20240229
-
-# Use Ollama's llama3-groq-tool-use model (local)
+# Use Ollama models (local)
 mycoder config set modelProvider ollama
-mycoder config set modelName llama3-groq-tool-use
+mycoder config set modelName llama3-groq-tool-use  # or any other model available in your Ollama instance
 
 # Configure custom Ollama server URL (default is http://localhost:11434/api)
 mycoder config set ollamaBaseUrl http://your-ollama-server:11434/api
