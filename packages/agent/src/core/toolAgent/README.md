@@ -9,7 +9,7 @@ This directory contains the refactored Tool Agent implementation, split into sma
 - **messageUtils.ts**: Utilities for handling and formatting messages
 - **toolExecutor.ts**: Logic for executing tool calls
 - **tokenTracking.ts**: Enhanced utilities for token tracking
-- **types.ts**: Consolidated type definitions
+- **types.ts**: Additional type definitions specific to toolAgent (re-exports from core/types.ts)
 
 ## Usage
 
