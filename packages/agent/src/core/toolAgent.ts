@@ -8,7 +8,6 @@ import {
   ToolResultPart,
   ToolSet,
   tool as makeTool,
-  Message
 } from 'ai';
 import chalk from 'chalk';
 
@@ -192,6 +191,18 @@ async function executeTools(
   };
 }
 
+function createCacheControlMessageFromSystemPrompt(
+  systemPrompt: string,
+): CoreMessage {
+  return {
+    role: 'system',
+    content: systemPrompt,
+    providerOptions: {
+      anthropic: { cacheControl: { type: 'ephemeral' } },
+    },
+  };
+}
+
 /**
  * Adds cache control to the messages for token caching with the Vercel AI SDK
  * This marks the last two messages as ephemeral which allows the conversation up to that
@@ -199,18 +210,15 @@ async function executeTools(
  */
 function addCacheControlToMessages(messages: CoreMessage[]): CoreMessage[] {
   if (messages.length <= 1) return messages;
-  
+
   // Create a deep copy of the messages array to avoid mutating the original
   const result = JSON.parse(JSON.stringify(messages)) as CoreMessage[];
-  
+
   // Get the last two messages (if available)
-  const lastTwoMessageIndices = [
-    messages.length - 1, 
-    messages.length - 2
-  ];
-  
+  const lastTwoMessageIndices = [messages.length - 1, messages.length - 2];
+
   // Add providerOptions with anthropic cache control to the last two messages
-  lastTwoMessageIndices.forEach(index => {
+  lastTwoMessageIndices.forEach((index) => {
     if (index >= 0) {
       const message = result[index];
       if (message) {
@@ -218,14 +226,12 @@ function addCacheControlToMessages(messages: CoreMessage[]): CoreMessage[] {
         // with cacheControl: 'ephemeral' to enable token caching
         message.providerOptions = {
           ...message.providerOptions,
-          anthropic: {
-            cacheControl: 'ephemeral'
-          }
+          anthropic: { cacheControl: { type: 'ephemeral' } },
         };
       }
     }
   });
-  
+
   return result;
 }
 
@@ -275,13 +281,15 @@ export const toolAgent = async (
       });
     });
     // Apply cache control to messages for token caching
-    const messagesWithCacheControl = addCacheControlToMessages(messages);
-    
+    const messagesWithCacheControl = [
+      createCacheControlMessageFromSystemPrompt(systemPrompt),
+      ...addCacheControlToMessages(messages),
+    ];
+
     const generateTextProps = {
       model: config.model,
       temperature: config.temperature,
       messages: messagesWithCacheControl,
-      system: systemPrompt,
       tools: toolSet,
     };
     const { text, toolCalls } = await generateText(generateTextProps);
