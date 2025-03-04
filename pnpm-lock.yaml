@@ -67,7 +67,7 @@ importers:
         specifier: ^3.0.5
         version: 3.0.6(@types/node@18.19.76)(playwright@1.50.1)(typescript@5.7.3)(vite@6.1.1(@types/node@18.19.76)(jiti@2.4.2)(terser@5.39.0)(tsx@4.19.3)(yaml@2.7.0))(vitest@3.0.6)
       chalk:
-        specifier: ^5
+        specifier: ^5.4.1
         version: 5.4.1
       dotenv:
         specifier: ^16
@@ -82,7 +82,7 @@ importers:
         specifier: ^11
         version: 11.1.0
       zod:
-        specifier: ^3
+        specifier: ^3.24.2
         version: 3.24.2
       zod-to-json-schema:
         specifier: ^3
