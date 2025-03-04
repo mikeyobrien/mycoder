@@ -16,7 +16,9 @@ export const DEFAULT_CONFIG = {
 /**
  * Gets the default system prompt with contextual information about the environment
  */
-export function getDefaultSystemPrompt(): string {
+export function getDefaultSystemPrompt(options?: {
+  githubMode?: boolean;
+}): string {
   // Gather context with error handling
   const getCommandOutput = (command: string, label: string): string => {
     try {
@@ -31,7 +33,23 @@ export function getDefaultSystemPrompt(): string {
     files: getCommandOutput('ls -la', 'file listing'),
     system: getCommandOutput('uname -a', 'system information'),
     datetime: new Date().toString(),
+    githubMode: options?.githubMode || false,
   };
+
+  const githubModeInstructions = context.githubMode
+    ? [
+        '',
+        '## GitHub Mode',
+        'GitHub mode is enabled. You should work with GitHub issues and PRs as part of your workflow:',
+        '- Start from existing GitHub issues or create new ones for tasks',
+        "- Create branches for issues you're working on",
+        '- Make commits with descriptive messages',
+        '- Create PRs when work is complete',
+        '- Create additional GitHub issues for follow-up tasks or ideas',
+        '',
+        'You can use the GitHub CLI (`gh`) for all GitHub interactions.',
+      ].join('\n')
+    : '';
 
   return [
     'You are an AI agent that can use tools to accomplish tasks.',
@@ -42,6 +60,7 @@ export function getDefaultSystemPrompt(): string {
     context.files,
     `System: ${context.system}`,
     `DateTime: ${context.datetime}`,
+    githubModeInstructions,
     '',
     'You prefer to call tools in parallel when possible because it leads to faster execution and less resource usage.',
     'When done, call the sequenceComplete tool with your results to indicate that the sequence has completed.',
