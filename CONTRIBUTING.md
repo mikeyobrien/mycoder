@@ -80,17 +80,19 @@ This project and everyone participating in it is governed by our Code of Conduct
 5. Push to your fork and create a Pull Request
 
 6. Pre-commit Hooks:
-   
+
    We use [husky](https://typicode.github.io/husky/) and [lint-staged](https://github.com/okonet/lint-staged) to automatically run linting and formatting on staged files before each commit. This helps maintain code quality and consistency.
 
    The pre-commit hooks are configured to run:
-   - `pnpm lint`: Lints the staged files using ESLint 
+
+   - `pnpm lint`: Lints the staged files using ESLint
    - `pnpm format`: Formats the staged files using Prettier
 
    If either of these commands fails due to linting errors or formatting issues, the commit will be aborted. Please fix the reported issues and try committing again.
 
    You can also run the lint and format commands manually at any time:
-   ```bash 
+
+   ```bash
    pnpm lint        # Lint all files
    pnpm format      # Format all files
    ```

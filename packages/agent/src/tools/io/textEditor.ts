@@ -1,7 +1,7 @@
-import * as fs from 'fs/promises';
-import * as fsSync from 'fs';
-import * as path from 'path';
 import { execSync } from 'child_process';
+import * as fsSync from 'fs';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
@@ -21,7 +21,9 @@ const parameterSchema = z.object({
     ),
   path: z
     .string()
-    .describe('Absolute path to file or directory, e.g. `/repo/file.py` or `/repo`.'),
+    .describe(
+      'Absolute path to file or directory, e.g. `/repo/file.py` or `/repo`.',
+    ),
   file_text: z
     .string()
     .optional()
@@ -72,10 +74,20 @@ export const textEditorTool: Tool<Parameters, ReturnType> = {
   description:
     'View, create, and edit files with persistent state across command calls',
   logPrefix: '📝',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  returns: returnSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (
-    { command, path: filePath, file_text, insert_line, new_str, old_str, view_range },
+    {
+      command,
+      path: filePath,
+      file_text,
+      insert_line,
+      new_str,
+      old_str,
+      view_range,
+    },
     context,
   ) => {
     const normalizedPath = path.normalize(filePath);
@@ -126,13 +138,12 @@ export const textEditorTool: Tool<Parameters, ReturnType> = {
               const [start, end] = view_range;
               const startLine = Math.max(1, start || 1) - 1; // Convert to 0-indexed
               const endLine = end === -1 ? lines.length : end;
-              displayContent = lines
-                .slice(startLine, endLine)
-                .join('\n');
+              displayContent = lines.slice(startLine, endLine).join('\n');
             }
 
             // Add line numbers
-            const startLineNum = view_range && view_range.length === 2 ? view_range[0] : 1;
+            const startLineNum =
+              view_range && view_range.length === 2 ? view_range[0] : 1;
             const numberedContent = displayContent
               .split('\n')
               .map((line, i) => `${(startLineNum || 1) + i}: ${line}`)
@@ -140,7 +151,10 @@ export const textEditorTool: Tool<Parameters, ReturnType> = {
 
             // Truncate if too large
             if (numberedContent.length > OUTPUT_LIMIT) {
-              const truncatedContent = numberedContent.substring(0, OUTPUT_LIMIT);
+              const truncatedContent = numberedContent.substring(
+                0,
+                OUTPUT_LIMIT,
+              );
               return {
                 success: true,
                 message: `File content (truncated):`,

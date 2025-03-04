@@ -1,4 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
+//import Anthropic from '@anthropic-ai/sdk';
 
 import { LogLevel } from '../utils/logger.js';
 
@@ -34,6 +34,7 @@ export class TokenUsage {
     return usage;
   }
 
+  /*
   static fromMessage(message: Anthropic.Message) {
     const usage = new TokenUsage();
     usage.input = message.usage.input_tokens;
@@ -41,7 +42,7 @@ export class TokenUsage {
     usage.cacheReads = message.usage.cache_read_input_tokens ?? 0;
     usage.output = message.usage.output_tokens;
     return usage;
-  }
+  }*/
 
   static sum(usages: TokenUsage[]) {
     const usage = new TokenUsage();

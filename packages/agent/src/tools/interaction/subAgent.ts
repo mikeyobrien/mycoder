@@ -1,3 +1,4 @@
+import { anthropic } from '@ai-sdk/anthropic';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
@@ -35,11 +36,13 @@ const parameterSchema = z.object({
     .optional(),
 });
 
-const returnSchema = z
-  .string()
-  .describe(
-    'The response from the sub-agent including its reasoning and tool usage',
-  );
+const returnSchema = z.object({
+  response: z
+    .string()
+    .describe(
+      'The response from the sub-agent including its reasoning and tool usage',
+    ),
+});
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
@@ -47,7 +50,7 @@ type ReturnType = z.infer<typeof returnSchema>;
 // Sub-agent specific configuration
 const subAgentConfig = {
   maxIterations: 50,
-  model: process.env.AGENT_MODEL || 'claude-3-opus-20240229',
+  model: anthropic('claude-3-7-sonnet-20250219'),
   maxTokens: 4096,
   temperature: 0.7,
   getSystemPrompt: () => {
@@ -66,8 +69,10 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
   description:
     'Creates a sub-agent that has access to all tools to solve a specific task',
   logPrefix: '🤖',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returns: returnSchema,
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (params, context) => {
     // Validate parameters
     const { description, goal, projectContext, fileContext } =
@@ -106,7 +111,7 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
       workingDirectory:
         fileContext?.workingDirectory ?? context.workingDirectory,
     });
-    return result.result; // Return the result string directly
+    return { response: result.result };
   },
   logParameters: (input, { logger }) => {
     logger.info(`Delegating task "${input.description}"`);

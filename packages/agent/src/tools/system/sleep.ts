@@ -23,8 +23,10 @@ export const sleepTool: Tool = {
   description:
     'Pauses execution for the specified number of seconds, useful when waiting for async tools to make progress before checking on them',
   logPrefix: '💤',
-  parameters: zodToJsonSchema(parametersSchema),
-  returns: zodToJsonSchema(returnsSchema),
+  parameters: parametersSchema,
+  returns: returnsSchema,
+  parametersJsonSchema: zodToJsonSchema(parametersSchema),
+  returnsJsonSchema: zodToJsonSchema(returnsSchema),
   async execute(params) {
     const { seconds } = parametersSchema.parse(params);
 

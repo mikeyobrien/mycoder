@@ -36,8 +36,10 @@ export const browseStartTool: Tool<Parameters, ReturnType> = {
   name: 'browseStart',
   logPrefix: '🏄',
   description: 'Starts a new browser session with optional initial URL',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returns: returnSchema,
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
 
   execute: async (
     { url, timeout = 30000 },

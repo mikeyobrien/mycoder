@@ -43,19 +43,22 @@ export const command: CommandModule<object, ToolsArgs> = {
     try {
       const tools = getTools();
 
-      console.log('Available Tools:\\n');
+      console.log('Available Tools:\n');
 
       for (const tool of tools) {
         // Tool name and description
         console.log(`${tool.name}`);
         console.log('-'.repeat(tool.name.length));
-        console.log(`Description: ${tool.description}\\n`);
+        console.log(`Description: ${tool.description}\n`);
 
         // Parameters section
         console.log('Parameters:');
+        // Use parametersJsonSchema if available, otherwise convert from ZodSchema
+        const parametersSchema =
+          (tool as any).parametersJsonSchema || tool.parameters;
         console.log(
           formatSchema(
-            tool.parameters as {
+            parametersSchema as {
               properties?: Record<string, JsonSchema7Type>;
               required?: string[];
             },
@@ -65,9 +68,11 @@ export const command: CommandModule<object, ToolsArgs> = {
         // Returns section
         console.log('Returns:');
         if (tool.returns) {
+          // Use returnsJsonSchema if available, otherwise convert from ZodSchema
+          const returnsSchema = (tool as any).returnsJsonSchema || tool.returns;
           console.log(
             formatSchema(
-              tool.returns as {
+              returnsSchema as {
                 properties?: Record<string, JsonSchema7Type>;
                 required?: string[];
               },
@@ -75,7 +80,7 @@ export const command: CommandModule<object, ToolsArgs> = {
           );
         } else {
           console.log('    Type: any');
-          console.log('    Description: Tool execution result or error\\n');
+          console.log('    Description: Tool execution result or error\n');
         }
 
         console.log(); // Add spacing between tools
