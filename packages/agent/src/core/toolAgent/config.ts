@@ -76,6 +76,12 @@ export function getDefaultSystemPrompt(toolContext: ToolContext): string {
         '- Create additional GitHub issues for follow-up tasks or ideas',
         '',
         'You can use the GitHub CLI (`gh`) for all GitHub interactions.',
+        '',
+        'When creating GitHub issues, PRs, or comments, use temporary markdown files for the content instead of inline text:',
+        '- Create a temporary markdown file with the content you want to include',
+        '- Use the file with GitHub CLI commands (e.g., `gh issue create --body-file temp.md`)',
+        '- Clean up the temporary file when done',
+        '- This approach preserves formatting, newlines, and special characters correctly',
       ].join('\n')
     : '';
 

@@ -61,6 +61,29 @@ Requirements for GitHub mode:
 - GitHub CLI (`gh`) needs to be installed and authenticated
 - User needs to have appropriate GitHub permissions for the target repository
 
+When using GitHub mode, MyCoder uses temporary markdown files for creating issues, PRs, and comments to ensure proper formatting:
+
+```bash
+# Example of how MyCoder handles GitHub content
+# 1. Creates a temporary markdown file
+cat > temp.md << 'EOF'
+## Description
+This is a description with proper
+newlines and formatting.
+
+- Bullet point 1
+- Bullet point 2
+EOF
+
+# 2. Uses the file with GitHub CLI
+gh issue create --title "Issue Title" --body-file temp.md
+
+# 3. Cleans up the temporary file
+rm temp.md
+```
+
+This approach ensures that formatting, newlines, and special characters are preserved correctly in GitHub content.
+
 ## Configuration
 
 MyCoder stores configuration in `~/.mycoder/config.json`. You can manage configuration using the `config` command:
