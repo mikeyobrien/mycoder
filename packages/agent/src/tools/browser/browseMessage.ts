@@ -70,8 +70,10 @@ export const browseMessageTool: Tool<Parameters, ReturnType> = {
   name: 'browseMessage',
   logPrefix: '🏄',
   description: 'Performs actions in an active browser session',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returns: returnSchema,
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
 
   execute: async (
     { instanceId, action },

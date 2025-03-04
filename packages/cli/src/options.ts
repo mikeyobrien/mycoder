@@ -6,6 +6,9 @@ export type SharedOptions = {
   readonly headless?: boolean;
   readonly userSession?: boolean;
   readonly pageFilter?: 'simple' | 'none' | 'readability';
+  readonly sentryDsn?: string;
+  readonly modelProvider?: string;
+  readonly modelName?: string;
 };
 
 export const sharedOptions = {
@@ -15,6 +18,15 @@ export const sharedOptions = {
     description: 'Set minimum logging level',
     default: 'info',
     choices: ['debug', 'verbose', 'info', 'warn', 'error'],
+  } as const,
+  modelProvider: {
+    type: 'string',
+    description: 'AI model provider to use',
+    choices: ['anthropic', 'openai'],
+  } as const,
+  modelName: {
+    type: 'string',
+    description: 'AI model name to use',
   } as const,
   interactive: {
     type: 'boolean',
@@ -48,5 +60,10 @@ export const sharedOptions = {
     description: 'Method to process webpage content',
     default: 'none',
     choices: ['simple', 'none', 'readability'],
+  } as const,
+  sentryDsn: {
+    type: 'string',
+    description: 'Custom Sentry DSN for error tracking',
+    hidden: true,
   } as const,
 };

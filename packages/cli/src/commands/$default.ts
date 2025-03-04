@@ -10,10 +10,15 @@ import {
   userPrompt,
   LogLevel,
   subAgentTool,
+  errorToString,
+  getModel,
+  DEFAULT_CONFIG,
 } from 'mycoder-agent';
 import { TokenTracker } from 'mycoder-agent/dist/core/tokens.js';
 
 import { SharedOptions } from '../options.js';
+import { initSentry, captureException } from '../sentry/index.js';
+import { getConfig } from '../settings/config.js';
 import { hasUserConsented, saveUserConsent } from '../settings/settings.js';
 import { nameToLogIndex } from '../utils/nameToLogIndex.js';
 import { checkForUpdates, getPackageInfo } from '../utils/versionCheck.js';
@@ -34,6 +39,11 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
     }) as Argv<DefaultArgs>;
   },
   handler: async (argv) => {
+    // Initialize Sentry with custom DSN if provided
+    if (argv.sentryDsn) {
+      initSentry(argv.sentryDsn);
+    }
+
     const logger = new Logger({
       name: 'Default',
       logLevel: nameToLogIndex(argv.logLevel),
@@ -79,11 +89,26 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
     );
 
     try {
-      // Early API key check
-      if (!process.env.ANTHROPIC_API_KEY) {
+      // Get configuration for model provider and name
+      const userConfig = getConfig();
+      const userModelProvider = argv.modelProvider || userConfig.modelProvider;
+      const userModelName = argv.modelName || userConfig.modelName;
+
+      // Early API key check based on model provider
+      if (userModelProvider === 'anthropic' && !process.env.ANTHROPIC_API_KEY) {
         logger.error(getAnthropicApiKeyError());
         throw new Error('Anthropic API key not found');
+      } else if (
+        userModelProvider === 'openai' &&
+        !process.env.OPENAI_API_KEY
+      ) {
+        logger.error(
+          'No OpenAI API key found. Please set the OPENAI_API_KEY environment variable.',
+          'You can get an API key from https://platform.openai.com/api-keys',
+        );
+        throw new Error('OpenAI API key not found');
       }
+      // No API key check needed for Ollama as it uses a local server
 
       let prompt: string | undefined;
 
@@ -126,14 +151,26 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
         );
         process.exit(0);
       });
+      const config = await getConfig();
 
-      const result = await toolAgent(prompt, tools, undefined, {
+      // Create a config with the selected model
+      const agentConfig = {
+        ...DEFAULT_CONFIG,
+        model: getModel(
+          userModelProvider as 'anthropic' | 'openai' | 'ollama',
+          userModelName,
+          { ollamaBaseUrl: config.ollamaBaseUrl },
+        ),
+      };
+
+      const result = await toolAgent(prompt, tools, agentConfig, {
         logger,
-        headless: argv.headless ?? true,
-        userSession: argv.userSession ?? false,
-        pageFilter: argv.pageFilter ?? 'none',
+        headless: argv.headless ?? config.headless,
+        userSession: argv.userSession ?? config.userSession,
+        pageFilter: argv.pageFilter ?? config.pageFilter,
         workingDirectory: '.',
         tokenTracker,
+        githubMode: config.githubMode,
       });
 
       const output =
@@ -142,7 +179,13 @@ export const command: CommandModule<SharedOptions, DefaultArgs> = {
           : JSON.stringify(result.result, null, 2);
       logger.info('\n=== Result ===\n', output);
     } catch (error) {
-      logger.error('An error occurred:', error);
+      logger.error(
+        'An error occurred:',
+        errorToString(error),
+        error instanceof Error ? error.stack : '',
+      );
+      // Capture the error with Sentry
+      captureException(error);
     }
 
     logger.log(

@@ -1,6 +1,5 @@
 // Tools - IO
-export * from './tools/io/readFile.js';
-export * from './tools/io/updateFile.js';
+
 export * from './tools/io/fetch.js';
 
 // Tools - System
@@ -27,6 +26,7 @@ export * from './tools/interaction/userPrompt.js';
 export * from './core/executeToolCall.js';
 export * from './core/types.js';
 export * from './core/toolAgent.js';
+export * from './core/toolAgent/config.js';
 
 // Utils
 export * from './tools/getTools.js';

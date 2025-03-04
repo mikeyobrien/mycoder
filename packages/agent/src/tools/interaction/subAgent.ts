@@ -1,8 +1,10 @@
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
+import { getModel } from '../../core/toolAgent/config.js';
+import { getDefaultSystemPrompt } from '../../core/toolAgent/index.js';
 import { toolAgent } from '../../core/toolAgent.js';
-import { Tool } from '../../core/types.js';
+import { Tool, ToolContext } from '../../core/types.js';
 import { getTools } from '../getTools.js';
 
 const parameterSchema = z.object({
@@ -16,30 +18,23 @@ const parameterSchema = z.object({
   projectContext: z
     .string()
     .describe('Context about the problem or environment'),
-  fileContext: z
-    .object({
-      workingDirectory: z
-        .string()
-        .optional()
-        .describe('The directory where the sub-agent should operate'),
-      relevantFiles: z
-        .string()
-        .optional()
-        .describe(
-          'A list of files, which may include ** or * wildcard characters',
-        ),
-    })
-    .describe(
-      'When working with files and directories, it is best to be very specific to avoid sub-agents making incorrect assumptions',
-    )
-    .optional(),
+  workingDirectory: z
+    .string()
+    .optional()
+    .describe('The directory where the sub-agent should operate'),
+  relevantFilesDirectories: z
+    .string()
+    .optional()
+    .describe('A list of files, which may include ** or * wildcard characters'),
 });
 
-const returnSchema = z
-  .string()
-  .describe(
-    'The response from the sub-agent including its reasoning and tool usage',
-  );
+const returnSchema = z.object({
+  response: z
+    .string()
+    .describe(
+      'The response from the sub-agent including its reasoning and tool usage',
+    ),
+});
 
 type Parameters = z.infer<typeof parameterSchema>;
 type ReturnType = z.infer<typeof returnSchema>;
@@ -47,11 +42,12 @@ type ReturnType = z.infer<typeof returnSchema>;
 // Sub-agent specific configuration
 const subAgentConfig = {
   maxIterations: 50,
-  model: process.env.AGENT_MODEL || 'claude-3-opus-20240229',
+  model: getModel('anthropic', 'claude-3-7-sonnet-20250219'),
   maxTokens: 4096,
   temperature: 0.7,
-  getSystemPrompt: () => {
+  getSystemPrompt: (context: ToolContext) => {
     return [
+      getDefaultSystemPrompt(context),
       'You are a focused AI sub-agent handling a specific task.',
       'You have access to the same tools as the main agent but should focus only on your assigned task.',
       'When complete, call the sequenceComplete tool with your results.',
@@ -66,29 +62,28 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
   description:
     'Creates a sub-agent that has access to all tools to solve a specific task',
   logPrefix: '🤖',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returns: returnSchema,
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (params, context) => {
     // Validate parameters
-    const { description, goal, projectContext, fileContext } =
-      parameterSchema.parse(params);
+    const {
+      description,
+      goal,
+      projectContext,
+      workingDirectory,
+      relevantFilesDirectories,
+    } = parameterSchema.parse(params);
 
     // Construct a well-structured prompt
     const prompt = [
       `Description: ${description}`,
       `Goal: ${goal}`,
       `Project Context: ${projectContext}`,
-      fileContext
-        ? `\nContext:\n${[
-            fileContext.workingDirectory
-              ? `- Working Directory: ${fileContext.workingDirectory}`
-              : '',
-            fileContext.relevantFiles
-              ? `- Relevant Files:\n  ${fileContext.relevantFiles}`
-              : '',
-          ]
-            .filter(Boolean)
-            .join('\n')}`
+      workingDirectory ? `Working Directory: ${workingDirectory}` : '',
+      relevantFilesDirectories
+        ? `Relevant Files:\n  ${relevantFilesDirectories}`
         : '',
     ]
       .filter(Boolean)
@@ -103,10 +98,9 @@ export const subAgentTool: Tool<Parameters, ReturnType> = {
 
     const result = await toolAgent(prompt, tools, config, {
       ...context,
-      workingDirectory:
-        fileContext?.workingDirectory ?? context.workingDirectory,
+      workingDirectory: workingDirectory ?? context.workingDirectory,
     });
-    return result.result; // Return the result string directly
+    return { response: result.result };
   },
   logParameters: (input, { logger }) => {
     logger.info(`Delegating task "${input.description}"`);

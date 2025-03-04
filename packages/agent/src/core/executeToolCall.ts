@@ -39,7 +39,25 @@ export const executeToolCall = async (
   }
 
   // TODO: validate JSON schema for input
-  const output = await tool.execute(toolCall.input, toolContext);
+  let output;
+  try {
+    output = await tool.execute(toolCall.input, toolContext);
+  } catch (err) {
+    if (err instanceof Error) {
+      logger.error(err.message);
+      return JSON.stringify({
+        error: true,
+        message: err.message,
+        stack: err.stack,
+      });
+    } else {
+      logger.error(err);
+      return JSON.stringify({
+        error: true,
+        message: err,
+      });
+    }
+  }
 
   // for each result log it and its name
   if (tool.logReturns) {

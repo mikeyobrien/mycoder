@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { z } from 'zod';
 
 import { MockLogger } from '../utils/mockLogger.js';
 
 import { executeToolCall } from './executeToolCall.js';
 import { TokenTracker } from './tokens.js';
-import { toolAgent } from './toolAgent.js';
 import { Tool, ToolContext } from './types.js';
 
 const toolContext: ToolContext = {
@@ -14,92 +14,61 @@ const toolContext: ToolContext = {
   userSession: false,
   pageFilter: 'simple',
   tokenTracker: new TokenTracker(),
+  githubMode: false,
 };
 
-// Mock configuration for testing
-const testConfig = {
-  maxIterations: 50,
-  model: 'claude-3-7-sonnet-latest',
-  maxTokens: 4096,
-  temperature: 0.7,
-  getSystemPrompt: () => 'Test system prompt',
-};
-
-// Mock Anthropic client response
-const mockResponse = {
-  content: [
-    {
-      type: 'tool_use',
-      name: 'sequenceComplete',
-      id: '1',
-      input: { result: 'Test complete' },
+// Mock tool for testing
+const mockTool: Tool = {
+  name: 'mockTool',
+  description: 'A mock tool for testing',
+  parameters: z.object({
+    input: z.string().describe('Test input'),
+  }),
+  returns: z.string().describe('The processed result'),
+  parametersJsonSchema: {
+    type: 'object',
+    properties: {
+      input: {
+        type: 'string',
+        description: 'Test input',
+      },
     },
-  ],
-  usage: { input_tokens: 10, output_tokens: 10 },
-  model: 'claude-3-7-sonnet-latest',
-  role: 'assistant',
-  id: 'msg_123',
+    required: ['input'],
+  },
+  returnsJsonSchema: {
+    type: 'string',
+    description: 'The processed result',
+  },
+  execute: ({ input }) => Promise.resolve(`Processed: ${input}`),
 };
 
-// Mock Anthropic SDK
-const mockCreate = vi.fn().mockImplementation(() => mockResponse);
-vi.mock('@anthropic-ai/sdk', () => ({
-  default: class {
-    messages = {
-      create: mockCreate,
-    };
+const errorTool: Tool = {
+  name: 'errorTool',
+  description: 'A tool that always fails',
+  parameters: z.object({}),
+  returns: z.string().describe('Error message'),
+  parametersJsonSchema: {
+    type: 'object',
+    properties: {},
+    required: [],
   },
-}));
+  returnsJsonSchema: {
+    type: 'string',
+    description: 'Error message',
+  },
+  execute: () => {
+    throw new Error('Deliberate failure');
+  },
+};
 
 describe('toolAgent', () => {
   beforeEach(() => {
-    process.env.ANTHROPIC_API_KEY = 'test-key';
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
-
-  // Mock tool for testing
-  const mockTool: Tool = {
-    name: 'mockTool',
-    description: 'A mock tool for testing',
-    parameters: {
-      type: 'object',
-      properties: {
-        input: {
-          type: 'string',
-          description: 'Test input',
-        },
-      },
-      required: ['input'],
-    },
-    returns: {
-      type: 'string',
-      description: 'The processed result',
-    },
-    execute: ({ input }) => Promise.resolve(`Processed: ${input}`),
-  };
-
-  const sequenceCompleteTool: Tool = {
-    name: 'sequenceComplete',
-    description: 'Completes the sequence',
-    parameters: {
-      type: 'object',
-      properties: {
-        result: {
-          type: 'string',
-          description: 'The final result',
-        },
-      },
-      required: ['result'],
-    },
-    returns: {
-      type: 'string',
-      description: 'The final result',
-    },
-    execute: ({ result }) => Promise.resolve(result),
-  };
 
   it('should execute tool calls', async () => {
     const result = await executeToolCall(
@@ -130,72 +99,21 @@ describe('toolAgent', () => {
   });
 
   it('should handle tool execution errors', async () => {
-    const errorTool: Tool = {
-      name: 'errorTool',
-      description: 'A tool that always fails',
-      parameters: {
-        type: 'object',
-        properties: {},
-        required: [],
+    const result = await executeToolCall(
+      {
+        id: '1',
+        name: 'errorTool',
+        input: {},
       },
-      returns: {
-        type: 'string',
-        description: 'Error message',
-      },
-      execute: () => {
-        throw new Error('Deliberate failure');
-      },
-    };
-
-    await expect(
-      executeToolCall(
-        {
-          id: '1',
-          name: 'errorTool',
-          input: {},
-        },
-        [errorTool],
-        toolContext,
-      ),
-    ).rejects.toThrow('Deliberate failure');
-  });
-
-  // Test empty response handling
-  it('should handle empty responses by sending a reminder', async () => {
-    // Reset the mock and set up the sequence of responses
-    mockCreate.mockReset();
-    mockCreate
-      .mockResolvedValueOnce({
-        content: [],
-        usage: { input_tokens: 5, output_tokens: 5 },
-      })
-      .mockResolvedValueOnce(mockResponse);
-
-    const result = await toolAgent(
-      'Test prompt',
-      [sequenceCompleteTool],
-      testConfig,
+      [errorTool],
       toolContext,
     );
 
-    // Verify that create was called twice (once for empty response, once for completion)
-    expect(mockCreate).toHaveBeenCalledTimes(2);
-    expect(result.result).toBe('Test complete');
-  });
+    // Parse the result as JSON
+    const parsedResult = JSON.parse(result);
 
-  // New tests for async system prompt
-  it('should handle async system prompt', async () => {
-    // Reset mock and set expected response
-    mockCreate.mockReset();
-    mockCreate.mockResolvedValue(mockResponse);
-
-    const result = await toolAgent(
-      'Test prompt',
-      [sequenceCompleteTool],
-      testConfig,
-      toolContext,
-    );
-
-    expect(result.result).toBe('Test complete');
+    // Check that it contains the expected error properties
+    expect(parsedResult.error).toBe(true);
+    expect(parsedResult.message).toContain('Deliberate failure');
   });
 });

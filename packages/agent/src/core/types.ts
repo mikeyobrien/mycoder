@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import { JsonSchema7Type } from 'zod-to-json-schema';
 
 import { Logger } from '../utils/logger.js';
@@ -15,19 +16,24 @@ export type ToolContext = {
   userSession: boolean;
   pageFilter: pageFilter;
   tokenTracker: TokenTracker;
+  githubMode: boolean;
 };
 
 export type Tool<TParams = Record<string, any>, TReturn = any> = {
   name: string;
   description: string;
-  parameters: JsonSchema7Type;
-  returns: JsonSchema7Type;
+  parameters: z.ZodType<TParams>;
+  returns: z.ZodType<TReturn>;
   logPrefix?: string;
 
   logParameters?: (params: TParams, context: ToolContext) => void;
   logReturns?: (returns: TReturn, context: ToolContext) => void;
 
   execute: (params: TParams, context: ToolContext) => Promise<TReturn>;
+
+  // Keep JsonSchema7Type for backward compatibility and Vercel AI SDK integration
+  parametersJsonSchema?: JsonSchema7Type;
+  returnsJsonSchema?: JsonSchema7Type;
 };
 
 export type ToolCall = {

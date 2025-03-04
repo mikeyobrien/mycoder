@@ -38,8 +38,10 @@ export const fetchTool: Tool<Parameters, ReturnType> = {
   description:
     'Executes HTTP requests using native Node.js fetch API, for using APIs, not for browsing the web.',
   logPrefix: '🌐',
-  parameters: zodToJsonSchema(parameterSchema),
-  returns: zodToJsonSchema(returnSchema),
+  parameters: parameterSchema,
+  returns: returnSchema,
+  parametersJsonSchema: zodToJsonSchema(parameterSchema),
+  returnsJsonSchema: zodToJsonSchema(returnSchema),
   execute: async (
     { method, url, params, body, headers }: Parameters,
     { logger },
